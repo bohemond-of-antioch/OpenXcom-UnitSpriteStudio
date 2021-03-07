@@ -1,0 +1,105 @@
+﻿<Window x:Class="UnitSpriteStudio.MainWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:UnitSpriteStudio"
+		mc:Ignorable="d"
+		Title="UnitSprite Studio"  Loaded="Window_Loaded"
+		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="_File">
+				<MenuItem Header="_New"  >
+					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemNew_Click" Tag="0"/>
+				</MenuItem>
+
+				<MenuItem Header="_Open"  >
+					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemOpen_Click" Tag="0"/>
+				</MenuItem>
+				<MenuItem Header="_Save" Click="MenuItemSave_Click" />
+				<MenuItem Header="_Save as..." Click="MenuItemSaveAs_Click" />
+				<MenuItem Header="Copy .rul snippet" Click="MenuItemCopyRulSnippet_Click"/>
+				<Separator />
+				<MenuItem Header="_Exit" Click="MenuItemExit_Click" />
+			</MenuItem>
+		</Menu>
+		<DockPanel LastChildFill = "True">
+			<StackPanel DockPanel.Dock="Top" VerticalAlignment="Top" Orientation="Horizontal">
+				<local:UnitDirection x:Name="UnitDirectionControl" DockPanel.Dock="Top" HorizontalAlignment="Left" VerticalAlignment="Top"></local:UnitDirection>
+				<StackPanel Margin="5,0,0,0">
+					<Label Content="Primary"  VerticalAlignment="Top" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
+					<ListBox SelectionChanged="FrameSelectionChanged" Name="ListBoxPrimaryFrames" IsSynchronizedWithCurrentItem="True" />
+				</StackPanel>
+				<StackPanel Margin="5,0,0,0">
+					<Label Content="Secondary"  VerticalAlignment="Top" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
+					<ListBox SelectionChanged="FrameSelectionChanged" Name="ListBoxSecondaryFrames" IsSynchronizedWithCurrentItem="True" />
+				</StackPanel>
+				<StackPanel Margin="5,0,0,0">
+					<Label Content="Tertiary"  VerticalAlignment="Top" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
+					<ListBox SelectionChanged="FrameSelectionChanged" Name="ListBoxTertiaryFrames" IsSynchronizedWithCurrentItem="True" />
+				</StackPanel>
+				<StackPanel Margin="5,0,0,0">
+					<Label Content="Items"  VerticalAlignment="Top" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
+
+				</StackPanel>
+			</StackPanel>
+			<StackPanel Name="LayerPanel" DockPanel.Dock="Bottom" Margin="5" Orientation="Horizontal">
+				<StackPanel Margin="5,0,0,0">
+					<Label Content="Layer"  VerticalAlignment="Top" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
+					<ListBox Name="ListBoxLayers" IsSynchronizedWithCurrentItem="True" SelectionChanged="ListBoxLayers_SelectionChanged" />
+					<CheckBox Name="CheckBoxHighlightLayer" Margin="0,5,5,0" Click="CheckBoxHighlightLayer_Click">Highlight layer</CheckBox>
+					<Slider Name="SliderHighlightPower" Minimum="0" Maximum="255" SmallChange="1" LargeChange="20" IsSnapToTickEnabled="True" Value="100" ValueChanged="SliderHighlightPower_ValueChanged"/>
+				</StackPanel>
+			</StackPanel>
+			<DockPanel LastChildFill = "True">
+				<StackPanel Name="ToolBar" Margin="3" DockPanel.Dock="Top" Orientation="Horizontal">
+					<ToggleButton Tag="0" Click="ToggleCursorToolClicked" Name="ToggleSelectPixels" >Pixels</ToggleButton>
+					<ToggleButton Tag="1" Click="ToggleCursorToolClicked" Name="ToggleSelectBox" Margin="2,0,0,0">Box</ToggleButton>
+					<ToggleButton Tag="2" Click="ToggleCursorToolClicked" Name="ToggleSelectLasso" Margin="2,0,0,0">Lasso</ToggleButton>
+					<ToggleButton Tag="3" Click="ToggleCursorToolClicked" Name="ToggleSelectColors" Margin="2,0,0,0">Colors</ToggleButton>
+					<ToggleButton Tag="4" Click="ToggleCursorToolClicked" Name="ToggleSelectArea" Margin="2,0,0,0">Area</ToggleButton>
+					<ToggleButton Tag="5" Click="ToggleCursorToolClicked" Name="TogglePaint" Margin="10,0,0,0">Paint</ToggleButton>
+
+					<ToggleButton Click="ToggleBackground_Click" Name="ToggleBackground" Margin="20,0,0,0">Checkered background</ToggleButton>
+					<ToggleButton Name="ToggleGrid" Margin="2,0,0,0">Grid</ToggleButton>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal">
+					<StackPanel>
+						<Canvas Width="320" Height="400">
+							<Image Canvas.Top="0" Canvas.Left="0" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="ImageComposite" Height="400" Width="320" Stretch="Fill"/>
+							<Image Canvas.Top="0" Canvas.Left="0" x:Name="ImageOverlay" Height="400" Width="320" MouseDown="ImageOverlay_MouseDown" MouseMove="ImageOverlay_MouseMove" Stretch="None"/>
+						</Canvas>
+						<Slider Name="SliderFrame" Margin="5" SmallChange="1" TickPlacement="TopLeft" IsSnapToTickEnabled="True" ValueChanged="SliderFrame_ValueChanged"></Slider>
+					</StackPanel>
+					<StackPanel>
+						<DockPanel LastChildFill="True">
+							<Grid DockPanel.Dock="Top">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="30" />
+								</Grid.RowDefinitions>
+								<Rectangle Name="SelectedColorLeft" Grid.Column="0" Fill="AliceBlue"/>
+								<Rectangle Name="SelectedColorMiddle" Grid.Column="1" Fill="Gray"/>
+								<Rectangle Name="SelectedColorRight" Grid.Column="2" Fill="GreenYellow"/>
+							</Grid>
+							<local:ColorPalette x:Name="ToolColorPalette" Width="240" Height="240"/>
+						</DockPanel>
+						<DockPanel LastChildFill="True">
+							<StackPanel HorizontalAlignment="Center" DockPanel.Dock="Bottom" Orientation="Horizontal">
+								<Button Click="AnimationControlPlay">Play</Button>
+								<Button Click="AnimationControlStop">Stop</Button>
+							</StackPanel>
+							<Image RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="ImageAnimation" Height="120" Width="96" Stretch="Fill"/>
+						</DockPanel>
+					</StackPanel>
+					
+				</StackPanel>
+			</DockPanel>
+		</DockPanel>
+	</DockPanel>
+</Window>
