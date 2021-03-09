@@ -199,10 +199,14 @@
 				<RowDefinition Height="*"/>
 				<RowDefinition Height="*"/>
 				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
 			<Label Grid.Column="0" Grid.Row="0">Scope</Label>
-			<CheckBox Name="CheckBoxEntireAnimation" Grid.Column="0" Grid.Row="1" Margin="5,10,5,0" Click="CheckBoxEntireAnimation_Click">Entire animation</CheckBox>
-			<CheckBox Name="CheckBoxEntireSprite" Grid.Column="0" Grid.Row="2" Margin="5,10,5,0" Click="CheckBoxEntireSprite_Click">Entire unit sprite</CheckBox>
+			<CheckBox Name="CheckBoxPrimaryGroup" Grid.Column="0" Grid.Row="1" Margin="5,3,5,0" Click="CheckBoxPrimaryGroup_Click">Primary group</CheckBox>
+			<CheckBox Name="CheckBoxSecondaryGroup" Grid.Column="0" Grid.Row="2" Margin="5,3,5,0" Click="CheckBoxSecondaryGroup_Click">Secondary group</CheckBox>
+			<CheckBox Name="CheckBoxTertiaryGroup" Grid.Column="0" Grid.Row="3" Margin="5,3,5,0" Click="CheckBoxTertiaryGroup_Click">Tertiary group</CheckBox>
+			<CheckBox Name="CheckBoxEntireAnimation" Grid.Column="0" Grid.Row="4" Margin="5,10,5,5" Click="CheckBoxEntireAnimation_Click">Animation</CheckBox>
 		</Grid>
 		<DockPanel Grid.Column="2" Grid.Row="1" LastChildFill="True">
 			<Label DockPanel.Dock="Top">Presets</Label>

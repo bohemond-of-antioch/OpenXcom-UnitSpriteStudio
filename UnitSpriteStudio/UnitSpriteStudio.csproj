@@ -68,6 +68,7 @@
       <DependentUpon>ColorPalette.xaml</DependentUpon>
     </Compile>
     <Compile Include="DrawingRoutines\DrawingRoutine.cs" />
+    <Compile Include="DrawingRoutines\DrawingRoutineSectopod.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineSoldier.cs" />
     <Compile Include="DrawingRoutines\FrameMetadata.cs" />
     <Compile Include="FloatingSelectionBitmap.cs" />
@@ -153,6 +154,48 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\BoxSelection.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\LassoSelection.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\AreaSelection.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ColorSelection.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Paint.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PaintCursor.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\CheckeredBackground.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\GridBackground.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\IconArrow.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\FrameBorder.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\SmartLayer.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HWPMaskCenter.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HWPMaskLeft.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HWPMaskRight.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HWPMaskTop.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

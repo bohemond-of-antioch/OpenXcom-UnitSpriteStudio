@@ -55,7 +55,9 @@ namespace UnitSpriteStudio {
 			}
 		}
 		public void AddPoint((int X, int Y) point) {
-			this.selectedPixels[point.X + point.Y * SizeX] = true;
+			int index = point.X + point.Y * SizeX;
+			if (index < 0 || index >= selectedPixels.Length) return;
+			this.selectedPixels[index] = true;
 		}
 
 		public bool GetPoint((int X, int Y) point) {

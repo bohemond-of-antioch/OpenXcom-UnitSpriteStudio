@@ -12,12 +12,14 @@ namespace UnitSpriteStudio {
 	class SpriteSheet {
 		internal class FrameSource {
 			private WriteableBitmap sprite;
-			private Dictionary<int, ImageSource> imageSourceCache;
+			private Dictionary<int, BitmapSource> imageSourceCache;
 			private int columnCount;
-			internal FrameSource(string FileName) {
-				var originalSprite = new WriteableBitmap(new BitmapImage(new Uri(FileName, UriKind.Absolute)));
-				if (originalSprite.Format!=PixelFormats.Indexed8) {
-					throw new Exception("Unspported image format!");
+
+			internal FrameSource(FrameSource cloneFrom) : this(cloneFrom.sprite) {}
+			internal FrameSource(BitmapSource sourceBitmap) {
+				var originalSprite = new WriteableBitmap(sourceBitmap);
+				if (originalSprite.Format != PixelFormats.Indexed8) {
+					throw new Exception("Unsupported image format!");
 				}
 				BitmapPalette UFOBattlescapePalette = GetUFOBattlescapePalette();
 				sprite = new WriteableBitmap(originalSprite.PixelWidth, originalSprite.PixelHeight, originalSprite.DpiX, originalSprite.DpiY, PixelFormats.Indexed8, UFOBattlescapePalette);
@@ -25,7 +27,7 @@ namespace UnitSpriteStudio {
 				originalSprite.CopyPixels(originalPixels, originalSprite.BackBufferStride, 0);
 				sprite.WritePixels(new System.Windows.Int32Rect(0, 0, originalSprite.PixelWidth, originalSprite.PixelHeight), originalPixels, sprite.BackBufferStride, 0);
 				columnCount = sprite.PixelWidth / 32;
-				imageSourceCache = new Dictionary<int, ImageSource>();
+				imageSourceCache = new Dictionary<int, BitmapSource>();
 			}
 
 			internal BitmapPalette GetUFOBattlescapePalette() {
@@ -59,7 +61,7 @@ namespace UnitSpriteStudio {
 				return result;
 			}
 
-			internal ImageSource GetFrame(int FrameIndex) {
+			internal BitmapSource GetFrame(int FrameIndex) {
 				if (imageSourceCache.ContainsKey(FrameIndex)) {
 					return imageSourceCache[FrameIndex];
 				}
@@ -117,29 +119,31 @@ namespace UnitSpriteStudio {
 			internal void SetPixel(int FrameIndex, int X, int Y, byte Color) {
 				if (X < 0 || Y < 0 || X >= 32 || Y >= 40) return;
 				(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
-				try {
-					// Reserve the back buffer for updates.
-					sprite.Lock();
+				lock (sprite) {
+					try {
+						// Reserve the back buffer for updates.
+						sprite.Lock();
 
-					unsafe {
-						// Get a pointer to the back buffer.
-						IntPtr pBackBuffer = sprite.BackBuffer;
+						unsafe {
+							// Get a pointer to the back buffer.
+							IntPtr pBackBuffer = sprite.BackBuffer;
 
-						// Find the address of the pixel to draw.
-						pBackBuffer += (frameCoords.Y + Y) * sprite.BackBufferStride;
-						pBackBuffer += (frameCoords.X + X) * 1;
+							// Find the address of the pixel to draw.
+							pBackBuffer += (frameCoords.Y + Y) * sprite.BackBufferStride;
+							pBackBuffer += (frameCoords.X + X) * 1;
 
-						// Assign the color data to the pixel.
-						*((byte*)pBackBuffer) = Color;
+							// Assign the color data to the pixel.
+							*((byte*)pBackBuffer) = Color;
+						}
+
+						// Specify the area of the bitmap that changed.
+						sprite.AddDirtyRect(new System.Windows.Int32Rect(X, Y, 1, 1));
+					} finally {
+						// Release the back buffer and make it available for display.
+						sprite.Unlock();
 					}
-
-					// Specify the area of the bitmap that changed.
-					sprite.AddDirtyRect(new System.Windows.Int32Rect(X, Y, 1, 1));
-				} finally {
-					// Release the back buffer and make it available for display.
-					sprite.Unlock();
+					imageSourceCache[FrameIndex] = new CroppedBitmap(sprite, new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40));
 				}
-				imageSourceCache[FrameIndex] = new CroppedBitmap(sprite, new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40));
 			}
 
 			internal BitmapPalette GetColorPalette() {
@@ -149,12 +153,7 @@ namespace UnitSpriteStudio {
 
 		internal readonly DrawingRoutines.DrawingRoutine drawingRoutine;
 		internal FrameSource frameSource=null;
-		private string sourceFileName;
-
-		internal void LoadSprite(string FileName) {
-			frameSource = new FrameSource(FileName);
-			sourceFileName = FileName;
-		}
+		internal string sourceFileName { get; private set; }
 
 		internal void Save(string FileName="") {
 			if (FileName.Equals("")) FileName = sourceFileName;
@@ -164,13 +163,35 @@ namespace UnitSpriteStudio {
 				encoder.Save(stream);
 			}
 		}
+		internal SpriteSheet(SpriteSheet cloneFrom) {
+			this.drawingRoutine = cloneFrom.drawingRoutine;
+			frameSource = new FrameSource(cloneFrom.frameSource);
+			sourceFileName = "";
+		}
 
+		internal SpriteSheet(DrawingRoutine drawingRoutine,string FileName) {
+			this.drawingRoutine = drawingRoutine;
+			frameSource = new FrameSource(new BitmapImage(new Uri(FileName, UriKind.Absolute)));
+			sourceFileName = FileName;
+		}
+		
 		internal SpriteSheet(DrawingRoutine drawingRoutine) {
 			this.drawingRoutine = drawingRoutine;
+			var defaultSpriteSize = drawingRoutine.DefaultSpriteSheetSize();
+			var emptyBitmap = new WriteableBitmap(defaultSpriteSize.Width, defaultSpriteSize.Height,96,96,PixelFormats.Indexed8, BitmapPalettes.Gray256Transparent);
+			frameSource = new FrameSource(emptyBitmap);
 		}
 
 		internal void DrawCompositeImage(FrameMetadata metadata,DrawingContext drawingContext, int highlightedLayer=-1) {
 			if (frameSource!=null) drawingRoutine.DrawCompositeImage(frameSource, metadata, drawingContext, highlightedLayer);
+		}
+
+		internal Selection CompositeImageOutline(FrameMetadata metadata) {
+			if (frameSource != null) {
+				return drawingRoutine.GetCompositeOutline(frameSource, metadata);
+			} else {
+				return null;
+			}
 		}
 
 		internal void SetPixel(FrameMetadata metadata,int layer, int X, int Y, byte Color) {

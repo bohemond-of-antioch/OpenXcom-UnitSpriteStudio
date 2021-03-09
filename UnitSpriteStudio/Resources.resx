@@ -118,11 +118,50 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="AreaSelection" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AreaSelection.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="BoxSelection" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\BoxSelection.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="CheckeredBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\CheckeredBackground.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ColorSelection" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ColorSelection.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FrameBorder" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\FrameBorder.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GridBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\GridBackground.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="HWPMaskCenter" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\HWPMaskCenter.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="HWPMaskLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\HWPMaskLeft.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="HWPMaskRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\HWPMaskRight.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="HWPMaskTop" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\HWPMaskTop.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconArrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\IconArrow.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LassoSelection" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\LassoSelection.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Paint" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Paint.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="PixelSelection" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\PixelSelection.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SmartLayer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\SmartLayer.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="UFOBattlescapePalette" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\UFOBattlescapePalette.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

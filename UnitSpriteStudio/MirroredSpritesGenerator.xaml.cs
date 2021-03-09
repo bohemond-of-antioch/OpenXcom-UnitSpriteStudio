@@ -142,7 +142,9 @@ namespace UnitSpriteStudio {
 			CheckBoxChangeArms.IsChecked = options.ChangeArms;
 
 			CheckBoxEntireAnimation.IsChecked = Operation.EntireAnimation;
-			CheckBoxEntireSprite.IsChecked = Operation.EntireSprite;
+			CheckBoxPrimaryGroup.IsChecked = Operation.EntirePrimaryGroup;
+			CheckBoxSecondaryGroup.IsChecked = Operation.EntireSecondaryGroup;
+			CheckBoxTertiaryGroup.IsChecked = Operation.EntireTertiaryGroup;
 
 			for (int d = 0; d < 8; d++) {
 				if (Operation.Directions[d].Active) {
@@ -186,12 +188,19 @@ namespace UnitSpriteStudio {
 		private void CheckBoxEntireAnimation_Click(object sender, RoutedEventArgs e) {
 			Operation.EntireAnimation = CheckBoxEntireAnimation.IsChecked == true;
 		}
-		private void CheckBoxEntireSprite_Click(object sender, RoutedEventArgs e) {
-			Operation.EntireSprite = CheckBoxEntireSprite.IsChecked == true;
+		private void CheckBoxPrimaryGroup_Click(object sender, RoutedEventArgs e) {
+			Operation.EntirePrimaryGroup = CheckBoxPrimaryGroup.IsChecked == true;
+		}
+		private void CheckBoxSecondaryGroup_Click(object sender, RoutedEventArgs e) {
+			Operation.EntireSecondaryGroup = CheckBoxSecondaryGroup.IsChecked == true;
+		}
+		private void CheckBoxTertiaryGroup_Click(object sender, RoutedEventArgs e) {
+			Operation.EntireTertiaryGroup = CheckBoxTertiaryGroup.IsChecked == true;
 		}
 
 		private void ButtonGO_Click(object sender, RoutedEventArgs e) {
-
+			Operation.Run(ApplicationWindow.GatherMetadata(), ApplicationWindow.spriteSheet);
+			ApplicationWindow.FrameMetadataChanged();
 		}
 
 		private void ListBoxSelectedPreset_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -206,6 +215,7 @@ namespace UnitSpriteStudio {
 					break;
 			}
 		}
+
 
 		private void RefreshImages() {
 			for (int f = 0; f < 8; f++) {

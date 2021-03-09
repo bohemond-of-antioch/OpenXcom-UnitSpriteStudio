@@ -13,6 +13,9 @@ namespace UnitSpriteStudio.DrawingRoutines {
 			return true;
 		}
 
+		internal override (int Width, int Height) DefaultSpriteSheetSize() {
+			return (512, 720);
+		}
 		internal override (int Width, int Height) CompositeImageSize() {
 			return (32, 40);
 		}
@@ -40,6 +43,33 @@ namespace UnitSpriteStudio.DrawingRoutines {
 					drawingContext.DrawImage(image, new Rect(frameInfo.OffsetX, frameInfo.OffsetY, 32, 40));
 				}
 			}
+		}
+		internal override Selection GetCompositeOutline(SpriteSheet.FrameSource sprite, FrameMetadata metadata) {
+			Selection outline = new Selection(32,40);
+			if (metadata.PrimaryFrame == (int)EPrimaryFrame.Death) {
+				LayerFrameInfo frameInfo = GetLayerFrame(metadata, (int)ELayer.Torso);
+				BitmapSource image = sprite.GetFrame(frameInfo.Index);
+				byte[] pixels = new byte[32 * 40];
+				image.CopyPixels(pixels, 32, 0);
+				for (int f=0;f<pixels.Length;f++) {
+					if (pixels[f]>0) {
+						outline.AddPoint((f % 32+frameInfo.OffsetX, f / 32 + frameInfo.OffsetY));
+					}
+				}
+			} else {
+				for (int l = 0; l < 4; l++) {
+					LayerFrameInfo frameInfo = GetLayerFrame(metadata, (int)LayerDrawingOrder[metadata.Direction, l]);
+					BitmapSource image = sprite.GetFrame(frameInfo.Index);
+					byte[] pixels = new byte[32 * 40];
+					image.CopyPixels(pixels, 32, 0);
+					for (int f = 0; f < pixels.Length; f++) {
+						if (pixels[f] > 0) {
+							outline.AddPoint((f % 32 + frameInfo.OffsetX, f / 32 + frameInfo.OffsetY));
+						}
+					}
+				}
+			}
+			return outline;
 		}
 
 		private const int FRAME_STAND_LEFT_ARM = 0;
@@ -206,6 +236,11 @@ namespace UnitSpriteStudio.DrawingRoutines {
 		internal override string[] LayerNames() {
 			return new string[] { "Torso", "Left arm", "Right arm", "Legs" };
 		}
+		internal override int ChangeArmsLayer(int layer) {
+			if (layer == 1) return 2;
+			if (layer == 2) return 1;
+			return layer;
+		}
 		private enum EPrimaryFrame {
 			Stand,
 			Kneel,
@@ -217,6 +252,9 @@ namespace UnitSpriteStudio.DrawingRoutines {
 		internal override string[] PrimaryFrameNames() {
 			return new string[] { "Stand", "Kneel", "Walk", "Float", "Shoot", "Death" };
 		}
+		internal override int[] PrimaryFrameMirroring() {
+			return new int[] { 0, 1, 2, 3, 4 };
+		}
 		private enum ESecondaryFrame {
 			FreeHands,
 			LeftHandItem,
@@ -227,12 +265,18 @@ namespace UnitSpriteStudio.DrawingRoutines {
 		internal override string[] SecondaryFrameNames() {
 			return new string[] { "Free hands", "Left hand item", "Right hand item", "Two items", "Two-handed item" };
 		}
+		internal override int[] SecondaryFrameMirroring() {
+			return new int[] { 0, 3 };
+		}
 		private enum ETertiaryFrame {
 			Male,
 			Female
 		}
 		internal override string[] TertiaryFrameNames() {
 			return new string[] { "Male", "Female" };
+		}
+		internal override int[] TertiaryFrameMirroring() {
+			return new int[] { 0, 1 };
 		}
 	}
 }

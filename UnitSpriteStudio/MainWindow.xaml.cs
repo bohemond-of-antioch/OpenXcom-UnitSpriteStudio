@@ -51,7 +51,7 @@ namespace UnitSpriteStudio {
 		private List<Image> LayerImages;
 		private bool SpriteSheetInitialized;
 
-		private ECursorTool CursorTool=ECursorTool.Paint;
+		private ECursorTool CursorTool = ECursorTool.Paint;
 
 		internal Selection selectedArea, futureSelectedArea;
 		private int selectionStartX, selectionStartY;
@@ -94,8 +94,8 @@ namespace UnitSpriteStudio {
 
 		private const int CheckerboardSize = 6;
 		internal void DrawTransparentBackground(DrawingContext drawingContext, ImageSource imageSource, bool faded = false) {
-			if (ToggleBackground.IsChecked==true) {
-				Brush darkSquare,lightSquare;
+			if (ToggleBackground.IsChecked == true) {
+				Brush darkSquare, lightSquare;
 				if (faded) {
 					darkSquare = new SolidColorBrush(Color.FromArgb((byte)SliderHighlightPower.Value, 128, 128, 128));
 					lightSquare = new SolidColorBrush(Color.FromArgb((byte)SliderHighlightPower.Value, 192, 192, 192));
@@ -104,8 +104,8 @@ namespace UnitSpriteStudio {
 					lightSquare = new SolidColorBrush(Color.FromRgb(192, 192, 192));
 				}
 				int x, y;
-				for (x=0;x<imageSource.Width/CheckerboardSize+1;x++) {
-					for (y = 0; y < imageSource.Height/ CheckerboardSize + 1; y++) {
+				for (x = 0; x < imageSource.Width / CheckerboardSize + 1; x++) {
+					for (y = 0; y < imageSource.Height / CheckerboardSize + 1; y++) {
 						drawingContext.DrawRectangle(((x + y) % 2) == 0 ? darkSquare : lightSquare, null, new Rect(x * CheckerboardSize, y * CheckerboardSize, CheckerboardSize, CheckerboardSize));
 					}
 				}
@@ -126,30 +126,80 @@ namespace UnitSpriteStudio {
 				HighlightedLayer = ListBoxLayers.SelectedIndex;
 			}
 			DrawingVisual drawingVisual = new DrawingVisual();
+			var frameMetadata = GatherMetadata();
 			using (DrawingContext drawingContext = drawingVisual.RenderOpen()) {
 				DrawTransparentBackground(drawingContext, compositeImageSource);
 				if (HighlightedLayer != -1) {
-					spriteSheet.DrawCompositeImage(GatherMetadata(), drawingContext, -1);
+					spriteSheet.DrawCompositeImage(frameMetadata, drawingContext, -1);
 					DrawTransparentBackground(drawingContext, compositeImageSource, true);
 				}
-				spriteSheet.DrawCompositeImage(GatherMetadata(), drawingContext, HighlightedLayer);
+				spriteSheet.DrawCompositeImage(frameMetadata, drawingContext, HighlightedLayer);
 			}
 			compositeImageSource.Render(drawingVisual);
 			if (!animationTimer.IsEnabled) {
 				animationFrame = (int)SliderFrame.Value;
 				RefreshAnimationImage();
 			}
+
+			if (SliderPreviousFrame.Value > 10) {
+				ImageCompositePreviousFrame.Opacity = SliderPreviousFrame.Value / 100;
+				drawingVisual = new DrawingVisual();
+				int origAnimFrame = frameMetadata.AnimationFrame;
+				int prevAnimFrame = origAnimFrame == 0 ? (int)SliderFrame.Maximum : origAnimFrame - 1;
+				frameMetadata.AnimationFrame = prevAnimFrame;
+				Selection outline = spriteSheet.CompositeImageOutline(frameMetadata);
+				using (DrawingContext drawingContext = drawingVisual.RenderOpen()) {
+					Pen selectionPenWhite;
+					Pen selectionPenBlack;
+					selectionPenWhite = new Pen(Brushes.Blue, 1);
+					selectionPenWhite.DashStyle = new DashStyle(new double[] { 3, 2 }, 0);
+					selectionPenBlack = new Pen(Brushes.Aquamarine, 1);
+					selectionPenBlack.DashStyle = new DashStyle(new double[] { 2, 3 }, 3);
+					DrawSelectionBorder(outline, selectionPenWhite, selectionPenBlack, drawingContext, 0, 0);
+				}
+				((RenderTargetBitmap)ImageCompositePreviousFrame.Source).Clear();
+				((RenderTargetBitmap)ImageCompositePreviousFrame.Source).Render(drawingVisual);
+				frameMetadata.AnimationFrame = origAnimFrame;
+				ImageCompositePreviousFrame.Visibility = Visibility.Visible;
+			} else {
+				ImageCompositePreviousFrame.Visibility = Visibility.Hidden;
+			}
+			if (SliderNextFrame.Value > 10) {
+				ImageCompositeNextFrame.Opacity = SliderNextFrame.Value / 100;
+				drawingVisual = new DrawingVisual();
+				int origAnimFrame = frameMetadata.AnimationFrame;
+				int nextAnimFrame = (origAnimFrame + 1) % ((int)SliderFrame.Maximum + 1);
+				frameMetadata.AnimationFrame = nextAnimFrame;
+				Selection outline = spriteSheet.CompositeImageOutline(frameMetadata);
+				using (DrawingContext drawingContext = drawingVisual.RenderOpen()) {
+					Pen selectionPenWhite;
+					Pen selectionPenBlack;
+					selectionPenWhite = new Pen(Brushes.IndianRed, 1);
+					selectionPenWhite.DashStyle = new DashStyle(new double[] { 3, 2 }, 0);
+					selectionPenBlack = new Pen(Brushes.Coral, 1);
+					selectionPenBlack.DashStyle = new DashStyle(new double[] { 2, 3 }, 3);
+					DrawSelectionBorder(outline, selectionPenWhite, selectionPenBlack, drawingContext, 0, 0);
+				}
+				((RenderTargetBitmap)ImageCompositeNextFrame.Source).Clear();
+				((RenderTargetBitmap)ImageCompositeNextFrame.Source).Render(drawingVisual);
+				frameMetadata.AnimationFrame = origAnimFrame;
+				ImageCompositeNextFrame.Visibility = Visibility.Visible;
+			} else {
+				ImageCompositeNextFrame.Visibility = Visibility.Hidden;
+			}
+
+
 			RefreshLayerImages();
 		}
 
-		internal void DrawSelectionBorder(Selection selection,Pen selectionPenWhite,Pen selectionPenBlack, DrawingContext drawingContext,int shiftX,int shiftY) {
+		internal void DrawSelectionBorder(Selection selection, Pen selectionPenWhite, Pen selectionPenBlack, DrawingContext drawingContext, int shiftX, int shiftY) {
 			int x, y;
 			for (x = 0; x < selection.SizeX; x++) {
 				for (y = 0; y < selection.SizeY; y++) {
 					if (selection.GetPoint((x, y))) {
-						int originX = x * EditImageScale+shiftX;
-						int originY = y * EditImageScale+shiftY;
-						
+						int originX = x * EditImageScale + shiftX;
+						int originY = y * EditImageScale + shiftY;
+
 						if (!selection.GetPoint((x - 1, y))) {
 							drawingContext.DrawLine(selectionPenWhite, new Point(originX, originY), new Point(originX, originY + EditImageScale));
 							drawingContext.DrawLine(selectionPenBlack, new Point(originX, originY), new Point(originX, originY + EditImageScale));
@@ -171,15 +221,16 @@ namespace UnitSpriteStudio {
 			}
 		}
 		internal void RefreshOverlayImage() {
+			var frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(GatherMetadata(), ListBoxLayers.SelectedIndex);
 			DrawingVisual drawingVisual = new DrawingVisual();
 			using (DrawingContext drawingContext = drawingVisual.RenderOpen()) {
-				if (ToggleGrid.IsChecked==true) {
+				if (ToggleGrid.IsChecked == true) {
 					int x, y;
-					Pen gridPen = new Pen(Brushes.WhiteSmoke,0.5);
-					for (x = 0; x < overlayImageSource.PixelWidth; x+=EditImageScale) {
+					Pen gridPen = new Pen(Brushes.WhiteSmoke, 0.5);
+					for (x = 0; x < overlayImageSource.PixelWidth; x += EditImageScale) {
 						drawingContext.DrawLine(gridPen, new Point(x, 0), new Point(x, overlayImageSource.PixelHeight));
 					}
-					for (y = 0; y < overlayImageSource.PixelHeight; y+= EditImageScale) {
+					for (y = 0; y < overlayImageSource.PixelHeight; y += EditImageScale) {
 						drawingContext.DrawLine(gridPen, new Point(0, y), new Point(overlayImageSource.PixelWidth, y));
 					}
 				}
@@ -187,14 +238,14 @@ namespace UnitSpriteStudio {
 				Pen selectionPenWhite;
 				Pen selectionPenBlack;
 
-				int shiftX=0, shiftY=0;
+				int shiftX = 0, shiftY = 0;
 				if (toolPhase == EToolPhase.MoveFloatingSelection) {
 					shiftX = ((int)Canvas.GetLeft(ImageFloatingSelection));
 					shiftY = ((int)Canvas.GetTop(ImageFloatingSelection));
 				}
 
 				selectionPenWhite = new Pen(Brushes.White, 1);
-				selectionPenWhite.DashStyle = new DashStyle(new double[] { 3,2 }, 0);
+				selectionPenWhite.DashStyle = new DashStyle(new double[] { 3, 2 }, 0);
 				selectionPenBlack = new Pen(Brushes.Black, 1);
 				selectionPenBlack.DashStyle = new DashStyle(new double[] { 2, 3 }, 3);
 				DrawSelectionBorder(selectedArea, selectionPenWhite, selectionPenBlack, drawingContext, shiftX, shiftY);
@@ -204,6 +255,10 @@ namespace UnitSpriteStudio {
 				selectionPenBlack = new Pen(Brushes.Red, 1);
 				selectionPenBlack.DashStyle = new DashStyle(new double[] { 2, 3 }, 3);
 				DrawSelectionBorder(futureSelectedArea, selectionPenWhite, selectionPenBlack, drawingContext, shiftX, shiftY);
+
+				if (ToggleFrameBorder.IsChecked == true) {
+					drawingContext.DrawRectangle(null, new Pen(Brushes.Cyan, 4), new Rect(frameInfo.OffsetX * EditImageScale, frameInfo.OffsetY * EditImageScale, 32 * EditImageScale, 40 * EditImageScale));
+				}
 			}
 			overlayImageSource.Clear();
 			overlayImageSource.Render(drawingVisual);
@@ -259,6 +314,13 @@ namespace UnitSpriteStudio {
 			ImageComposite.Height = CompositeImageSize.Height * EditImageScale;
 			ImageComposite.Source = compositeImageSource;
 
+			ImageCompositeNextFrame.Width = CompositeImageSize.Width * EditImageScale;
+			ImageCompositeNextFrame.Height = CompositeImageSize.Height * EditImageScale;
+			ImageCompositeNextFrame.Source = new RenderTargetBitmap(CompositeImageSize.Width * EditImageScale, CompositeImageSize.Height * EditImageScale, 96, 96, PixelFormats.Pbgra32);
+			ImageCompositePreviousFrame.Width = CompositeImageSize.Width * EditImageScale;
+			ImageCompositePreviousFrame.Height = CompositeImageSize.Height * EditImageScale;
+			ImageCompositePreviousFrame.Source = new RenderTargetBitmap(CompositeImageSize.Width * EditImageScale, CompositeImageSize.Height * EditImageScale, 96, 96, PixelFormats.Pbgra32);
+
 			animationImageSource = new RenderTargetBitmap(CompositeImageSize.Width, CompositeImageSize.Height, 96, 96, PixelFormats.Pbgra32);
 			ImageAnimation.Width = CompositeImageSize.Width * AnimationImageScale;
 			ImageAnimation.Height = CompositeImageSize.Height * AnimationImageScale;
@@ -276,10 +338,10 @@ namespace UnitSpriteStudio {
 
 			selectedArea = new Selection(CompositeImageSize.Width, CompositeImageSize.Height);
 			futureSelectedArea = new Selection(CompositeImageSize.Width, CompositeImageSize.Height);
-
 			foreach (Image element in LayerImages) {
 				LayerPanel.Children.Remove(element);
 			}
+			LayerImages.Clear();
 
 			ListBoxLayers.Items.Clear();
 			DrawingRoutines.FrameMetadata layerMetadata;
@@ -298,7 +360,6 @@ namespace UnitSpriteStudio {
 				} catch (Exception) {
 
 				}
-
 				LayerImages.Add(newLayerImage);
 				LayerPanel.Children.Add(newLayerImage);
 				f++;
@@ -312,6 +373,8 @@ namespace UnitSpriteStudio {
 			ToolColorPalette.ApplyPalette(spriteSheet.GetColorPalette());
 			SpriteSheetInitialized = true;
 			undoSystem = new UndoSystem(spriteSheet, this);
+			ToggleSmartLayer.IsEnabled = (spriteSheet.drawingRoutine.SmartLayerSupported() != DrawingRoutines.DrawingRoutine.SmartLayerType.None);
+
 			FrameMetadataChanged();
 		}
 
@@ -324,7 +387,7 @@ namespace UnitSpriteStudio {
 		private void CutSelection() {
 			floatingSelection = new FloatingSelectionBitmap(spriteSheet);
 			int cutPixels = floatingSelection.CopyPixels(selectedArea, spriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex, true);
-			if (cutPixels==0) {
+			if (cutPixels == 0) {
 				toolPhase = EToolPhase.None;
 			} else {
 				ImageFloatingSelection.Source = floatingSelection.bitmap;
@@ -339,19 +402,19 @@ namespace UnitSpriteStudio {
 				data = new DataObject();
 				data.SetData(DataFormats.Bitmap, copyBuffer.bitmap, true);
 				UnitSpriteStudioClipboardFormat clipboardObject = new UnitSpriteStudioClipboardFormat(copyBuffer);
-				data.SetData("UnitSpriteStudioClipboardFormat", clipboardObject,false);
-				
+				data.SetData("UnitSpriteStudioClipboardFormat", clipboardObject, false);
+
 				Clipboard.SetDataObject(data, true);
 			}
 		}
 		private void PasteBuffer() {
 			MergeFloatingSelection();
 			IDataObject data = Clipboard.GetDataObject();
-			string[] formats =data.GetFormats();
+			string[] formats = data.GetFormats();
 			FloatingSelectionBitmap newFloatingSelection = null;
 
-			if (data.GetDataPresent("UnitSpriteStudioClipboardFormat",false)) {
-				UnitSpriteStudioClipboardFormat clipboardObject =(UnitSpriteStudioClipboardFormat) data.GetData("UnitSpriteStudioClipboardFormat", false);
+			if (data.GetDataPresent("UnitSpriteStudioClipboardFormat", false)) {
+				UnitSpriteStudioClipboardFormat clipboardObject = (UnitSpriteStudioClipboardFormat)data.GetData("UnitSpriteStudioClipboardFormat", false);
 				newFloatingSelection = clipboardObject.GetFloatingSelection(spriteSheet);
 			} else if (data.GetDataPresent(DataFormats.Bitmap, true)) {
 				try {
@@ -365,7 +428,7 @@ namespace UnitSpriteStudio {
 					IList<Color> paletteWPF = spriteSheet.frameSource.GetUFOBattlescapePalette().Colors;
 					List<System.Drawing.Color> palette = new List<System.Drawing.Color>();
 					foreach (var c in paletteWPF) {
-						palette.Add(System.Drawing.Color.FromArgb(c.A,c.R,c.G,c.B));
+						palette.Add(System.Drawing.Color.FromArgb(c.A, c.R, c.G, c.B));
 					}
 					byte[] transformedPixels = new byte[CopyWidth * CopyHeight];
 					int f;
@@ -402,7 +465,7 @@ namespace UnitSpriteStudio {
 					MessageBox.Show("Something went wrong with the Paste: " + exception.Message + "\nThis content can't be pasted in.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
 				}
 			}
-			if (newFloatingSelection!=null) {
+			if (newFloatingSelection != null) {
 				undoSystem.RegisterUndoState();
 				ResetFloatingSection();
 				ImageFloatingSelection.Source = newFloatingSelection.bitmap;
@@ -416,7 +479,7 @@ namespace UnitSpriteStudio {
 		private void SelectFloatingSelection() {
 			selectedArea.SetAll(false);
 			var pixels = floatingSelection.GetAllPixels();
-			for (int f=0;f<pixels.Length;f++) {
+			for (int f = 0; f < pixels.Length; f++) {
 				if (pixels[f] != 0) selectedArea.AddPoint((f % floatingSelection.bitmap.PixelWidth, f / floatingSelection.bitmap.PixelWidth));
 			}
 		}
@@ -431,9 +494,9 @@ namespace UnitSpriteStudio {
 			FrameMetadataChanged();
 			RefreshOverlayImage();
 		}
-		private void MoveFloatingSelection(int deltaX,int deltaY) {
+		private void MoveFloatingSelection(int deltaX, int deltaY) {
 			Canvas.SetLeft(ImageFloatingSelection, Canvas.GetLeft(ImageFloatingSelection) + deltaX * EditImageScale);
-			Canvas.SetTop(ImageFloatingSelection, Canvas.GetTop(ImageFloatingSelection)+deltaY*EditImageScale);
+			Canvas.SetTop(ImageFloatingSelection, Canvas.GetTop(ImageFloatingSelection) + deltaY * EditImageScale);
 			RefreshOverlayImage();
 		}
 		private void ResetFloatingSection() {
@@ -449,6 +512,91 @@ namespace UnitSpriteStudio {
 			CutSelection();
 			RefreshCompositeImage();
 		}
+		private void SelectColors(int positionX, int positionY) {
+			DrawingRoutines.FrameMetadata metadata = GatherMetadata();
+			DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(metadata, ListBoxLayers.SelectedIndex);
+			byte[] pixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+			int cursorOffset = (positionX - frameInfo.OffsetX) + (positionY - frameInfo.OffsetY) * 32;
+			byte colorUnderCursor;
+			if (cursorOffset < 0 || cursorOffset >= pixels.Length) {
+				colorUnderCursor = 0;
+			} else {
+				colorUnderCursor = pixels[cursorOffset];
+			}
+			for (int f = 0; f < pixels.Length; f++) {
+				if (pixels[f] == colorUnderCursor) futureSelectedArea.AddPoint((f % 32 + frameInfo.OffsetX, f / 32 + frameInfo.OffsetY));
+			}
+			RefreshOverlayImage();
+		}
+
+		private void FloodSelectColor(int positionX, int positionY) {
+			DrawingRoutines.FrameMetadata metadata = GatherMetadata();
+			DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(metadata, ListBoxLayers.SelectedIndex);
+			(int X, int Y) cursorPoint = (positionX - frameInfo.OffsetX, positionY - frameInfo.OffsetY);
+			if (cursorPoint.X < 0 || cursorPoint.X >= 32 || cursorPoint.Y < 0 || cursorPoint.Y >= 40) return;
+			byte[] pixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+			int cursorOffset = cursorPoint.X + cursorPoint.Y * 32;
+			byte colorUnderCursor;
+			if (cursorOffset < 0 || cursorOffset >= pixels.Length) {
+				return;
+			} else {
+				colorUnderCursor = pixels[cursorOffset];
+			}
+
+			Queue<(int X, int Y)> head = new Queue<(int X, int Y)>();
+
+			Selection newSelection = new Selection(futureSelectedArea.SizeX, futureSelectedArea.SizeY);
+			head.Enqueue(cursorPoint);
+			while (head.Count > 0) {
+				var point = head.Dequeue();
+				newSelection.AddPoint(point);
+
+				(int X, int Y) checkPoint;
+
+				checkPoint = (point.X - 1, point.Y);
+				if (point.X > 0 && !newSelection.GetPoint(checkPoint) && pixels[(checkPoint.X) + (checkPoint.Y) * 32] == colorUnderCursor) {
+					newSelection.AddPoint(checkPoint);
+					head.Enqueue(checkPoint);
+				}
+				checkPoint = (point.X, point.Y - 1);
+				if (point.Y > 0 && !newSelection.GetPoint(checkPoint) && pixels[(checkPoint.X) + (checkPoint.Y) * 32] == colorUnderCursor) {
+					newSelection.AddPoint(checkPoint);
+					head.Enqueue(checkPoint);
+				}
+				checkPoint = (point.X + 1, point.Y);
+				if (point.X < 31 && !newSelection.GetPoint(checkPoint) && pixels[(checkPoint.X) + (checkPoint.Y) * 32] == colorUnderCursor) {
+					newSelection.AddPoint(checkPoint);
+					head.Enqueue(checkPoint);
+				}
+				checkPoint = (point.X, point.Y + 1);
+				if (point.Y < 39 && !newSelection.GetPoint(checkPoint) && pixels[(checkPoint.X) + (checkPoint.Y) * 32] == colorUnderCursor) {
+					newSelection.AddPoint(checkPoint);
+					head.Enqueue(checkPoint);
+				}
+			}
+			for (int x = 0; x < futureSelectedArea.SizeX; x++) {
+				for (int y = 0; y < futureSelectedArea.SizeY; y++) {
+					if (newSelection.GetPoint((x, y))) futureSelectedArea.AddPoint((x + frameInfo.OffsetX, y + frameInfo.OffsetY));
+				}
+			}
+			RefreshOverlayImage();
+		}
+
+		private void MergeFloatingSelection() {
+			if (toolPhase == EToolPhase.MoveFloatingSelection) {
+				undoSystem.RegisterUndoState();
+
+				int shiftX, shiftY;
+				shiftX = (int)Canvas.GetLeft(ImageFloatingSelection) / EditImageScale;
+				shiftY = (int)Canvas.GetTop(ImageFloatingSelection) / EditImageScale;
+				floatingSelection.PastePixels(spriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex, shiftX, shiftY);
+				selectedArea.SetAll(false);
+				ResetFloatingSection();
+				RefreshOverlayImage();
+				toolPhase = EToolPhase.None;
+			}
+		}
+
 		private void ImageOverlay_MouseDown(object sender, MouseButtonEventArgs e) {
 			int PositionX, PositionY;
 			PositionX = (int)(e.GetPosition((IInputElement)sender).X / EditImageScale);
@@ -457,7 +605,7 @@ namespace UnitSpriteStudio {
 			if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
 				if (toolPhase == EToolPhase.None) {
 					Cut();
-				} else if (toolPhase==EToolPhase.MoveFloatingSelection) {
+				} else if (toolPhase == EToolPhase.MoveFloatingSelection) {
 					undoSystem.RegisterUndoState();
 				}
 			} else {
@@ -478,10 +626,23 @@ namespace UnitSpriteStudio {
 						}
 						break;
 					case ECursorTool.SelectLasso:
+						if (e.ChangedButton == MouseButton.Left) {
+							//toolPhase = EToolPhase.Started;
+						}
 						break;
 					case ECursorTool.SelectColors:
+						if (e.ChangedButton == MouseButton.Left) {
+							futureSelectedArea.SetAll(false);
+							toolPhase = EToolPhase.Started;
+							SelectColors(PositionX, PositionY);
+						}
 						break;
 					case ECursorTool.SelectArea:
+						if (e.ChangedButton == MouseButton.Left) {
+							futureSelectedArea.SetAll(false);
+							toolPhase = EToolPhase.Started;
+							FloodSelectColor(PositionX, PositionY);
+						}
 						break;
 					case ECursorTool.Paint:
 						if (Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
@@ -510,81 +671,86 @@ namespace UnitSpriteStudio {
 			lastCursorPositionY = PositionY;
 		}
 
-		private void MergeFloatingSelection() {
-			if (toolPhase == EToolPhase.MoveFloatingSelection) {
-				undoSystem.RegisterUndoState();
-
-				int shiftX, shiftY;
-				shiftX = (int)Canvas.GetLeft(ImageFloatingSelection) / EditImageScale;
-				shiftY = (int)Canvas.GetTop(ImageFloatingSelection) / EditImageScale;
-				floatingSelection.PastePixels(spriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex, shiftX, shiftY);
-				selectedArea.SetAll(false);
-				ResetFloatingSection();
-				RefreshOverlayImage();
-				toolPhase = EToolPhase.None;
-			}
-		}
-
 		private void ImageOverlay_MouseMove(object sender, MouseEventArgs e) {
 			int PositionX, PositionY;
 			PositionX = (int)(e.GetPosition((IInputElement)sender).X / EditImageScale);
 			PositionY = (int)(e.GetPosition((IInputElement)sender).Y / EditImageScale);
 
-			if (e.LeftButton == MouseButtonState.Pressed && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && toolPhase == EToolPhase.MoveFloatingSelection) {
-				if (lastCursorPositionY != PositionY || lastCursorPositionX != PositionX) {
-					MoveFloatingSelection(PositionX - lastCursorPositionX, PositionY - lastCursorPositionY);
+			if (lastCursorPositionY != PositionY || lastCursorPositionX != PositionX) {
+				if (ToggleSmartLayer.IsEnabled && ToggleSmartLayer.IsChecked == true) {
+					if (UnitSpriteStudio.Resources.HWPMaskCenter.GetPixel(PositionX, PositionY).R > 0) {
+						ListBoxLayers.SelectedIndex = 3;
+					} else if (UnitSpriteStudio.Resources.HWPMaskLeft.GetPixel(PositionX, PositionY).R > 0) {
+						ListBoxLayers.SelectedIndex = 2;
+					} else if (UnitSpriteStudio.Resources.HWPMaskRight.GetPixel(PositionX, PositionY).R > 0) {
+						ListBoxLayers.SelectedIndex = 1;
+					} else if (UnitSpriteStudio.Resources.HWPMaskTop.GetPixel(PositionX, PositionY).R > 0) {
+						ListBoxLayers.SelectedIndex = 0;
+					}
 				}
-			} else {
-				switch (CursorTool) {
-					case ECursorTool.SelectPixels:
-						if (e.LeftButton == MouseButtonState.Pressed) {
-							futureSelectedArea.AddPoint((PositionX, PositionY));
-							RefreshOverlayImage();
-						}
-						break;
-					case ECursorTool.SelectBox:
-						if (toolPhase == EToolPhase.Started || toolPhase == EToolPhase.InProgress) {
-							toolPhase = EToolPhase.InProgress;
-							futureSelectedArea.SetAll(false);
-							futureSelectedArea.AddRectangle(new Int32Rect(selectionStartX, selectionStartY, PositionX - selectionStartX + 1, PositionY - selectionStartY + 1));
-							RefreshOverlayImage();
-						}
-						break;
-					case ECursorTool.SelectLasso:
-						break;
-					case ECursorTool.SelectColors:
-						break;
-					case ECursorTool.SelectArea:
-						break;
-					case ECursorTool.Paint:
-						if (Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
-							byte ColorUnderCursor = spriteSheet.GetPixel(GatherMetadata(), ListBoxLayers.SelectedIndex, PositionX, PositionY);
+
+				if (e.LeftButton == MouseButtonState.Pressed && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && toolPhase == EToolPhase.MoveFloatingSelection) {
+					MoveFloatingSelection(PositionX - lastCursorPositionX, PositionY - lastCursorPositionY);
+				} else {
+					switch (CursorTool) {
+						case ECursorTool.SelectPixels:
 							if (e.LeftButton == MouseButtonState.Pressed) {
-								ToolColorPalette.SelectedLeftColor = ColorUnderCursor;
-							} else if (e.MiddleButton == MouseButtonState.Pressed) {
-								ToolColorPalette.SelectedMiddleColor = ColorUnderCursor;
-							} else if (e.RightButton == MouseButtonState.Pressed) {
-								ToolColorPalette.SelectedRightColor = ColorUnderCursor;
-							} else {
-								break;
+								futureSelectedArea.AddPoint((PositionX, PositionY));
+								RefreshOverlayImage();
 							}
-							ToolColorPalette.UpdateMarkers();
-							ToolColorPalette_OnSelectedColorChanged();
-						} else {
-							byte ApplyColor;
-							if (e.LeftButton == MouseButtonState.Pressed) {
-								ApplyColor = ToolColorPalette.SelectedLeftColor;
-							} else if (e.MiddleButton == MouseButtonState.Pressed) {
-								ApplyColor = ToolColorPalette.SelectedMiddleColor;
-							} else if (e.RightButton == MouseButtonState.Pressed) {
-								ApplyColor = ToolColorPalette.SelectedRightColor;
-							} else {
-								break;
+							break;
+						case ECursorTool.SelectBox:
+							if (toolPhase == EToolPhase.Started || toolPhase == EToolPhase.InProgress) {
+								toolPhase = EToolPhase.InProgress;
+								futureSelectedArea.SetAll(false);
+								futureSelectedArea.AddRectangle(new Int32Rect(selectionStartX, selectionStartY, PositionX - selectionStartX + 1, PositionY - selectionStartY + 1));
+								RefreshOverlayImage();
 							}
-							spriteSheet.SetPixel(GatherMetadata(), ListBoxLayers.SelectedIndex, PositionX, PositionY, ApplyColor);
-							RefreshCompositeImage();
-						}
-						break;
+							break;
+						case ECursorTool.SelectLasso:
+							break;
+						case ECursorTool.SelectColors:
+							if (toolPhase == EToolPhase.Started || toolPhase == EToolPhase.InProgress) {
+								toolPhase = EToolPhase.InProgress;
+								SelectColors(PositionX, PositionY);
+							}
+							break;
+						case ECursorTool.SelectArea:
+							if (toolPhase == EToolPhase.Started || toolPhase == EToolPhase.InProgress) {
+								toolPhase = EToolPhase.InProgress;
+								FloodSelectColor(PositionX, PositionY);
+							}
+							break;
+						case ECursorTool.Paint:
+							if (Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
+								byte ColorUnderCursor = spriteSheet.GetPixel(GatherMetadata(), ListBoxLayers.SelectedIndex, PositionX, PositionY);
+								if (e.LeftButton == MouseButtonState.Pressed) {
+									ToolColorPalette.SelectedLeftColor = ColorUnderCursor;
+								} else if (e.MiddleButton == MouseButtonState.Pressed) {
+									ToolColorPalette.SelectedMiddleColor = ColorUnderCursor;
+								} else if (e.RightButton == MouseButtonState.Pressed) {
+									ToolColorPalette.SelectedRightColor = ColorUnderCursor;
+								} else {
+									break;
+								}
+								ToolColorPalette.UpdateMarkers();
+								ToolColorPalette_OnSelectedColorChanged();
+							} else {
+								byte ApplyColor;
+								if (e.LeftButton == MouseButtonState.Pressed) {
+									ApplyColor = ToolColorPalette.SelectedLeftColor;
+								} else if (e.MiddleButton == MouseButtonState.Pressed) {
+									ApplyColor = ToolColorPalette.SelectedMiddleColor;
+								} else if (e.RightButton == MouseButtonState.Pressed) {
+									ApplyColor = ToolColorPalette.SelectedRightColor;
+								} else {
+									break;
+								}
+								spriteSheet.SetPixel(GatherMetadata(), ListBoxLayers.SelectedIndex, PositionX, PositionY, ApplyColor);
+								RefreshCompositeImage();
+							}
+							break;
+					}
 				}
 			}
 			lastCursorPositionX = PositionX;
@@ -600,19 +766,16 @@ namespace UnitSpriteStudio {
 				case ECursorTool.SelectPixels:
 					goto default;
 				case ECursorTool.SelectBox:
-					if (toolPhase==EToolPhase.InProgress || toolPhase==EToolPhase.Started) {
+				case ECursorTool.SelectLasso:
+				case ECursorTool.SelectColors:
+				case ECursorTool.SelectArea:
+					if (toolPhase == EToolPhase.InProgress || toolPhase == EToolPhase.Started) {
 						toolPhase = EToolPhase.None;
 						goto default;
 					}
 					break;
-				case ECursorTool.SelectLasso:
-					break;
-				case ECursorTool.SelectColors:
-					break;
-				case ECursorTool.SelectArea:
-					break;
 				case ECursorTool.Paint:
-					if (e.LeftButton==MouseButtonState.Released && e.MiddleButton==MouseButtonState.Released && e.RightButton==MouseButtonState.Released) {
+					if (e.LeftButton == MouseButtonState.Released && e.MiddleButton == MouseButtonState.Released && e.RightButton == MouseButtonState.Released) {
 						toolPhase = EToolPhase.None;
 					}
 					break;
@@ -637,10 +800,12 @@ namespace UnitSpriteStudio {
 			SliderFrame.Maximum = spriteSheet.drawingRoutine.GetAnimationFrameCount(GatherMetadata()) - 1;
 			ToolColorPalette_OnSelectedColorChanged();
 		}
-		private void FrameMetadataChanged() {
+
+		internal void FrameMetadataChanged() {
 			if (SpriteSheetInitialized) {
 				RefreshCompositeImage();
 				UpdateControls();
+				RefreshOverlayImage();
 
 				OnMetadataChanged?.Invoke();
 			}
@@ -689,17 +854,19 @@ namespace UnitSpriteStudio {
 			if (openFileDialog.ShowDialog() == true) {
 				SpriteSheet openedSpriteSheet;
 				int DrawingRoutine = int.Parse((string)((MenuItem)sender).Tag);
-				switch (DrawingRoutine) {
-					case 0:
-						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSoldier());
-						break;
-					default:
-						throw new Exception("Unsupported drawing routine.");
-				}
 				try {
-					openedSpriteSheet.LoadSprite(openFileDialog.FileName);
+					switch (DrawingRoutine) {
+						case 0:
+							openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSoldier(), openFileDialog.FileName);
+							break;
+						case 5:
+							openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSectopod(), openFileDialog.FileName);
+							break;
+						default:
+							throw new Exception("Unsupported drawing routine.");
+					}
 				} catch (Exception exception) {
-					MessageBox.Show("An error has occured during loading the file: " + exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+					MessageBox.Show("An error has occured during loading of the file: " + exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 					return;
 				}
 				InitializeSpriteSheet(openedSpriteSheet);
@@ -707,7 +874,11 @@ namespace UnitSpriteStudio {
 		}
 
 		private void MenuItemSave_Click(object sender, RoutedEventArgs e) {
-			spriteSheet.Save();
+			if (spriteSheet.sourceFileName == null || "".Equals(spriteSheet.sourceFileName)) {
+				MenuItemSaveAs_Click(sender, e);
+			} else {
+				spriteSheet.Save();
+			}
 		}
 		private void MenuItemSaveAs_Click(object sender, RoutedEventArgs e) {
 			SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -843,6 +1014,12 @@ namespace UnitSpriteStudio {
 					case Key.D6:
 						ListBoxLayers.SelectedIndex = 5;
 						break;
+					case Key.Add:
+						SliderFrame.Value = (SliderFrame.Value + 1) % (SliderFrame.Maximum + 1);
+						break;
+					case Key.Subtract:
+						SliderFrame.Value = SliderFrame.Value == 0 ? SliderFrame.Maximum : SliderFrame.Value - 1;
+						break;
 				}
 			}
 		}
@@ -853,11 +1030,11 @@ namespace UnitSpriteStudio {
 				ResetFloatingSection();
 				selectedArea.SetAll(false);
 			} else {
-				TransmogrifySelection((oldColor) => 0);
+				TransmogrifySelection(ListBoxLayers.SelectedIndex, (oldColor) => 0);
 			}
 		}
 		private void FillSelection() {
-			TransmogrifySelection((oldColor) => ToolColorPalette.SelectedLeftColor);
+			TransmogrifySelection(ListBoxLayers.SelectedIndex, (oldColor) => ToolColorPalette.SelectedLeftColor);
 		}
 		private void ClearSelection() {
 			MergeFloatingSelection();
@@ -887,6 +1064,7 @@ namespace UnitSpriteStudio {
 
 		private void MenuItemGenerateMirrored_Click(object sender, RoutedEventArgs e) {
 			MirroredSpritesGenerator generatorWindow = new MirroredSpritesGenerator();
+			generatorWindow.Owner = this;
 			generatorWindow.Show();
 		}
 
@@ -902,11 +1080,10 @@ namespace UnitSpriteStudio {
 			Clipboard.SetText(spriteSheet.GenerateRulSnippet());
 		}
 
-		private void TransmogrifySelection(Func<byte,byte> transmogrification) {
+		private void TransmogrifySelection(int layer, Func<byte, byte> transmogrification) {
 			MergeFloatingSelection();
 			undoSystem.RegisterUndoState();
 			DrawingRoutines.FrameMetadata metadata = GatherMetadata();
-			int layer = ListBoxLayers.SelectedIndex;
 			DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(metadata, layer);
 			byte[] pixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
 			for (int x = 0; x < selectedArea.SizeX; x++) {
@@ -914,7 +1091,7 @@ namespace UnitSpriteStudio {
 					if (selectedArea.GetPoint((x, y))) {
 						int FrameX = x - frameInfo.OffsetX;
 						int FrameY = y - frameInfo.OffsetY;
-						if (FrameX < 0 || FrameY < 0 || FrameX >= 32 || FrameY >= 40) return;
+						if (FrameX < 0 || FrameY < 0 || FrameX >= 32 || FrameY >= 40) continue;
 
 						pixels[FrameX + FrameY * 32] = transmogrification(pixels[FrameX + FrameY * 32]);
 					}
@@ -925,7 +1102,7 @@ namespace UnitSpriteStudio {
 		}
 
 		private void PaletteShiftLighter(object sender, RoutedEventArgs e) {
-			TransmogrifySelection((oldColor) => {
+			TransmogrifySelection(ListBoxLayers.SelectedIndex, (oldColor) => {
 				if (oldColor == 0) return 0;
 				int newColor;
 				newColor = oldColor;
@@ -935,7 +1112,7 @@ namespace UnitSpriteStudio {
 		}
 
 		private void PaletteShiftDarker(object sender, RoutedEventArgs e) {
-			TransmogrifySelection((oldColor) => {
+			TransmogrifySelection(ListBoxLayers.SelectedIndex, (oldColor) => {
 				if (oldColor == 0) return 0;
 				int newColor;
 				newColor = oldColor;
@@ -945,7 +1122,7 @@ namespace UnitSpriteStudio {
 		}
 
 		private void PaletteShiftUp(object sender, RoutedEventArgs e) {
-			TransmogrifySelection((oldColor) => {
+			TransmogrifySelection(ListBoxLayers.SelectedIndex, (oldColor) => {
 				if (oldColor < 16) return oldColor;
 				int newColor;
 				newColor = oldColor;
@@ -956,8 +1133,8 @@ namespace UnitSpriteStudio {
 		}
 
 		private void PaletteShiftDown(object sender, RoutedEventArgs e) {
-			TransmogrifySelection((oldColor) => {
-				if (oldColor == 0 || oldColor>=240) return oldColor;
+			TransmogrifySelection(ListBoxLayers.SelectedIndex, (oldColor) => {
+				if (oldColor == 0 || oldColor >= 240) return oldColor;
 				int newColor;
 				newColor = oldColor;
 				newColor = newColor + 16;
@@ -965,8 +1142,16 @@ namespace UnitSpriteStudio {
 			});
 		}
 
-		private void ToggleGrid_Click(object sender, RoutedEventArgs e) {
+		private void NeedsOverlayRefresh_Click(object sender, RoutedEventArgs e) {
 			RefreshOverlayImage();
+		}
+
+		private void SliderPreviousFrame_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+			FrameMetadataChanged();
+		}
+
+		private void SliderNextFrame_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+			FrameMetadataChanged();
 		}
 
 		private void SetTool(ECursorTool tool) {

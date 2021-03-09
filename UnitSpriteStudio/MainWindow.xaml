@@ -12,10 +12,12 @@
 			<MenuItem Header="_File">
 				<MenuItem Header="_New"  >
 					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemNew_Click" Tag="0"/>
+					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemNew_Click" Tag="5"/>
 				</MenuItem>
 
 				<MenuItem Header="_Open"  >
 					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemOpen_Click" Tag="0"/>
+					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemOpen_Click" Tag="5"/>
 				</MenuItem>
 				<MenuItem Header="_Save" Click="MenuItemSave_Click" />
 				<MenuItem Header="_Save as..." Click="MenuItemSaveAs_Click" />
@@ -67,26 +69,46 @@
 			</StackPanel>
 			<DockPanel LastChildFill = "True">
 				<StackPanel Name="ToolBar" Margin="3" DockPanel.Dock="Top" Orientation="Horizontal">
-					<ToggleButton Tag="0" Click="ToggleCursorToolClicked" Name="ToggleSelectPixels" >
+					<ToggleButton ToolTip="Pixel Selection" Tag="0" Click="ToggleCursorToolClicked" Name="ToggleSelectPixels" >
 						<Image Source="Resources/PixelSelection.ico" Stretch="None"></Image>
 					</ToggleButton>
-					<ToggleButton Tag="1" Click="ToggleCursorToolClicked" Name="ToggleSelectBox" Margin="2,0,0,0">
+					<ToggleButton ToolTip="Box Selection" Tag="1" Click="ToggleCursorToolClicked" Name="ToggleSelectBox" Margin="2,0,0,0">
 						<Image Source="Resources/BoxSelection.ico" Stretch="None"></Image>
 					</ToggleButton>
-					<ToggleButton Tag="2" Click="ToggleCursorToolClicked" Name="ToggleSelectLasso" Margin="2,0,0,0">Lasso</ToggleButton>
-					<ToggleButton Tag="3" Click="ToggleCursorToolClicked" Name="ToggleSelectColors" Margin="2,0,0,0">Colors</ToggleButton>
-					<ToggleButton Tag="4" Click="ToggleCursorToolClicked" Name="ToggleSelectArea" Margin="2,0,0,0">Area</ToggleButton>
-					<ToggleButton Tag="5" Click="ToggleCursorToolClicked" Name="TogglePaint" Margin="10,0,0,0">Paint</ToggleButton>
+					<ToggleButton ToolTip="Lasso Selection" Tag="2" Click="ToggleCursorToolClicked" Name="ToggleSelectLasso" Margin="2,0,0,0">
+						<Image Source="Resources/LassoSelection.ico" Stretch="None"></Image>
+					</ToggleButton>
+					<ToggleButton ToolTip="Color Selection" Tag="3" Click="ToggleCursorToolClicked" Name="ToggleSelectColors" Margin="2,0,0,0">
+						<Image Source="Resources/ColorSelection.ico" Stretch="None"></Image>
+					</ToggleButton>
+					<ToggleButton ToolTip="Area Selection" Tag="4" Click="ToggleCursorToolClicked" Name="ToggleSelectArea" Margin="2,0,0,0">
+						<Image Source="Resources/AreaSelection.ico" Stretch="None"></Image>
+					</ToggleButton>
+					<ToggleButton ToolTip="Paint" Tag="5" Click="ToggleCursorToolClicked" Name="TogglePaint" Margin="10,0,0,0" IsChecked="True">
+						<Image Source="Resources/Paint.ico" Stretch="None"></Image>
+					</ToggleButton>
 
-					<ToggleButton Click="ToggleBackground_Click" Name="ToggleBackground" Margin="20,0,0,0">Checkered background</ToggleButton>
-					<ToggleButton Click="ToggleGrid_Click" Name="ToggleGrid" Margin="2,0,0,0">Grid</ToggleButton>
+					<ToggleButton ToolTip="Checkered background" Click="ToggleBackground_Click" Name="ToggleBackground" Margin="20,0,0,0">
+						<Image Source="Resources/CheckeredBackground.ico" Stretch="None"></Image>
+					</ToggleButton>
+					<ToggleButton ToolTip="Grid" Click="NeedsOverlayRefresh_Click" Name="ToggleGrid" Margin="2,0,0,0">
+						<Image Source="Resources/GridBackground.ico" Stretch="None"></Image>
+					</ToggleButton>
+					<ToggleButton ToolTip="Frame border" Click="NeedsOverlayRefresh_Click" Name="ToggleFrameBorder" Margin="10,0,0,0">
+						<Image Source="Resources/FrameBorder.ico" Stretch="None"></Image>
+					</ToggleButton>
+					<ToggleButton ToolTip="Smart layer" Name="ToggleSmartLayer" Margin="2,0,0,0">
+						<Image Source="Resources/SmartLayer.ico" Stretch="None"></Image>
+					</ToggleButton>
 				</StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<StackPanel>
-						<Canvas Width="320" Height="400" ClipToBounds="True">
+						<Canvas Width="{Binding ActualWidth, ElementName=ImageComposite, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=ImageComposite, Mode=OneWay}">
 							<Image Canvas.Top="0" Canvas.Left="0" IsHitTestVisible="False" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="ImageComposite" Height="400" Width="320" Stretch="Fill"/>
+							<Image Canvas.Top="0" Canvas.Left="0" IsHitTestVisible="False" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="ImageCompositePreviousFrame" Height="400" Width="320" Stretch="Fill"/>
+							<Image Canvas.Top="0" Canvas.Left="0" IsHitTestVisible="False" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="ImageCompositeNextFrame" Height="400" Width="320" Stretch="Fill"/>
 							<Image Canvas.Top="0" Canvas.Left="0" IsHitTestVisible="False" x:Name="ImageFloatingSelection" Height="400" Width="320" RenderOptions.BitmapScalingMode="NearestNeighbor"  Stretch="Fill"/>
-							<Image Canvas.Top="0" Canvas.Left="0" x:Name="ImageOverlay" Height="400" Width="320" MouseDown="ImageOverlay_MouseDown" MouseMove="ImageOverlay_MouseMove" MouseUp="ImageOverlay_MouseUp" Stretch="None"/>
+							<Image Canvas.Top="0" Canvas.Left="0" x:Name="ImageOverlay" Height="400" Width="320" MouseDown="ImageOverlay_MouseDown" MouseMove="ImageOverlay_MouseMove" MouseUp="ImageOverlay_MouseUp" Stretch="None" Cursor="Cross"/>
 						</Canvas>
 						<Slider Name="SliderFrame" Margin="5" SmallChange="1" TickPlacement="TopLeft" IsSnapToTickEnabled="True" ValueChanged="SliderFrame_ValueChanged"></Slider>
 					</StackPanel>
@@ -94,20 +116,55 @@
 						<DockPanel LastChildFill="True">
 							<Grid DockPanel.Dock="Right" VerticalAlignment="Center">
 								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="20"/>
-									<ColumnDefinition Width="20"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="*"/>
 									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
 								<Grid.RowDefinitions>
-									<RowDefinition Height="20"/>
-									<RowDefinition Height="20"/>
-									<RowDefinition Height="20"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
 								</Grid.RowDefinitions>
-								<Button Grid.Column="0" Grid.Row="0" Click="PaletteShiftLighter"></Button>
-								<Button Grid.Column="1" Grid.Row="0" Click="PaletteShiftDarker"></Button>
+								<Button Grid.Column="0" Grid.Row="0" Click="PaletteShiftLighter">
+									<Image Source="Resources/IconArrow.ico" Stretch="None" RenderTransformOrigin="0.5,0.5">
+										<Image.RenderTransform>
+											<TransformGroup>
+												<ScaleTransform/>
+												<SkewTransform/>
+												<RotateTransform Angle="-90"/>
+												<TranslateTransform/>
+											</TransformGroup>
+										</Image.RenderTransform>
+									</Image>
+								</Button>
+								<Button Grid.Column="1" Grid.Row="0" Click="PaletteShiftDarker">
+									<Image Source="Resources/IconArrow.ico" Stretch="None" RenderTransformOrigin="0.5,0.5">
+										<Image.RenderTransform>
+											<TransformGroup>
+												<ScaleTransform/>
+												<SkewTransform/>
+												<RotateTransform Angle="90"/>
+												<TranslateTransform/>
+											</TransformGroup>
+										</Image.RenderTransform>
+									</Image>
+								</Button>
 								<Label Grid.Column="2" Grid.Row="0">Color light</Label>
-								<Button Grid.Column="0" Grid.Row="1" Click="PaletteShiftUp"></Button>
-								<Button Grid.Column="0" Grid.Row="2" Click="PaletteShiftDown"></Button>
+								<Button Grid.Column="0" Grid.Row="1" Click="PaletteShiftUp">
+									<Image Source="Resources/IconArrow.ico" Stretch="None"></Image>
+								</Button>
+								<Button Grid.Column="0" Grid.Row="2" Click="PaletteShiftDown">
+									<Image Source="Resources/IconArrow.ico" Stretch="None" RenderTransformOrigin="0.5,0.5">
+										<Image.RenderTransform>
+											<TransformGroup>
+												<ScaleTransform/>
+												<SkewTransform/>
+												<RotateTransform Angle="180"/>
+												<TranslateTransform/>
+											</TransformGroup>
+										</Image.RenderTransform>
+									</Image>
+								</Button>
 								<Label Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Center">Color group</Label>
 							</Grid>
 							<Grid DockPanel.Dock="Top">
@@ -126,6 +183,30 @@
 							<local:ColorPalette x:Name="ToolColorPalette" Width="240" Height="240"/>
 						</DockPanel>
 						<DockPanel LastChildFill="True">
+							<StackPanel Orientation="Horizontal">
+								<Label ContentStringFormat="" RenderTransformOrigin="0.5,0.5" Content="Previous frame" VerticalAlignment="Center">
+									<Label.LayoutTransform>
+										<TransformGroup>
+											<ScaleTransform/>
+											<SkewTransform/>
+											<RotateTransform Angle="-90"/>
+											<TranslateTransform/>
+										</TransformGroup>
+									</Label.LayoutTransform>
+								</Label>
+								<Slider Name="SliderPreviousFrame" Orientation="Vertical" Maximum="100" SmallChange="1" LargeChange="25" ValueChanged="SliderPreviousFrame_ValueChanged"/>
+								<Label ContentStringFormat="" RenderTransformOrigin="0.5,0.5" Content="Next frame" VerticalAlignment="Center">
+									<Label.LayoutTransform>
+										<TransformGroup>
+											<ScaleTransform/>
+											<SkewTransform/>
+											<RotateTransform Angle="-90"/>
+											<TranslateTransform/>
+										</TransformGroup>
+									</Label.LayoutTransform>
+								</Label>
+								<Slider Name="SliderNextFrame" Orientation="Vertical" Maximum="100" SmallChange="1" LargeChange="25" ValueChanged="SliderNextFrame_ValueChanged"/>
+							</StackPanel>
 							<StackPanel HorizontalAlignment="Center" DockPanel.Dock="Bottom" Orientation="Horizontal">
 								<Button Click="AnimationControlPlay">Play</Button>
 								<Button Click="AnimationControlStop">Stop</Button>
@@ -133,7 +214,7 @@
 							<Image RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="ImageAnimation" Height="120" Width="96" Stretch="Fill"/>
 						</DockPanel>
 					</StackPanel>
-					
+
 				</StackPanel>
 			</DockPanel>
 		</DockPanel>
