@@ -39,6 +39,9 @@
   <PropertyGroup>
     <StartupObject>UnitSpriteStudio.App</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\UnitSpriteStudioIcon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -67,10 +70,23 @@
     <Compile Include="DrawingRoutines\DrawingRoutine.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineSoldier.cs" />
     <Compile Include="DrawingRoutines\FrameMetadata.cs" />
+    <Compile Include="FloatingSelectionBitmap.cs" />
+    <Compile Include="MirroredFramesGenerator\MirroredDirectionsOperation.cs" />
+    <Compile Include="MirroredSpritesGenerator.xaml.cs">
+      <DependentUpon>MirroredSpritesGenerator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Selection.cs" />
     <Compile Include="SpriteSheet.cs" />
+    <Compile Include="UndoSystem.cs" />
     <Compile Include="UnitDirection.xaml.cs">
       <DependentUpon>UnitDirection.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UnitSpriteStudioClipboardFormat.cs" />
     <Page Include="ColorPalette.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -87,6 +103,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MirroredSpritesGenerator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UnitDirection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -110,6 +130,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -117,6 +141,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UFOBattlescapePalette.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UnitSpriteStudioIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\PixelSelection.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\BoxSelection.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

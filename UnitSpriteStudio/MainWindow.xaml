@@ -6,7 +6,7 @@
 		xmlns:local="clr-namespace:UnitSpriteStudio"
 		mc:Ignorable="d"
 		Title="UnitSprite Studio"  Loaded="Window_Loaded"
-		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
+		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" KeyUp="Window_KeyUp">
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_File">
@@ -22,6 +22,19 @@
 				<MenuItem Header="Copy .rul snippet" Click="MenuItemCopyRulSnippet_Click"/>
 				<Separator />
 				<MenuItem Header="_Exit" Click="MenuItemExit_Click" />
+			</MenuItem>
+			<MenuItem Header="_Edit">
+				<MenuItem Header="Undo" InputGestureText="Ctrl+Z" Click="MenuItemUndo_Click"/>
+				<MenuItem Header="Redo" InputGestureText="Ctrl+Y" Click="MenuItemRedo_Click" />
+				<Separator/>
+				<MenuItem Header="Cut"  InputGestureText="Ctrl+X" Click="MenuItemCut_Click"/>
+				<MenuItem Header="Copy"  InputGestureText="Ctrl+C" Click="MenuItemCopy_Click"/>
+				<MenuItem Header="Paste"  InputGestureText="Ctrl+V" Click="MenuItemPaste_Click"/>
+				<MenuItem Header="Fill"  InputGestureText="Ins" Click="MenuItemFill_Click"/>
+				<MenuItem Header="Delete"  InputGestureText="Del" Click="MenuItemDelete_Click"/>
+			</MenuItem>
+			<MenuItem Header="_Unit sprite">
+				<MenuItem Header="_Generate mirrored directions" Click="MenuItemGenerateMirrored_Click"/>
 			</MenuItem>
 		</Menu>
 		<DockPanel LastChildFill = "True">
@@ -54,26 +67,49 @@
 			</StackPanel>
 			<DockPanel LastChildFill = "True">
 				<StackPanel Name="ToolBar" Margin="3" DockPanel.Dock="Top" Orientation="Horizontal">
-					<ToggleButton Tag="0" Click="ToggleCursorToolClicked" Name="ToggleSelectPixels" >Pixels</ToggleButton>
-					<ToggleButton Tag="1" Click="ToggleCursorToolClicked" Name="ToggleSelectBox" Margin="2,0,0,0">Box</ToggleButton>
+					<ToggleButton Tag="0" Click="ToggleCursorToolClicked" Name="ToggleSelectPixels" >
+						<Image Source="Resources/PixelSelection.ico" Stretch="None"></Image>
+					</ToggleButton>
+					<ToggleButton Tag="1" Click="ToggleCursorToolClicked" Name="ToggleSelectBox" Margin="2,0,0,0">
+						<Image Source="Resources/BoxSelection.ico" Stretch="None"></Image>
+					</ToggleButton>
 					<ToggleButton Tag="2" Click="ToggleCursorToolClicked" Name="ToggleSelectLasso" Margin="2,0,0,0">Lasso</ToggleButton>
 					<ToggleButton Tag="3" Click="ToggleCursorToolClicked" Name="ToggleSelectColors" Margin="2,0,0,0">Colors</ToggleButton>
 					<ToggleButton Tag="4" Click="ToggleCursorToolClicked" Name="ToggleSelectArea" Margin="2,0,0,0">Area</ToggleButton>
 					<ToggleButton Tag="5" Click="ToggleCursorToolClicked" Name="TogglePaint" Margin="10,0,0,0">Paint</ToggleButton>
 
 					<ToggleButton Click="ToggleBackground_Click" Name="ToggleBackground" Margin="20,0,0,0">Checkered background</ToggleButton>
-					<ToggleButton Name="ToggleGrid" Margin="2,0,0,0">Grid</ToggleButton>
+					<ToggleButton Click="ToggleGrid_Click" Name="ToggleGrid" Margin="2,0,0,0">Grid</ToggleButton>
 				</StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<StackPanel>
-						<Canvas Width="320" Height="400">
-							<Image Canvas.Top="0" Canvas.Left="0" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="ImageComposite" Height="400" Width="320" Stretch="Fill"/>
-							<Image Canvas.Top="0" Canvas.Left="0" x:Name="ImageOverlay" Height="400" Width="320" MouseDown="ImageOverlay_MouseDown" MouseMove="ImageOverlay_MouseMove" Stretch="None"/>
+						<Canvas Width="320" Height="400" ClipToBounds="True">
+							<Image Canvas.Top="0" Canvas.Left="0" IsHitTestVisible="False" RenderOptions.BitmapScalingMode="NearestNeighbor" x:Name="ImageComposite" Height="400" Width="320" Stretch="Fill"/>
+							<Image Canvas.Top="0" Canvas.Left="0" IsHitTestVisible="False" x:Name="ImageFloatingSelection" Height="400" Width="320" RenderOptions.BitmapScalingMode="NearestNeighbor"  Stretch="Fill"/>
+							<Image Canvas.Top="0" Canvas.Left="0" x:Name="ImageOverlay" Height="400" Width="320" MouseDown="ImageOverlay_MouseDown" MouseMove="ImageOverlay_MouseMove" MouseUp="ImageOverlay_MouseUp" Stretch="None"/>
 						</Canvas>
 						<Slider Name="SliderFrame" Margin="5" SmallChange="1" TickPlacement="TopLeft" IsSnapToTickEnabled="True" ValueChanged="SliderFrame_ValueChanged"></Slider>
 					</StackPanel>
 					<StackPanel>
 						<DockPanel LastChildFill="True">
+							<Grid DockPanel.Dock="Right" VerticalAlignment="Center">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="20"/>
+									<ColumnDefinition Width="20"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="20"/>
+									<RowDefinition Height="20"/>
+									<RowDefinition Height="20"/>
+								</Grid.RowDefinitions>
+								<Button Grid.Column="0" Grid.Row="0" Click="PaletteShiftLighter"></Button>
+								<Button Grid.Column="1" Grid.Row="0" Click="PaletteShiftDarker"></Button>
+								<Label Grid.Column="2" Grid.Row="0">Color light</Label>
+								<Button Grid.Column="0" Grid.Row="1" Click="PaletteShiftUp"></Button>
+								<Button Grid.Column="0" Grid.Row="2" Click="PaletteShiftDown"></Button>
+								<Label Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Center">Color group</Label>
+							</Grid>
 							<Grid DockPanel.Dock="Top">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="*"/>

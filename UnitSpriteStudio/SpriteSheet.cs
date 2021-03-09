@@ -15,13 +15,35 @@ namespace UnitSpriteStudio {
 			private Dictionary<int, ImageSource> imageSourceCache;
 			private int columnCount;
 			internal FrameSource(string FileName) {
-				sprite = new WriteableBitmap(new BitmapImage(new Uri(FileName, UriKind.Absolute)));
+				var originalSprite = new WriteableBitmap(new BitmapImage(new Uri(FileName, UriKind.Absolute)));
+				if (originalSprite.Format!=PixelFormats.Indexed8) {
+					throw new Exception("Unspported image format!");
+				}
+				BitmapPalette UFOBattlescapePalette = GetUFOBattlescapePalette();
+				sprite = new WriteableBitmap(originalSprite.PixelWidth, originalSprite.PixelHeight, originalSprite.DpiX, originalSprite.DpiY, PixelFormats.Indexed8, UFOBattlescapePalette);
+				byte[] originalPixels = new byte[originalSprite.PixelWidth * originalSprite.PixelHeight];
+				originalSprite.CopyPixels(originalPixels, originalSprite.BackBufferStride, 0);
+				sprite.WritePixels(new System.Windows.Int32Rect(0, 0, originalSprite.PixelWidth, originalSprite.PixelHeight), originalPixels, sprite.BackBufferStride, 0);
 				columnCount = sprite.PixelWidth / 32;
 				imageSourceCache = new Dictionary<int, ImageSource>();
 			}
 
+			internal BitmapPalette GetUFOBattlescapePalette() {
+				System.Drawing.Imaging.ColorPalette UFOBattlescapePalette = Resources.UFOBattlescapePalette.Palette;
+				List<Color> outputColorList = new List<Color>();
+				foreach (System.Drawing.Color c in UFOBattlescapePalette.Entries) {
+					outputColorList.Add(Color.FromArgb(c.A,c.R,c.G,c.B));
+				}
+				outputColorList[0] = Color.FromArgb(0, 0, 255, 0);
+				return new BitmapPalette(outputColorList);
+			}
+
 			internal (int Width,int Height) GetSize() {
 				return (sprite.PixelWidth, sprite.PixelHeight);
+			}
+
+			internal WriteableBitmap getSprite() {
+				return sprite;
 			}
 
 			internal PngBitmapEncoder GetSpriteEncoder() {
@@ -38,23 +60,62 @@ namespace UnitSpriteStudio {
 			}
 
 			internal ImageSource GetFrame(int FrameIndex) {
-				/*if (imageSourceCache.ContainsKey(FrameIndex)) {
+				if (imageSourceCache.ContainsKey(FrameIndex)) {
 					return imageSourceCache[FrameIndex];
-				}*/
+				}
 				(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
 				CroppedBitmap result = new CroppedBitmap(sprite, new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40));
-				//imageSourceCache.Add(FrameIndex, result);
+				imageSourceCache.Add(FrameIndex, result);
 				return result;
 			}
 
+			internal byte[] GetFramePixelData(int FrameIndex) {
+				(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
+				byte[] pixels = new byte[32*40];
+				sprite.CopyPixels(new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y , 32, 40), pixels, 32, 0);
+				return pixels;
+			}
+
 			internal byte GetPixel(int FrameIndex, int X, int Y) {
+				if (X < 0 || Y < 0 || X >= 32 || Y >= 40) return 0;
 				(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
 				byte[] pixels = new byte[1];
 				sprite.CopyPixels(new System.Windows.Int32Rect(frameCoords.X + X, frameCoords.Y + Y, 1, 1), pixels, sprite.BackBufferStride, 0);
 				return pixels[0];
 			}
+			internal void SetFramePixelData(int FrameIndex, byte[] pixelData) {
+				(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
+				try {
+					// Reserve the back buffer for updates.
+					sprite.Lock();
+
+					unsafe {
+						for (int x = 0; x < 32; x++) {
+							for (int y = 0; y < 40; y++) {
+								// Get a pointer to the back buffer.
+								IntPtr pBackBuffer = sprite.BackBuffer;
+
+								// Find the address of the pixel to draw.
+								pBackBuffer += (frameCoords.Y + y) * sprite.BackBufferStride;
+								pBackBuffer += (frameCoords.X + x) * 1;
+
+								// Assign the color data to the pixel.
+								*((byte*)pBackBuffer) = pixelData[x + y * 32];
+							}
+						}
+					}
+
+					// Specify the area of the bitmap that changed.
+					sprite.AddDirtyRect(new System.Windows.Int32Rect(0, 0, 32, 40));
+				} finally {
+					// Release the back buffer and make it available for display.
+					sprite.Unlock();
+				}
+				imageSourceCache[FrameIndex] = new CroppedBitmap(sprite, new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40));
+			}
 
 			internal void SetPixel(int FrameIndex, int X, int Y, byte Color) {
+				if (X < 0 || Y < 0 || X >= 32 || Y >= 40) return;
 				(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
 				try {
 					// Reserve the back buffer for updates.
@@ -87,7 +148,7 @@ namespace UnitSpriteStudio {
 		}
 
 		internal readonly DrawingRoutines.DrawingRoutine drawingRoutine;
-		private FrameSource frameSource=null;
+		internal FrameSource frameSource=null;
 		private string sourceFileName;
 
 		internal void LoadSprite(string FileName) {
@@ -142,6 +203,10 @@ namespace UnitSpriteStudio {
 			rulText += "    files:\n";
 			rulText += string.Format("      0: Path/{0}\n", Path.GetFileName(sourceFileName));
 			return rulText;
+		}
+
+		internal WriteableBitmap getSprite() {
+			return frameSource.getSprite();
 		}
 	}
 }

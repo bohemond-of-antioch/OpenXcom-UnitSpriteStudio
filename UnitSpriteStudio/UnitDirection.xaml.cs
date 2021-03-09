@@ -41,6 +41,11 @@ namespace UnitSpriteStudio {
 			OnChanged?.Invoke();
 		}
 
+		public void SetDirection(int direction) {
+			SelectedDirection = direction;
+			UpdateButtons();
+		}
+
 		private void buttonDirection0_Click(object sender, RoutedEventArgs e) {
 			SelectedDirection = 0;
 			UpdateButtons();
