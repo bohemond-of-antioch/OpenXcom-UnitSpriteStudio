@@ -13,7 +13,8 @@ namespace UnitSpriteStudio {
 	partial class App : Application {
 		private void Application_Startup(object sender, StartupEventArgs e) {
 			MainWindow mainWindow = new MainWindow();
-			SpriteSheet initialSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSectopod(), "D:\\!Honza!\\OpenXCom - Anabasis\\Assets\\Sectopod_Halved.png");
+			SpriteSheet initialSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSoldier());
+			//SpriteSheet initialSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSectopod(), "D:\\!Honza!\\OpenXCom - Anabasis\\Assets\\Sectopod_Halved.png");
 			//initialSheet.LoadSprite("D:\\!Honza!\\OpenXCom - Anabasis\\Assets\\Units\\FLIGHT_SUIT.png");
 			//initialSheet.LoadSprite("D:\\!Honza!\\OpenXCom - Anabasis\\Assets\\Units\\zane_armor2.png");
 			mainWindow.InitializeSpriteSheet(initialSheet);

@@ -12,7 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using UnitSpriteStudio.MirroredFramesGenerator;
+using UnitSpriteStudio.FrameProcessing;
 
 namespace UnitSpriteStudio {
 	/// <summary>
@@ -183,7 +183,7 @@ namespace UnitSpriteStudio {
 			Operation.Directions[ActiveDirection].Flip = CheckBoxFlip.IsChecked == true;
 		}
 		private void CheckBoxChangeArms_Click(object sender, RoutedEventArgs e) {
-			Operation.Directions[ActiveDirection].ChangeArms = CheckBoxActive.IsChecked == true;
+			Operation.Directions[ActiveDirection].ChangeArms = CheckBoxChangeArms.IsChecked == true;
 		}
 		private void CheckBoxEntireAnimation_Click(object sender, RoutedEventArgs e) {
 			Operation.EntireAnimation = CheckBoxEntireAnimation.IsChecked == true;
@@ -199,7 +199,9 @@ namespace UnitSpriteStudio {
 		}
 
 		private void ButtonGO_Click(object sender, RoutedEventArgs e) {
+			MainWindow.undoSystem.BeginUndoBlock();
 			Operation.Run(ApplicationWindow.GatherMetadata(), ApplicationWindow.spriteSheet);
+			MainWindow.undoSystem.EndUndoBlock();
 			ApplicationWindow.FrameMetadataChanged();
 		}
 
@@ -216,6 +218,9 @@ namespace UnitSpriteStudio {
 			}
 		}
 
+		private void Window_KeyUp(object sender, KeyEventArgs e) {
+			ApplicationWindow.Window_KeyUp(sender, e);
+		}
 
 		private void RefreshImages() {
 			for (int f = 0; f < 8; f++) {

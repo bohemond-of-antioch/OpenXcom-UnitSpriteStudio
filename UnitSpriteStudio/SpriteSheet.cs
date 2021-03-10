@@ -11,10 +11,16 @@ using UnitSpriteStudio.DrawingRoutines;
 namespace UnitSpriteStudio {
 	class SpriteSheet {
 		internal class FrameSource {
-			private WriteableBitmap sprite;
+			internal event Action OnChanged;
+			internal WriteableBitmap sprite { get; private set; }
 			private Dictionary<int, BitmapSource> imageSourceCache;
 			private int columnCount;
 
+			internal void SetInternalSprite(WriteableBitmap newSprite) {
+				this.sprite = newSprite;
+				this.imageSourceCache = new Dictionary<int, BitmapSource>();
+				OnChanged?.Invoke();
+			}
 			internal FrameSource(FrameSource cloneFrom) : this(cloneFrom.sprite) {}
 			internal FrameSource(BitmapSource sourceBitmap) {
 				var originalSprite = new WriteableBitmap(sourceBitmap);
@@ -114,6 +120,7 @@ namespace UnitSpriteStudio {
 					sprite.Unlock();
 				}
 				imageSourceCache[FrameIndex] = new CroppedBitmap(sprite, new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40));
+				OnChanged?.Invoke();
 			}
 
 			internal void SetPixel(int FrameIndex, int X, int Y, byte Color) {
@@ -144,6 +151,7 @@ namespace UnitSpriteStudio {
 					}
 					imageSourceCache[FrameIndex] = new CroppedBitmap(sprite, new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40));
 				}
+				OnChanged?.Invoke();
 			}
 
 			internal BitmapPalette GetColorPalette() {
@@ -152,7 +160,7 @@ namespace UnitSpriteStudio {
 		}
 
 		internal readonly DrawingRoutines.DrawingRoutine drawingRoutine;
-		internal FrameSource frameSource=null;
+		internal FrameSource frameSource { get; private set; }
 		internal string sourceFileName { get; private set; }
 
 		internal void Save(string FileName="") {

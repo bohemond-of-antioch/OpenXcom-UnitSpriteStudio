@@ -85,8 +85,13 @@ namespace UnitSpriteStudio {
 		internal void ApplyPalette(BitmapPalette palette) {
 			CurrentPalette = palette;
 			foreach (Rectangle swatch in SwatchGrid.Children.OfType<Rectangle>()) {
-				swatch.Fill = new SolidColorBrush(palette.Colors[(int)(swatch.Tag)]);
+				if ((int)(swatch.Tag)==0) {
+					swatch.Fill = new SolidColorBrush(Color.FromRgb(0,255,0));
+				} else {
+					swatch.Fill = new SolidColorBrush(palette.Colors[(int)(swatch.Tag)]);
+				}
 			}
+			
 			UpdateMarkers();
 		}
 	}

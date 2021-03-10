@@ -4,6 +4,12 @@
              xmlns:local="clr-namespace:UnitSpriteStudio"
              Startup="Application_Startup" ShutdownMode="OnMainWindowClose">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/PresentationFramework.Classic;V3.0.0.0;31bf3856ad364e35;component\\themes/classic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -59,9 +59,11 @@ namespace UnitSpriteStudio {
 		private int lastCursorPositionX, lastCursorPositionY;
 		//private FloatingSelectionBitmap copyBuffer;
 
-		private UndoSystem undoSystem;
+		internal static UndoSystem undoSystem;
 
 		public event Action OnMetadataChanged;
+
+		private bool IsSaved = true;
 		public MainWindow() {
 			InitializeComponent();
 			LayerImages = new List<Image>();
@@ -97,10 +99,10 @@ namespace UnitSpriteStudio {
 			if (ToggleBackground.IsChecked == true) {
 				Brush darkSquare, lightSquare;
 				if (faded) {
-					darkSquare = new SolidColorBrush(Color.FromArgb((byte)SliderHighlightPower.Value, 128, 128, 128));
+					darkSquare = new SolidColorBrush(Color.FromArgb((byte)SliderHighlightPower.Value, 160, 160, 160));
 					lightSquare = new SolidColorBrush(Color.FromArgb((byte)SliderHighlightPower.Value, 192, 192, 192));
 				} else {
-					darkSquare = new SolidColorBrush(Color.FromRgb(128, 128, 128));
+					darkSquare = new SolidColorBrush(Color.FromRgb(160, 160, 160));
 					lightSquare = new SolidColorBrush(Color.FromRgb(192, 192, 192));
 				}
 				int x, y;
@@ -371,11 +373,49 @@ namespace UnitSpriteStudio {
 			SliderFrame.Value = 0;
 
 			ToolColorPalette.ApplyPalette(spriteSheet.GetColorPalette());
-			SpriteSheetInitialized = true;
 			undoSystem = new UndoSystem(spriteSheet, this);
+			IsSaved = true;
+			SpriteSheetInitialized = true;
+			spriteSheet.frameSource.OnChanged += SetFileModified;
+
 			ToggleSmartLayer.IsEnabled = (spriteSheet.drawingRoutine.SmartLayerSupported() != DrawingRoutines.DrawingRoutine.SmartLayerType.None);
 
 			FrameMetadataChanged();
+			SetWindowTitle();
+		}
+
+		private string GetTitleFilename() {
+			string FileTitle = "New";
+			if (spriteSheet.sourceFileName != null && !spriteSheet.sourceFileName.Equals("")) {
+				FileTitle = System.IO.Path.GetFileName(spriteSheet.sourceFileName);
+			}
+			return FileTitle;
+		}
+		private void SetWindowTitle() {
+			string Title = string.Format("{0} - UnitSprite Studio", GetTitleFilename());
+			if (!IsSaved) Title += "*";
+			this.Title = Title;
+		}
+		private void SetFileModified() {
+			if (IsSaved) {
+				IsSaved = false;
+				SetWindowTitle();
+			}
+		}
+
+		private bool ConfirmUnsavedFile() {
+			if (IsSaved) {
+				return true;
+			} else {
+				var answer = MessageBox.Show(string.Format("Save changes to {0}?", GetTitleFilename()), "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+				if (answer == MessageBoxResult.Yes) {
+					return Save();
+				} else if (answer == MessageBoxResult.No) {
+					return true;
+				} else {
+					return false;
+				}
+			}
 		}
 
 		private void ToolColorPalette_OnSelectedColorChanged() {
@@ -845,47 +885,80 @@ namespace UnitSpriteStudio {
 		}
 
 		private void MenuItemNew_Click(object sender, RoutedEventArgs e) {
-
-		}
-
-		private void MenuItemOpen_Click(object sender, RoutedEventArgs e) {
-			OpenFileDialog openFileDialog = new OpenFileDialog();
-			openFileDialog.Filter = "PNG Files|*.png|All Files|*.*";
-			if (openFileDialog.ShowDialog() == true) {
+			if (ConfirmUnsavedFile()) {
 				SpriteSheet openedSpriteSheet;
 				int DrawingRoutine = int.Parse((string)((MenuItem)sender).Tag);
-				try {
-					switch (DrawingRoutine) {
-						case 0:
-							openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSoldier(), openFileDialog.FileName);
-							break;
-						case 5:
-							openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSectopod(), openFileDialog.FileName);
-							break;
-						default:
-							throw new Exception("Unsupported drawing routine.");
-					}
-				} catch (Exception exception) {
-					MessageBox.Show("An error has occured during loading of the file: " + exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-					return;
+				switch (DrawingRoutine) {
+					case 0:
+						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSoldier());
+						break;
+					case 4:
+						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineEthereal());
+						break;
+					case 5:
+						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSectopod());
+						break;
+					default:
+						throw new Exception("Unsupported drawing routine.");
 				}
 				InitializeSpriteSheet(openedSpriteSheet);
 			}
 		}
 
-		private void MenuItemSave_Click(object sender, RoutedEventArgs e) {
-			if (spriteSheet.sourceFileName == null || "".Equals(spriteSheet.sourceFileName)) {
-				MenuItemSaveAs_Click(sender, e);
-			} else {
-				spriteSheet.Save();
+		private void MenuItemOpen_Click(object sender, RoutedEventArgs e) {
+			if (ConfirmUnsavedFile()) {
+				OpenFileDialog openFileDialog = new OpenFileDialog();
+				openFileDialog.Filter = "PNG Files|*.png|All Files|*.*";
+				if (openFileDialog.ShowDialog() == true) {
+					SpriteSheet openedSpriteSheet;
+					int DrawingRoutine = int.Parse((string)((MenuItem)sender).Tag);
+					try {
+						switch (DrawingRoutine) {
+							case 0:
+								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSoldier(), openFileDialog.FileName);
+								break;
+							case 4:
+								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineEthereal(), openFileDialog.FileName);
+								break;
+							case 5:
+								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSectopod(), openFileDialog.FileName);
+								break;
+							default:
+								throw new Exception("Unsupported drawing routine.");
+						}
+					} catch (Exception exception) {
+						MessageBox.Show("An error has occured during loading of the file: " + exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+						return;
+					}
+					InitializeSpriteSheet(openedSpriteSheet);
+				}
 			}
 		}
-		private void MenuItemSaveAs_Click(object sender, RoutedEventArgs e) {
+
+		private bool SaveAs() {
 			SaveFileDialog saveFileDialog = new SaveFileDialog();
 			saveFileDialog.Filter = "PNG Files|*.png|All Files|*.*";
 			if (saveFileDialog.ShowDialog() == true) {
 				spriteSheet.Save(saveFileDialog.FileName);
+				return true;
+			} else {
+				return false;
 			}
+		}
+		private bool Save() {
+			if (spriteSheet.sourceFileName == null || "".Equals(spriteSheet.sourceFileName)) {
+				return SaveAs();
+			} else {
+				spriteSheet.Save();
+				return true;
+			}
+		}
+
+		private void MenuItemSave_Click(object sender, RoutedEventArgs e) {
+			Save();
+		}
+		private void MenuItemSaveAs_Click(object sender, RoutedEventArgs e) {
+			SaveAs();
 		}
 
 		private void MenuItemExit_Click(object sender, RoutedEventArgs e) {
@@ -913,7 +986,14 @@ namespace UnitSpriteStudio {
 			}
 		}
 
-		private void Window_KeyUp(object sender, KeyEventArgs e) {
+		internal bool IsUndoShortcut(KeyEventArgs e) {
+			return (e.Key == Key.Z && KeyModifier(ModifierKeys.Control));
+		}
+		internal bool IsRedoShortcut(KeyEventArgs e) {
+			return (e.Key == Key.Y && KeyModifier(ModifierKeys.Control));
+		}
+
+		internal void Window_KeyUp(object sender, KeyEventArgs e) {
 			if ((e.Key == Key.C && KeyModifier(ModifierKeys.Control)) || (e.Key == Key.Insert && KeyModifier(ModifierKeys.Control))) {
 				CopySelection();
 			}
@@ -1062,7 +1142,7 @@ namespace UnitSpriteStudio {
 			Cut();
 		}
 
-		private void MenuItemGenerateMirrored_Click(object sender, RoutedEventArgs e) {
+		private void MenuItemFrameCloning_Click(object sender, RoutedEventArgs e) {
 			MirroredSpritesGenerator generatorWindow = new MirroredSpritesGenerator();
 			generatorWindow.Owner = this;
 			generatorWindow.Show();
@@ -1102,44 +1182,84 @@ namespace UnitSpriteStudio {
 		}
 
 		private void PaletteShiftLighter(object sender, RoutedEventArgs e) {
-			TransmogrifySelection(ListBoxLayers.SelectedIndex, (oldColor) => {
-				if (oldColor == 0) return 0;
-				int newColor;
-				newColor = oldColor;
-				newColor = Math.Max(1, Math.Max(newColor - 1, (newColor / 16) * 16));
-				return (byte)newColor;
-			});
+			int[] AffectedLayers;
+			if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) {
+				AffectedLayers = Enumerable.Range(0, spriteSheet.drawingRoutine.LayerNames().Length).ToArray();
+				undoSystem.BeginUndoBlock();
+			} else {
+				AffectedLayers = new int[] { ListBoxLayers.SelectedIndex };
+			}
+			for (int l = 0; l < AffectedLayers.Length; l++) {
+				TransmogrifySelection(AffectedLayers[l], (oldColor) => {
+					if (oldColor == 0) return 0;
+					int newColor;
+					newColor = oldColor;
+					newColor = Math.Max(1, Math.Max(newColor - 1, (newColor / 16) * 16));
+					return (byte)newColor;
+				});
+			}
+			undoSystem.EndUndoBlock();
 		}
 
 		private void PaletteShiftDarker(object sender, RoutedEventArgs e) {
-			TransmogrifySelection(ListBoxLayers.SelectedIndex, (oldColor) => {
-				if (oldColor == 0) return 0;
-				int newColor;
-				newColor = oldColor;
-				newColor = Math.Min(newColor + 1, ((newColor / 16) + 1) * 16 - 1);
-				return (byte)newColor;
-			});
+			int[] AffectedLayers;
+			if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) {
+				AffectedLayers = Enumerable.Range(0, spriteSheet.drawingRoutine.LayerNames().Length).ToArray();
+				undoSystem.BeginUndoBlock();
+			} else {
+				AffectedLayers = new int[] { ListBoxLayers.SelectedIndex };
+			}
+			for (int l = 0; l < AffectedLayers.Length; l++) {
+				TransmogrifySelection(AffectedLayers[l], (oldColor) => {
+					if (oldColor == 0) return 0;
+					int newColor;
+					newColor = oldColor;
+					newColor = Math.Min(newColor + 1, ((newColor / 16) + 1) * 16 - 1);
+					return (byte)newColor;
+				});
+			}
+			undoSystem.EndUndoBlock();
 		}
 
 		private void PaletteShiftUp(object sender, RoutedEventArgs e) {
-			TransmogrifySelection(ListBoxLayers.SelectedIndex, (oldColor) => {
-				if (oldColor < 16) return oldColor;
-				int newColor;
-				newColor = oldColor;
-				newColor = newColor - 16;
-				if (newColor == 0) newColor = 1;
-				return (byte)newColor;
-			});
+			int[] AffectedLayers;
+			if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) {
+				AffectedLayers = Enumerable.Range(0, spriteSheet.drawingRoutine.LayerNames().Length).ToArray();
+				undoSystem.BeginUndoBlock();
+			} else {
+				AffectedLayers = new int[] { ListBoxLayers.SelectedIndex };
+			}
+			for (int l = 0; l < AffectedLayers.Length; l++) {
+				TransmogrifySelection(AffectedLayers[l], (oldColor) => {
+					if (oldColor < 16) return oldColor;
+					int newColor;
+					newColor = oldColor;
+					newColor = newColor - 16;
+					if (newColor == 0) newColor = 1;
+					return (byte)newColor;
+				});
+			}
+			undoSystem.EndUndoBlock();
 		}
 
 		private void PaletteShiftDown(object sender, RoutedEventArgs e) {
-			TransmogrifySelection(ListBoxLayers.SelectedIndex, (oldColor) => {
-				if (oldColor == 0 || oldColor >= 240) return oldColor;
-				int newColor;
-				newColor = oldColor;
-				newColor = newColor + 16;
-				return (byte)newColor;
-			});
+			int[] AffectedLayers;
+			if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) {
+				AffectedLayers = Enumerable.Range(0, spriteSheet.drawingRoutine.LayerNames().Length).ToArray();
+				undoSystem.BeginUndoBlock();
+			} else {
+				AffectedLayers = new int[] { ListBoxLayers.SelectedIndex };
+			}
+			for (int l = 0; l < AffectedLayers.Length; l++) {
+				TransmogrifySelection(AffectedLayers[l], (oldColor) => {
+					if (oldColor == 0 || oldColor >= 240) return oldColor;
+					int newColor;
+					newColor = oldColor;
+					newColor = newColor + 16;
+					return (byte)newColor;
+				});
+			}
+			undoSystem.EndUndoBlock();
 		}
 
 		private void NeedsOverlayRefresh_Click(object sender, RoutedEventArgs e) {
@@ -1152,6 +1272,18 @@ namespace UnitSpriteStudio {
 
 		private void SliderNextFrame_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
 			FrameMetadataChanged();
+		}
+
+		private void MenuItemShiftAnimation_Click(object sender, RoutedEventArgs e) {
+			ShiftAnimationWindow toolWindow = new ShiftAnimationWindow();
+			toolWindow.Owner = this;
+			toolWindow.ShowDialog();
+		}
+
+		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if (!ConfirmUnsavedFile()) {
+				e.Cancel = true;
+			}
 		}
 
 		private void SetTool(ECursorTool tool) {

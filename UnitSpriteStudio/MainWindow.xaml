@@ -6,17 +6,19 @@
 		xmlns:local="clr-namespace:UnitSpriteStudio"
 		mc:Ignorable="d"
 		Title="UnitSprite Studio"  Loaded="Window_Loaded"
-		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" KeyUp="Window_KeyUp">
+		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" KeyUp="Window_KeyUp" Closing="Window_Closing">
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_File">
 				<MenuItem Header="_New"  >
 					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemNew_Click" Tag="0"/>
+					<MenuItem Header="Routine 4 - Civilian, Ethereal" Click="MenuItemNew_Click" Tag="4"/>
 					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemNew_Click" Tag="5"/>
 				</MenuItem>
 
 				<MenuItem Header="_Open"  >
 					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemOpen_Click" Tag="0"/>
+					<MenuItem Header="Routine 4 - Civilian, Ethereal" Click="MenuItemOpen_Click" Tag="4"/>
 					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemOpen_Click" Tag="5"/>
 				</MenuItem>
 				<MenuItem Header="_Save" Click="MenuItemSave_Click" />
@@ -36,7 +38,8 @@
 				<MenuItem Header="Delete"  InputGestureText="Del" Click="MenuItemDelete_Click"/>
 			</MenuItem>
 			<MenuItem Header="_Unit sprite">
-				<MenuItem Header="_Generate mirrored directions" Click="MenuItemGenerateMirrored_Click"/>
+				<MenuItem Header="_Frame cloning" Click="MenuItemFrameCloning_Click"/>
+				<MenuItem Header="_Shift animation" Click="MenuItemShiftAnimation_Click"/>
 			</MenuItem>
 		</Menu>
 		<DockPanel LastChildFill = "True">
@@ -44,15 +47,15 @@
 				<local:UnitDirection x:Name="UnitDirectionControl" DockPanel.Dock="Top" HorizontalAlignment="Left" VerticalAlignment="Top"></local:UnitDirection>
 				<StackPanel Margin="5,0,0,0">
 					<Label Content="Primary"  VerticalAlignment="Top" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
-					<ListBox SelectionChanged="FrameSelectionChanged" Name="ListBoxPrimaryFrames" IsSynchronizedWithCurrentItem="True" />
+					<ListBox SelectionChanged="FrameSelectionChanged" Name="ListBoxPrimaryFrames" IsSynchronizedWithCurrentItem="True" IsTextSearchEnabled="False" />
 				</StackPanel>
 				<StackPanel Margin="5,0,0,0">
 					<Label Content="Secondary"  VerticalAlignment="Top" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
-					<ListBox SelectionChanged="FrameSelectionChanged" Name="ListBoxSecondaryFrames" IsSynchronizedWithCurrentItem="True" />
+					<ListBox SelectionChanged="FrameSelectionChanged" Name="ListBoxSecondaryFrames" IsSynchronizedWithCurrentItem="True" IsTextSearchEnabled="False" />
 				</StackPanel>
 				<StackPanel Margin="5,0,0,0">
 					<Label Content="Tertiary"  VerticalAlignment="Top" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
-					<ListBox SelectionChanged="FrameSelectionChanged" Name="ListBoxTertiaryFrames" IsSynchronizedWithCurrentItem="True" />
+					<ListBox SelectionChanged="FrameSelectionChanged" Name="ListBoxTertiaryFrames" IsSynchronizedWithCurrentItem="True" IsTextSearchEnabled="False" />
 				</StackPanel>
 				<StackPanel Margin="5,0,0,0">
 					<Label Content="Items"  VerticalAlignment="Top" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
@@ -62,7 +65,7 @@
 			<StackPanel Name="LayerPanel" DockPanel.Dock="Bottom" Margin="5" Orientation="Horizontal">
 				<StackPanel Margin="5,0,0,0">
 					<Label Content="Layer"  VerticalAlignment="Top" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
-					<ListBox Name="ListBoxLayers" IsSynchronizedWithCurrentItem="True" SelectionChanged="ListBoxLayers_SelectionChanged" />
+					<ListBox Name="ListBoxLayers" IsSynchronizedWithCurrentItem="True" SelectionChanged="ListBoxLayers_SelectionChanged" IsTextSearchEnabled="False" />
 					<CheckBox Name="CheckBoxHighlightLayer" Margin="0,5,5,0" Click="CheckBoxHighlightLayer_Click">Highlight layer</CheckBox>
 					<Slider Name="SliderHighlightPower" Minimum="0" Maximum="255" SmallChange="1" LargeChange="20" IsSnapToTickEnabled="True" Value="100" ValueChanged="SliderHighlightPower_ValueChanged"/>
 				</StackPanel>
@@ -88,7 +91,7 @@
 						<Image Source="Resources/Paint.ico" Stretch="None"></Image>
 					</ToggleButton>
 
-					<ToggleButton ToolTip="Checkered background" Click="ToggleBackground_Click" Name="ToggleBackground" Margin="20,0,0,0">
+					<ToggleButton ToolTip="Checkered background" Click="ToggleBackground_Click" Name="ToggleBackground" Margin="20,0,0,0" IsChecked="True">
 						<Image Source="Resources/CheckeredBackground.ico" Stretch="None"></Image>
 					</ToggleButton>
 					<ToggleButton ToolTip="Grid" Click="NeedsOverlayRefresh_Click" Name="ToggleGrid" Margin="2,0,0,0">
@@ -125,7 +128,7 @@
 									<RowDefinition Height="*"/>
 									<RowDefinition Height="*"/>
 								</Grid.RowDefinitions>
-								<Button Grid.Column="0" Grid.Row="0" Click="PaletteShiftLighter">
+								<Button ToolTip="Shift+Click to affect all layers" Grid.Column="0" Grid.Row="0" Click="PaletteShiftLighter">
 									<Image Source="Resources/IconArrow.ico" Stretch="None" RenderTransformOrigin="0.5,0.5">
 										<Image.RenderTransform>
 											<TransformGroup>
@@ -137,7 +140,7 @@
 										</Image.RenderTransform>
 									</Image>
 								</Button>
-								<Button Grid.Column="1" Grid.Row="0" Click="PaletteShiftDarker">
+								<Button ToolTip="Shift+Click to affect all layers" Grid.Column="1" Grid.Row="0" Click="PaletteShiftDarker">
 									<Image Source="Resources/IconArrow.ico" Stretch="None" RenderTransformOrigin="0.5,0.5">
 										<Image.RenderTransform>
 											<TransformGroup>
@@ -150,10 +153,10 @@
 									</Image>
 								</Button>
 								<Label Grid.Column="2" Grid.Row="0">Color light</Label>
-								<Button Grid.Column="0" Grid.Row="1" Click="PaletteShiftUp">
+								<Button ToolTip="Shift+Click to affect all layers" Grid.Column="0" Grid.Row="1" Click="PaletteShiftUp">
 									<Image Source="Resources/IconArrow.ico" Stretch="None"></Image>
 								</Button>
-								<Button Grid.Column="0" Grid.Row="2" Click="PaletteShiftDown">
+								<Button ToolTip="Shift+Click to affect all layers" Grid.Column="0" Grid.Row="2" Click="PaletteShiftDown">
 									<Image Source="Resources/IconArrow.ico" Stretch="None" RenderTransformOrigin="0.5,0.5">
 										<Image.RenderTransform>
 											<TransformGroup>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UnitSpriteStudio.MirroredFramesGenerator {
+namespace UnitSpriteStudio.FrameProcessing {
 	class MirroredDirectionsOperation {
 		internal struct Direction {
 			internal int Source;

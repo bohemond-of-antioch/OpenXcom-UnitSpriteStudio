@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using UnitSpriteStudio.DrawingRoutines;
 
 namespace UnitSpriteStudio {
 	class FloatingSelectionBitmap {
@@ -18,6 +19,9 @@ namespace UnitSpriteStudio {
 			byte[] pixels = new byte[bitmap.PixelWidth * bitmap.PixelHeight];
 			bitmap.CopyPixels(new System.Windows.Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight), pixels, bitmap.PixelWidth, 0);
 			return pixels;
+		}
+		internal void PutAllPixels(byte[] pixels) {
+			bitmap.WritePixels(new System.Windows.Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight), pixels, bitmap.PixelWidth, 0);
 		}
 		internal byte GetPixel(int X, int Y) {
 			byte[] pixels = new byte[1];
@@ -39,36 +43,30 @@ namespace UnitSpriteStudio {
 		internal int CopyPixels(Selection selectedArea, SpriteSheet spriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer,bool cut=false) {
 			int x, y;
 			int copiedPixels = 0;
-			try {
-				// Reserve the back buffer for updates.
-				bitmap.Lock();
-				int maxX = 0, minX = bitmap.PixelWidth, maxY = 0, minY = bitmap.PixelHeight;
-				unsafe {
-					for (x = 0; x < selectedArea.SizeX; x++) {
-						for (y = 0; y < selectedArea.SizeY; y++) {
-							if (selectedArea.GetPoint((x, y))) {
-								copiedPixels++;
-								byte colorIndex = spriteSheet.GetPixel(frameMetadata, layer, x, y);
-								maxX = Math.Max(x, maxX);
-								maxY = Math.Max(y, maxY);
-								minX = Math.Min(x, minX);
-								minY = Math.Min(y, minY);
+			DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(frameMetadata, layer);
+			byte[] sourcePixels =spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+			byte[] destinationPixels = GetAllPixels();
 
-								IntPtr pBackBuffer = bitmap.BackBuffer + y * bitmap.BackBufferStride + x;
-								*((byte*)pBackBuffer) = colorIndex;
+			for (x = 0; x < selectedArea.SizeX; x++) {
+				for (y = 0; y < selectedArea.SizeY; y++) {
+					if (selectedArea.GetPoint((x, y))) {
+						(int X, int Y) pointInSource;
+						pointInSource.X = x - frameInfo.OffsetX;
+						pointInSource.Y = y - frameInfo.OffsetY;
+						if (pointInSource.X < 0 || pointInSource.Y < 0 || pointInSource.X >= 32 || pointInSource.Y >= 40) continue;
+						copiedPixels++;
+						byte colorIndex = sourcePixels[pointInSource.X + pointInSource.Y * 32];
 
-								if (cut) spriteSheet.SetPixel(frameMetadata, layer, x, y, 0);
-							}
-						}
+						destinationPixels[x + y * selectedArea.SizeX] = colorIndex;
+
+						if (cut) sourcePixels[pointInSource.X + pointInSource.Y * 32] = 0;
 					}
 				}
-
-				// Specify the area of the bitmap that changed.
-				if (copiedPixels > 0) bitmap.AddDirtyRect(new System.Windows.Int32Rect(minX, minY, maxX - minX + 1, maxY - minY + 1));
-			} finally {
-				// Release the back buffer and make it available for display.
-				bitmap.Unlock();
 			}
+
+			PutAllPixels(destinationPixels);
+			if (cut) spriteSheet.frameSource.SetFramePixelData(frameInfo.Index, sourcePixels);
+
 			return copiedPixels;
 		}
 

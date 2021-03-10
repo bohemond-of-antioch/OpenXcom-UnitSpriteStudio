@@ -5,8 +5,8 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:UnitSpriteStudio"
 		mc:Ignorable="d"
-		Title="Mirrored directions Generator" 
-		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closed="Window_Closed" ResizeMode="CanMinimize">
+		Title="Frame cloning" 
+		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closed="Window_Closed" ResizeMode="CanMinimize" KeyUp="Window_KeyUp">
 	<Grid Name="BaseGrid">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
@@ -189,7 +189,7 @@
 			<CheckBox Name="CheckBoxActive" Grid.Column="0" Grid.Row="1" Margin="5,10,5,0" Click="CheckBoxActive_Click">Active</CheckBox>
 			<CheckBox Name="CheckBoxMirror" Grid.Column="0" Grid.Row="2" Margin="5,10,5,0" Click="CheckBoxMirror_Click">Mirror</CheckBox>
 			<CheckBox Name="CheckBoxFlip" Grid.Column="0" Grid.Row="3" Margin="5,0,5,0" Click="CheckBoxFlip_Click">Flip</CheckBox>
-			<CheckBox Name="CheckBoxChangeArms" Grid.Column="0" Grid.Row="4" Margin="5,10,5,5" Click="CheckBoxChangeArms_Click">Change arms</CheckBox>
+			<CheckBox Name="CheckBoxChangeArms" Grid.Column="0" Grid.Row="4" Margin="5,10,5,5" Click="CheckBoxChangeArms_Click">Swap mirrored layers</CheckBox>
 		</Grid>
 		<Grid Grid.Column="1" Grid.Row="1">
 			<Grid.ColumnDefinitions>

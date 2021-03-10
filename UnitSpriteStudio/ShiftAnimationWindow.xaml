@@ -1,0 +1,17 @@
+﻿<Window x:Class="UnitSpriteStudio.ShiftAnimationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UnitSpriteStudio"
+        mc:Ignorable="d"
+        Title="Shift Animation"
+		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closed="Window_Closed" ResizeMode="CanMinimize" KeyUp="Window_KeyUp">
+    <DockPanel LastChildFill="True">
+		<StackPanel Name="ToolControls" Orientation="Horizontal" DockPanel.Dock="Bottom">
+			<Button Click="ButtonGO_Click">GO!</Button>
+		</StackPanel>
+		<StackPanel Name="AnimationFrames" Orientation="Horizontal">
+		</StackPanel>
+	</DockPanel>
+</Window>

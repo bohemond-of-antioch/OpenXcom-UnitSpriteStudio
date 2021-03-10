@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="UnitSpriteStudio.FrameProcessing.InteractiveFrame"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 xmlns:local="clr-namespace:UnitSpriteStudio.FrameProcessing"
+			 mc:Ignorable="d" 
+			 d:DesignWidth="68" d:DesignHeight="88">
+	<Canvas Name="MainCanvas" Width="{Binding ActualWidth, ElementName=ImageFrame, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=ImageFrame, Mode=OneWay}" ClipToBounds="True">
+		<Rectangle Width="{Binding ActualWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Canvas}}}" Height="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Canvas}}}" Stroke="Black" StrokeThickness="3" />
+		<Image Name="ImageFrame" MouseDown="ImageFrame_MouseDown" MouseMove="ImageFrame_MouseMove" MouseUp="ImageFrame_MouseUp"  Margin="2" Stretch="Fill" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+		<Line Name="ReticleVertical" X1="0" Y1="0" X2="50" Y2="50" StrokeThickness="1" Stroke="White" Opacity="0.7" IsHitTestVisible="False"/>
+		<Line Name="ReticleHorizontal" X1="0" Y1="0" X2="50" Y2="50" StrokeThickness="1" Stroke="White" Opacity="0.7" IsHitTestVisible="False"/>
+		<Line Name="SecondaryReticleVertical" X1="0" Y1="0" X2="50" Y2="50" StrokeThickness="1" Stroke="LightCoral" Opacity="0.7" IsHitTestVisible="False"/>
+		<Line Name="SecondaryReticleHorizontal" X1="0" Y1="0" X2="50" Y2="50" StrokeThickness="1" Stroke="LightCoral" Opacity="0.7" IsHitTestVisible="False"/>
+	</Canvas>
+</UserControl>
