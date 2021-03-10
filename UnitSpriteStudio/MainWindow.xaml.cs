@@ -392,9 +392,7 @@ namespace UnitSpriteStudio {
 			return FileTitle;
 		}
 		private void SetWindowTitle() {
-			string Title = string.Format("{0} - UnitSprite Studio", GetTitleFilename());
-			if (!IsSaved) Title += "*";
-			this.Title = Title;
+			this.Title = string.Format("{0}{1} - UnitSprite Studio", GetTitleFilename(),IsSaved?"":"*");
 		}
 		private void SetFileModified() {
 			if (IsSaved) {

@@ -6,14 +6,14 @@
              xmlns:local="clr-namespace:UnitSpriteStudio"
              mc:Ignorable="d" Height="90" Width="90">
 	<Canvas>
-		<Button x:Name="buttonDirection0" Content="0" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="60" Canvas.Top="0" Click="buttonDirection0_Click"/>
-		<Button x:Name="buttonDirection1" Content="1" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="60" Canvas.Top="30" Click="buttonDirection1_Click"/>
-		<Button x:Name="buttonDirection2" Content="2" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="60" Canvas.Top="60" Click="buttonDirection2_Click"/>
-		<Button x:Name="buttonDirection3" Content="3" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="30" Canvas.Top="60" Click="buttonDirection3_Click"/>
-		<Button x:Name="buttonDirection4" Content="4" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="0" Canvas.Top="60" Click="buttonDirection4_Click"/>
-		<Button x:Name="buttonDirection5" Content="5" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="0" Canvas.Top="30" Click="buttonDirection5_Click"/>
-		<Button x:Name="buttonDirection6" Content="6" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="0" Canvas.Top="0" Click="buttonDirection6_Click"/>
-		<Button x:Name="buttonDirection7" Content="7" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="30" Canvas.Top="0" Click="buttonDirection7_Click"/>
+		<Button ToolTip="Numpad 9" x:Name="buttonDirection0" Content="0" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="60" Canvas.Top="0" Click="buttonDirection0_Click"/>
+		<Button ToolTip="Numpad 6" x:Name="buttonDirection1" Content="1" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="60" Canvas.Top="30" Click="buttonDirection1_Click"/>
+		<Button ToolTip="Numpad 3" x:Name="buttonDirection2" Content="2" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="60" Canvas.Top="60" Click="buttonDirection2_Click"/>
+		<Button ToolTip="Numpad 2" x:Name="buttonDirection3" Content="3" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="30" Canvas.Top="60" Click="buttonDirection3_Click"/>
+		<Button ToolTip="Numpad 1" x:Name="buttonDirection4" Content="4" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="0" Canvas.Top="60" Click="buttonDirection4_Click"/>
+		<Button ToolTip="Numpad 4" x:Name="buttonDirection5" Content="5" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="0" Canvas.Top="30" Click="buttonDirection5_Click"/>
+		<Button ToolTip="Numpad 7" x:Name="buttonDirection6" Content="6" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="0" Canvas.Top="0" Click="buttonDirection6_Click"/>
+		<Button ToolTip="Numpad 8" x:Name="buttonDirection7" Content="7" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Canvas.Left="30" Canvas.Top="0" Click="buttonDirection7_Click"/>
 
 	</Canvas>
 </UserControl>
