@@ -400,6 +400,10 @@ namespace UnitSpriteStudio {
 				SetWindowTitle();
 			}
 		}
+		private void SetFileSaved() {
+			IsSaved = true;
+			SetWindowTitle();
+		}
 
 		private bool ConfirmUnsavedFile() {
 			if (IsSaved) {
@@ -944,6 +948,7 @@ namespace UnitSpriteStudio {
 			saveFileDialog.Filter = "PNG Files|*.png|All Files|*.*";
 			if (saveFileDialog.ShowDialog() == true) {
 				spriteSheet.Save(saveFileDialog.FileName);
+				SetFileSaved();
 				return true;
 			} else {
 				return false;
@@ -954,6 +959,7 @@ namespace UnitSpriteStudio {
 				return SaveAs();
 			} else {
 				spriteSheet.Save();
+				SetFileSaved();
 				return true;
 			}
 		}
