@@ -639,6 +639,7 @@ namespace UnitSpriteStudio {
 			int PositionX, PositionY;
 			PositionX = (int)(e.GetPosition((IInputElement)sender).X / EditImageScale);
 			PositionY = (int)(e.GetPosition((IInputElement)sender).Y / EditImageScale);
+			if (PositionX < 0 || PositionY < 0 || PositionX >= selectedArea.SizeX || PositionY >= selectedArea.SizeY) return;
 
 			if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
 				if (toolPhase == EToolPhase.None) {
@@ -693,7 +694,9 @@ namespace UnitSpriteStudio {
 						} else {
 							byte ApplyColor = 0;
 							if (toolPhase == EToolPhase.None) {
-								undoSystem.RegisterUndoState();
+								undoSystem.BeginUndoBlock();
+								undoSystem.EndUndoBlock();
+								//undoSystem.RegisterUndoState();
 							}
 							toolPhase = EToolPhase.InProgress;
 							if (e.ChangedButton == MouseButton.Left) ApplyColor = ToolColorPalette.SelectedLeftColor;
@@ -713,6 +716,7 @@ namespace UnitSpriteStudio {
 			int PositionX, PositionY;
 			PositionX = (int)(e.GetPosition((IInputElement)sender).X / EditImageScale);
 			PositionY = (int)(e.GetPosition((IInputElement)sender).Y / EditImageScale);
+			if (PositionX < 0 || PositionY < 0 || PositionX >= selectedArea.SizeX || PositionY >= selectedArea.SizeY) return;
 
 			if (lastCursorPositionY != PositionY || lastCursorPositionX != PositionX) {
 				if (ToggleSmartLayer.IsEnabled && ToggleSmartLayer.IsChecked == true) {
@@ -799,6 +803,8 @@ namespace UnitSpriteStudio {
 			int PositionX, PositionY;
 			PositionX = (int)(e.GetPosition((IInputElement)sender).X / EditImageScale);
 			PositionY = (int)(e.GetPosition((IInputElement)sender).Y / EditImageScale);
+			if (PositionX < 0 || PositionY < 0 || PositionX >= selectedArea.SizeX || PositionY >= selectedArea.SizeY) return;
+
 			if (toolPhase == EToolPhase.MoveFloatingSelection) return;
 			switch (CursorTool) {
 				case ECursorTool.SelectPixels:

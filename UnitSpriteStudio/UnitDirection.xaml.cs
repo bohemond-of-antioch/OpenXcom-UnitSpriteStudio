@@ -26,7 +26,7 @@ namespace UnitSpriteStudio {
 		public UnitDirection() {
 			InitializeComponent();
 			normalBackground = buttonDirection0.Background;
-			selectedBackground = Brushes.AliceBlue;
+			selectedBackground = Brushes.CadetBlue;
 			UpdateButtons();
 		}
 		private void UpdateButtons() {
