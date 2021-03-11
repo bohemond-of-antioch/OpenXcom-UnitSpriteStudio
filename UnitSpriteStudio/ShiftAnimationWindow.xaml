@@ -9,7 +9,8 @@
 		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closed="Window_Closed" ResizeMode="CanMinimize" KeyUp="Window_KeyUp">
     <DockPanel LastChildFill="True">
 		<StackPanel Name="ToolControls" Orientation="Horizontal" DockPanel.Dock="Bottom">
-			<Button Click="ButtonGO_Click">GO!</Button>
+			<Button Margin="3" Click="ButtonGO_Click">GO!</Button>
+			<Button Margin="3" Click="ButtonGOAll_Click">GO For all layers!</Button>
 		</StackPanel>
 		<StackPanel Name="AnimationFrames" Orientation="Horizontal">
 		</StackPanel>

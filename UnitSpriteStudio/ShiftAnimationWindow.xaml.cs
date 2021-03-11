@@ -132,7 +132,7 @@ namespace UnitSpriteStudio {
 			((RenderTargetBitmap)targetBitmap).Render(drawingVisual);
 		}
 
-		private void ButtonGO_Click(object sender, RoutedEventArgs e) {
+		private void RunFrameShift(int[] layers) {
 			MainWindow.undoSystem.BeginUndoBlock();
 			var metadata = ApplicationWindow.GatherMetadata();
 			var drawingRoutine = ApplicationWindow.spriteSheet.drawingRoutine;
@@ -141,8 +141,8 @@ namespace UnitSpriteStudio {
 				int deltaX = frame.SecondaryReticlePosition.X - frame.ReticlePosition.X;
 				int deltaY = frame.SecondaryReticlePosition.Y - frame.ReticlePosition.Y;
 				metadata.AnimationFrame = frame.ID;
-				for (int l = 0; l < drawingRoutine.LayerNames().Length; l++) {
-					DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = drawingRoutine.GetLayerFrame(metadata, l);
+				for (int l = 0; l < layers.Length; l++) {
+					DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = drawingRoutine.GetLayerFrame(metadata, layers[l]);
 					byte[] originalPixels = frameSource.GetFramePixelData(frameInfo.Index);
 					byte[] shiftedPixels = new byte[originalPixels.Length];
 					for (int x = 0; x < 32; x++) {
@@ -162,6 +162,13 @@ namespace UnitSpriteStudio {
 			}
 			ApplicationWindow.FrameMetadataChanged();
 			MainWindow.undoSystem.EndUndoBlock();
+		}
+
+		private void ButtonGOAll_Click(object sender, RoutedEventArgs e) {
+			RunFrameShift(Enumerable.Range(0, ApplicationWindow.spriteSheet.drawingRoutine.LayerNames().Length).ToArray());
+		}
+		private void ButtonGO_Click(object sender, RoutedEventArgs e) {
+			RunFrameShift(new int[] { ApplicationWindow.ListBoxLayers.SelectedIndex });
 		}
 
 		private void Window_KeyUp(object sender, KeyEventArgs e) {

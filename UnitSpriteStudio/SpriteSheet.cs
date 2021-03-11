@@ -125,7 +125,7 @@ namespace UnitSpriteStudio {
 
 		internal void Save(string FileName = "") {
 			if (FileName.Equals("")) FileName = sourceFileName;
-
+			sourceFileName = FileName;
 			using (var stream = new FileStream(FileName, FileMode.Create)) {
 				PngBitmapEncoder encoder = frameSource.GetSpriteEncoder();
 				encoder.Save(stream);
