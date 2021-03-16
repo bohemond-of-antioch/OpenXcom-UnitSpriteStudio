@@ -77,6 +77,9 @@
       <DependentUpon>InteractiveFrame.xaml</DependentUpon>
     </Compile>
     <Compile Include="FrameProcessing\MirroredDirectionsOperation.cs" />
+    <Compile Include="HelpShortcuts.xaml.cs">
+      <DependentUpon>HelpShortcuts.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MirroredSpritesGenerator.xaml.cs">
       <DependentUpon>MirroredSpritesGenerator.xaml</DependentUpon>
     </Compile>
@@ -100,6 +103,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="FrameProcessing\InteractiveFrame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelpShortcuts.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -54,10 +54,10 @@ namespace UnitSpriteStudio {
 		private ECursorTool CursorTool = ECursorTool.Paint;
 
 		internal Selection selectedArea, futureSelectedArea;
+		private List<Point> lassoPoints;
 		private int selectionStartX, selectionStartY;
 		internal EToolPhase toolPhase;
 		private int lastCursorPositionX, lastCursorPositionY;
-		//private FloatingSelectionBitmap copyBuffer;
 
 		internal static UndoSystem undoSystem;
 
@@ -708,7 +708,11 @@ namespace UnitSpriteStudio {
 						break;
 					case ECursorTool.SelectLasso:
 						if (e.ChangedButton == MouseButton.Left) {
-							//toolPhase = EToolPhase.Started;
+							toolPhase = EToolPhase.Started;
+							selectionStartX = PositionX;
+							selectionStartY = PositionY;
+							lassoPoints = new List<Point>();
+							RefreshOverlayImage();
 						}
 						break;
 					case ECursorTool.SelectColors:
@@ -792,6 +796,19 @@ namespace UnitSpriteStudio {
 							}
 							break;
 						case ECursorTool.SelectLasso:
+							if (toolPhase == EToolPhase.Started || toolPhase == EToolPhase.InProgress) {
+								toolPhase = EToolPhase.InProgress;
+								Vector delta = new Vector(PositionX - lastCursorPositionX, PositionY - lastCursorPositionY);
+								Vector direction = delta;
+								direction.Normalize();
+								for (int f = 0; f < delta.Length; f++) {
+									futureSelectedArea.AddPoint(((int)(lastCursorPositionX + direction.X * f), (int)(lastCursorPositionY + direction.Y * f)));
+									lassoPoints.Add(new Point((int)(lastCursorPositionX + direction.X * f), (int)(lastCursorPositionY + direction.Y * f)));
+								}
+								futureSelectedArea.AddPoint((PositionX, PositionY));
+								lassoPoints.Add(new Point(PositionX, PositionY));
+								RefreshOverlayImage();
+							}
 							break;
 						case ECursorTool.SelectColors:
 							if (toolPhase == EToolPhase.Started || toolPhase == EToolPhase.InProgress) {
@@ -851,8 +868,48 @@ namespace UnitSpriteStudio {
 			switch (CursorTool) {
 				case ECursorTool.SelectPixels:
 					goto default;
-				case ECursorTool.SelectBox:
 				case ECursorTool.SelectLasso:
+					if (toolPhase == EToolPhase.InProgress || toolPhase == EToolPhase.Started) {
+						toolPhase = EToolPhase.None;
+
+						Vector delta = new Vector(selectionStartX - PositionX, selectionStartY - PositionY);
+						Vector direction = delta;
+						direction.Normalize();
+						for (int f = 0; f < delta.Length; f++) {
+							futureSelectedArea.AddPoint(((int)(PositionX + direction.X * f), (int)(PositionY + direction.Y * f)));
+							lassoPoints.Add(new Point((int)(PositionX + direction.X * f), (int)(PositionY + direction.Y * f)));
+						}
+						futureSelectedArea.AddPoint((selectionStartX, selectionStartY));
+						lassoPoints.Add(new Point(selectionStartX, selectionStartY));
+						for (int y = 0; y < futureSelectedArea.SizeY; y++) {
+							for (int x = 0; x < futureSelectedArea.SizeX; x++) {
+								if (futureSelectedArea.GetPoint((x, y))) continue;
+								int winding = 0;
+								int lastQuadrant = -1, currentQuadrant;
+								foreach (Point lassoPoint in lassoPoints) {
+									if (lassoPoint.X >= x && lassoPoint.Y >= y) {
+										currentQuadrant = 0;
+									} else if (lassoPoint.X < x && lassoPoint.Y >= y) {
+										currentQuadrant = 1;
+									} else if (lassoPoint.X < x && lassoPoint.Y < y) {
+										currentQuadrant = 2;
+									} else {
+										currentQuadrant = 3;
+									}
+									if (lastQuadrant == -1) lastQuadrant = currentQuadrant;
+									if (currentQuadrant != lastQuadrant) {
+										winding += (((lastQuadrant + 1) % 4) == currentQuadrant) ? 1 : -1;
+										lastQuadrant = currentQuadrant;
+									}
+
+								}
+								if (winding!=0) futureSelectedArea.AddPoint((x, y));
+							}
+						}
+						goto default;
+					}
+					break;
+				case ECursorTool.SelectBox:
 				case ECursorTool.SelectColors:
 				case ECursorTool.SelectArea:
 					if (toolPhase == EToolPhase.InProgress || toolPhase == EToolPhase.Started) {
@@ -1151,6 +1208,16 @@ namespace UnitSpriteStudio {
 					case Key.Subtract:
 						SliderFrame.Value = SliderFrame.Value == 0 ? SliderFrame.Maximum : SliderFrame.Value - 1;
 						break;
+					case Key.Divide:
+						ToolColorPalette.SelectedLeftColor--;
+						ToolColorPalette.UpdateMarkers();
+						ToolColorPalette_OnSelectedColorChanged();
+						break;
+					case Key.Multiply:
+						ToolColorPalette.SelectedLeftColor++;
+						ToolColorPalette.UpdateMarkers();
+						ToolColorPalette_OnSelectedColorChanged();
+						break;
 				}
 			}
 		}
@@ -1363,6 +1430,12 @@ namespace UnitSpriteStudio {
 					control.IsChecked = (tool == (ECursorTool)int.Parse((string)control.Tag));
 				}
 			}
+		}
+
+		private void MenuItemHelpShortcuts_Click(object sender, RoutedEventArgs e) {
+			HelpShortcuts helpWindow = new HelpShortcuts();
+			helpWindow.Owner = this;
+			helpWindow.Show();
 		}
 
 		private void ToggleCursorToolClicked(object sender, RoutedEventArgs e) {

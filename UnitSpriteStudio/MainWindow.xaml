@@ -9,6 +9,11 @@
 		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" KeyUp="Window_KeyUp" Closing="Window_Closing">
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
+			<Menu.ItemsPanel>
+				<ItemsPanelTemplate>
+					<DockPanel/>
+				</ItemsPanelTemplate>
+			</Menu.ItemsPanel>
 			<MenuItem Header="_File">
 				<MenuItem Header="_New"  >
 					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemNew_Click" Tag="0"/>
@@ -49,6 +54,10 @@
 				<MenuItem Header="_Frame cloning" Click="MenuItemFrameCloning_Click"/>
 				<MenuItem Header="_Shift animation" Click="MenuItemShiftAnimation_Click"/>
 			</MenuItem>
+			<MenuItem Header="_Help" HorizontalAlignment="Right" FlowDirection="RightToLeft">
+				<MenuItem Header="Shortcuts" Click="MenuItemHelpShortcuts_Click"/>
+			</MenuItem>
+				
 		</Menu>
 		<DockPanel LastChildFill = "True">
 			<StackPanel DockPanel.Dock="Top" VerticalAlignment="Top" Orientation="Horizontal">
