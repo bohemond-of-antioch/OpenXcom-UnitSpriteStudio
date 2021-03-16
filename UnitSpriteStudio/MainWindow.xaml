@@ -33,9 +33,17 @@
 				<Separator/>
 				<MenuItem Header="Cut"  InputGestureText="Ctrl+X" Click="MenuItemCut_Click"/>
 				<MenuItem Header="Copy"  InputGestureText="Ctrl+C" Click="MenuItemCopy_Click"/>
+				<MenuItem Header="Copy merged"  InputGestureText="Ctrl+Shift+C" Click="MenuItemCopyMerged_Click"/>
 				<MenuItem Header="Paste"  InputGestureText="Ctrl+V" Click="MenuItemPaste_Click"/>
+				<MenuItem Header="Smart merge" Click="MenuItemSmartMerge_Click"/>
 				<MenuItem Header="Fill"  InputGestureText="Ins" Click="MenuItemFill_Click"/>
 				<MenuItem Header="Delete"  InputGestureText="Del" Click="MenuItemDelete_Click"/>
+			</MenuItem>
+			<MenuItem Header="_Effects">
+				<MenuItem Header="Mirror" Click="SelectionMirror_Click"/>
+				<MenuItem Header="Flip" Click="SelectionFlip_Click"/>
+				<Separator/>
+				<MenuItem Header="Shade" Click="SelectionShade_Click"/>
 			</MenuItem>
 			<MenuItem Header="_Unit sprite">
 				<MenuItem Header="_Frame cloning" Click="MenuItemFrameCloning_Click"/>

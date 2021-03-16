@@ -108,8 +108,12 @@ namespace UnitSpriteStudio {
 				(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
 
 				lock (sprite) {
-					sprite.WritePixels(new System.Windows.Int32Rect(frameCoords.X + X, frameCoords.Y + Y, 1, 1), new byte[] { Color },1, 0);
-					imageSourceCache[FrameIndex] = new CroppedBitmap(sprite, new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40));
+					try {
+						sprite.WritePixels(new System.Windows.Int32Rect(frameCoords.X + X, frameCoords.Y + Y, 1, 1), new byte[] { Color }, 1, 0);
+						imageSourceCache[FrameIndex] = new CroppedBitmap(sprite, new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40));
+					} catch (Exception) {
+
+					}
 				}
 				OnChanged?.Invoke();
 			}

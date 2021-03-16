@@ -392,7 +392,7 @@ namespace UnitSpriteStudio {
 			return FileTitle;
 		}
 		private void SetWindowTitle() {
-			this.Title = string.Format("{0}{1} - UnitSprite Studio", GetTitleFilename(),IsSaved?"":"*");
+			this.Title = string.Format("{0}{1} - UnitSprite Studio", GetTitleFilename(), IsSaved ? "" : "*");
 		}
 		private void SetFileModified() {
 			if (IsSaved) {
@@ -433,6 +433,25 @@ namespace UnitSpriteStudio {
 				toolPhase = EToolPhase.None;
 			} else {
 				ImageFloatingSelection.Source = floatingSelection.bitmap;
+			}
+		}
+
+		private void CopyMergedSelection() {
+			FloatingSelectionBitmap copyBuffer = new FloatingSelectionBitmap(spriteSheet);
+			int f;
+			int copiedPixels = 0;
+			for (f = 0; f < spriteSheet.drawingRoutine.LayerNames().Length; f++) {
+				copiedPixels += copyBuffer.CopyPixels(selectedArea, spriteSheet, GatherMetadata(), f, false, true);
+			}
+			if (copiedPixels > 0) {
+				Clipboard.Clear();
+				DataObject data;
+				data = new DataObject();
+				data.SetData(DataFormats.Bitmap, copyBuffer.bitmap, true);
+				UnitSpriteStudioClipboardFormat clipboardObject = new UnitSpriteStudioClipboardFormat(copyBuffer);
+				data.SetData("UnitSpriteStudioClipboardFormat", clipboardObject, false);
+
+				Clipboard.SetDataObject(data, true);
 			}
 		}
 		private void CopySelection() {
@@ -632,6 +651,25 @@ namespace UnitSpriteStudio {
 				shiftX = (int)Canvas.GetLeft(ImageFloatingSelection) / EditImageScale;
 				shiftY = (int)Canvas.GetTop(ImageFloatingSelection) / EditImageScale;
 				floatingSelection.PastePixels(spriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex, shiftX, shiftY);
+				selectedArea.SetAll(false);
+				ResetFloatingSection();
+				RefreshOverlayImage();
+				toolPhase = EToolPhase.None;
+			}
+		}
+		private void SmartMergeFloatingSelection() {
+			if (toolPhase == EToolPhase.MoveFloatingSelection && spriteSheet.drawingRoutine.SmartLayerSupported() == DrawingRoutines.DrawingRoutine.SmartLayerType.HWP) {
+				undoSystem.RegisterUndoState();
+
+				int shiftX, shiftY;
+				shiftX = (int)Canvas.GetLeft(ImageFloatingSelection) / EditImageScale;
+				shiftY = (int)Canvas.GetTop(ImageFloatingSelection) / EditImageScale;
+
+				floatingSelection.PastePixels(spriteSheet, GatherMetadata(), 0, shiftX, shiftY, UnitSpriteStudio.Resources.HWPMaskTop);
+				floatingSelection.PastePixels(spriteSheet, GatherMetadata(), 1, shiftX, shiftY, UnitSpriteStudio.Resources.HWPMaskRight);
+				floatingSelection.PastePixels(spriteSheet, GatherMetadata(), 2, shiftX, shiftY, UnitSpriteStudio.Resources.HWPMaskLeft);
+				floatingSelection.PastePixels(spriteSheet, GatherMetadata(), 3, shiftX, shiftY, UnitSpriteStudio.Resources.HWPMaskCenter);
+
 				selectedArea.SetAll(false);
 				ResetFloatingSection();
 				RefreshOverlayImage();
@@ -1007,6 +1045,9 @@ namespace UnitSpriteStudio {
 			if ((e.Key == Key.C && KeyModifier(ModifierKeys.Control)) || (e.Key == Key.Insert && KeyModifier(ModifierKeys.Control))) {
 				CopySelection();
 			}
+			if ((e.Key == Key.C && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) || (e.Key == Key.Insert && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))) {
+				CopyMergedSelection();
+			}
 			if ((e.Key == Key.V && KeyModifier(ModifierKeys.Control)) || (e.Key == Key.Insert && KeyModifier(ModifierKeys.Shift))) {
 				PasteBuffer();
 			}
@@ -1135,9 +1176,16 @@ namespace UnitSpriteStudio {
 		private void MenuItemCopy_Click(object sender, RoutedEventArgs e) {
 			CopySelection();
 		}
+		private void MenuItemCopyMerged_Click(object sender, RoutedEventArgs e) {
+			CopyMergedSelection();
+		}
 
 		private void MenuItemPaste_Click(object sender, RoutedEventArgs e) {
 			PasteBuffer();
+		}
+
+		private void MenuItemSmartMerge_Click(object sender, RoutedEventArgs e) {
+			SmartMergeFloatingSelection();
 		}
 
 		private void MenuItemUndo_Click(object sender, RoutedEventArgs e) {
@@ -1296,6 +1344,18 @@ namespace UnitSpriteStudio {
 			}
 		}
 
+		private void SelectionMirror_Click(object sender, RoutedEventArgs e) {
+
+		}
+
+		private void SelectionFlip_Click(object sender, RoutedEventArgs e) {
+
+		}
+
+		private void SelectionShade_Click(object sender, RoutedEventArgs e) {
+			SelectionShade(ListBoxLayers.SelectedIndex);
+		}
+
 		private void SetTool(ECursorTool tool) {
 			CursorTool = tool;
 			foreach (var control in ToolBar.Children.OfType<System.Windows.Controls.Primitives.ToggleButton>()) {
@@ -1313,6 +1373,81 @@ namespace UnitSpriteStudio {
 		}
 
 		private void ToggleBackground_Click(object sender, RoutedEventArgs e) {
+			FrameMetadataChanged();
+		}
+
+		private void SelectionShade(int layer) {
+			MergeFloatingSelection();
+			undoSystem.RegisterUndoState();
+			DrawingRoutines.FrameMetadata metadata = GatherMetadata();
+			DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(metadata, layer);
+			float[,] distanceMap = new float[selectedArea.SizeX, selectedArea.SizeY];
+			float furthestEdge = 0;
+
+			for (int x = 0; x < selectedArea.SizeX; x++) {
+				for (int y = 0; y < selectedArea.SizeY; y++) {
+					if (selectedArea.GetPoint((x, y))) {
+						float nearestEdgeDistance = 0;
+						int ex, ey;
+						// Orthogonals
+						for (ex = x + 1; ex < selectedArea.SizeX && selectedArea.GetPoint((ex, y)); ex++) { }
+						nearestEdgeDistance = ex - x;
+						for (ex = x - 1; ex >= 0 && selectedArea.GetPoint((ex, y)); ex--) { }
+						nearestEdgeDistance = Math.Min(x - ex, nearestEdgeDistance);
+						for (ey = y + 1; ey < selectedArea.SizeY && selectedArea.GetPoint((x, ey)); ey++) { }
+						nearestEdgeDistance = Math.Min(ey - y, nearestEdgeDistance);
+						for (ey = y - 1; ey >= 0 && selectedArea.GetPoint((x, ey)); ey--) { }
+						nearestEdgeDistance = Math.Min(y - ey, nearestEdgeDistance);
+						// Diagonals
+						for (ex = x + 1, ey = y + 1; ex < selectedArea.SizeX && ey < selectedArea.SizeY && selectedArea.GetPoint((ex, ey)); ex++, ey++) { }
+						nearestEdgeDistance = Math.Min((float)Math.Sqrt((ex - x) * (ex - x) + (ey - y) * (ey - y)), nearestEdgeDistance);
+						for (ex = x - 1, ey = y + 1; ex >= 0 && ey < selectedArea.SizeY && selectedArea.GetPoint((ex, ey)); ex--, ey++) { }
+						nearestEdgeDistance = Math.Min((float)Math.Sqrt((x - ex) * (x - ex) + (ey - y) * (ey - y)), nearestEdgeDistance);
+						for (ex = x - 1, ey = y - 1; ex >= 0 && ey >= 0 && selectedArea.GetPoint((ex, ey)); ex--, ey--) { }
+						nearestEdgeDistance = Math.Min((float)Math.Sqrt((x - ex) * (x - ex) + (y - ey) * (y - ey)), nearestEdgeDistance);
+						for (ex = x + 1, ey = y - 1; ex < selectedArea.SizeX && ey >= 0 && selectedArea.GetPoint((ex, ey)); ex++, ey--) { }
+						nearestEdgeDistance = Math.Min((float)Math.Sqrt((ex - x) * (ex - x) + (y - ey) * (y - ey)), nearestEdgeDistance);
+
+						distanceMap[x, y] = nearestEdgeDistance;
+						if (furthestEdge < nearestEdgeDistance) furthestEdge = nearestEdgeDistance;
+					}
+				}
+			}
+
+			for (int x = 0; x < selectedArea.SizeX; x++) {
+				for (int y = 0; y < selectedArea.SizeY; y++) {
+					if (selectedArea.GetPoint((x, y))) {
+						distanceMap[x, y] = distanceMap[x, y] / furthestEdge;
+					}
+				}
+			}
+
+			byte[] pixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+			for (int x = 0; x < selectedArea.SizeX; x++) {
+				for (int y = 0; y < selectedArea.SizeY; y++) {
+					if (selectedArea.GetPoint((x, y))) {
+						int FrameX = x - frameInfo.OffsetX;
+						int FrameY = y - frameInfo.OffsetY;
+						if (FrameX < 0 || FrameY < 0 || FrameX >= 32 || FrameY >= 40) continue;
+
+						int brightnessShift;
+						//brightnessShift = (int)Math.Round(furthestEdge - distanceMap[x, y]); // Linear step 1
+						//brightnessShift = (int)Math.Round((1-distanceMap[x, y])*10); // Linear Normalized to 10
+						//brightnessShift = (int)Math.Round(((1 - distanceMap[x, y]) * (1 - distanceMap[x, y])) * 10); // Squared normalized to 10
+						//brightnessShift = (int)Math.Round(Math.Cos(distanceMap[x, y] * (Math.PI / 2)) * furthestEdge);
+						//brightnessShift = (int)Math.Round(Math.Sqrt((1-distanceMap[x, y])) * furthestEdge);
+						brightnessShift = (int)Math.Round(((1 - distanceMap[x, y]) * (1 - distanceMap[x, y])) * furthestEdge); // Squared normalized to furthestEdge
+
+						int newColor = pixels[FrameX + FrameY * 32];
+						if (newColor == 0) continue;
+						newColor = Math.Max(1, (newColor / 16) * 16); // Brightest color in the group
+						newColor = Math.Min(newColor + brightnessShift, ((newColor / 16) + 1) * 16 - 1);
+
+						pixels[FrameX + FrameY * 32] = (byte)newColor;
+					}
+				}
+			}
+			spriteSheet.frameSource.SetFramePixelData(frameInfo.Index, pixels);
 			FrameMetadataChanged();
 		}
 	}

@@ -29,22 +29,25 @@ namespace UnitSpriteStudio {
 			return pixels[0];
 		}
 
-		internal void PastePixels(SpriteSheet spriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer,int shiftX, int shiftY) {
+		internal void PastePixels(SpriteSheet spriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer, int shiftX, int shiftY, System.Drawing.Bitmap mask = null) {
 			byte[] pixels = new byte[bitmap.PixelWidth * bitmap.PixelHeight];
 			bitmap.CopyPixels(pixels, bitmap.BackBufferStride, 0);
-			for (int x=0;x<bitmap.PixelWidth;x++) {
+			for (int x = 0; x < bitmap.PixelWidth; x++) {
 				for (int y = 0; y < bitmap.PixelHeight; y++) {
 					byte colorIndex = pixels[x + y * bitmap.BackBufferStride];
-					if (colorIndex>0) spriteSheet.SetPixel(frameMetadata, layer, x + shiftX, y + shiftY, colorIndex);
+					if (colorIndex > 0) {
+						if (mask != null && mask.GetPixel(x, y).R <= 0) continue;
+						spriteSheet.SetPixel(frameMetadata, layer, x + shiftX, y + shiftY, colorIndex);
+					}
 				}
 			}
 		}
 
-		internal int CopyPixels(Selection selectedArea, SpriteSheet spriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer,bool cut=false) {
+		internal int CopyPixels(Selection selectedArea, SpriteSheet spriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer, bool cut = false, bool transparency = false) {
 			int x, y;
 			int copiedPixels = 0;
 			DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(frameMetadata, layer);
-			byte[] sourcePixels =spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+			byte[] sourcePixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
 			byte[] destinationPixels = GetAllPixels();
 
 			for (x = 0; x < selectedArea.SizeX; x++) {
@@ -56,7 +59,7 @@ namespace UnitSpriteStudio {
 						if (pointInSource.X < 0 || pointInSource.Y < 0 || pointInSource.X >= 32 || pointInSource.Y >= 40) continue;
 						copiedPixels++;
 						byte colorIndex = sourcePixels[pointInSource.X + pointInSource.Y * 32];
-
+						if (transparency && colorIndex == 0) continue; // Skip pixel if copying with transparency
 						destinationPixels[x + y * selectedArea.SizeX] = colorIndex;
 
 						if (cut) sourcePixels[pointInSource.X + pointInSource.Y * 32] = 0;
