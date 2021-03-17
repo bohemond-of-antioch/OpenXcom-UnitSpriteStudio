@@ -80,7 +80,11 @@ namespace UnitSpriteStudio {
 				(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
 				byte[] pixels = new byte[32 * 40];
 				lock (sprite) {
-					sprite.CopyPixels(new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40), pixels, 32, 0);
+					try {
+						sprite.CopyPixels(new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40), pixels, 32, 0);
+					} catch (Exception) {
+
+					}
 				}
 				return pixels;
 			}
@@ -90,15 +94,23 @@ namespace UnitSpriteStudio {
 				(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
 				byte[] pixels = new byte[1];
 				lock (sprite) {
-					sprite.CopyPixels(new System.Windows.Int32Rect(frameCoords.X + X, frameCoords.Y + Y, 1, 1), pixels, sprite.BackBufferStride, 0);
+					try {
+						sprite.CopyPixels(new System.Windows.Int32Rect(frameCoords.X + X, frameCoords.Y + Y, 1, 1), pixels, sprite.BackBufferStride, 0);
+					} catch (Exception) {
+
+					}
 				}
 				return pixels[0];
 			}
 			internal void SetFramePixelData(int FrameIndex, byte[] pixelData) {
 				(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
 				lock (sprite) {
-					sprite.WritePixels(new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40), pixelData, 32, 0);
-					imageSourceCache[FrameIndex] = new CroppedBitmap(sprite, new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40));
+					try {
+						sprite.WritePixels(new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40), pixelData, 32, 0);
+						imageSourceCache[FrameIndex] = new CroppedBitmap(sprite, new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40));
+					} catch (Exception) {
+
+					}
 				}
 				OnChanged?.Invoke();
 			}

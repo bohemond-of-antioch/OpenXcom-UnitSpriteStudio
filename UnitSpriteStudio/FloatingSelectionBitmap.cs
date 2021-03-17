@@ -52,7 +52,7 @@ namespace UnitSpriteStudio {
 
 			for (x = 0; x < selectedArea.SizeX; x++) {
 				for (y = 0; y < selectedArea.SizeY; y++) {
-					if (selectedArea.GetPoint((x, y))) {
+					if (selectedArea.GetPoint(x, y)) {
 						(int X, int Y) pointInSource;
 						pointInSource.X = x - frameInfo.OffsetX;
 						pointInSource.Y = y - frameInfo.OffsetY;

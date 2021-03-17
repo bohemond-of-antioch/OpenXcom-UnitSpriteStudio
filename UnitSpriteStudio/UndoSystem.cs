@@ -130,8 +130,10 @@ namespace UnitSpriteStudio {
 		}
 
 		internal void BeginUndoBlock() {
-			InsideUndoBlock = true;
-			PushUndoState(CaptureEntireSprite());
+			if (!InsideUndoBlock) {
+				InsideUndoBlock = true;
+				PushUndoState(CaptureEntireSprite());
+			}
 		}
 
 		internal void EndUndoBlock() {

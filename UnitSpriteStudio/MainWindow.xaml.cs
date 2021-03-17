@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Media.Media3D;
 
 namespace UnitSpriteStudio {
 	/// <summary>
@@ -198,23 +199,23 @@ namespace UnitSpriteStudio {
 			int x, y;
 			for (x = 0; x < selection.SizeX; x++) {
 				for (y = 0; y < selection.SizeY; y++) {
-					if (selection.GetPoint((x, y))) {
+					if (selection.GetPoint(x, y)) {
 						int originX = x * EditImageScale + shiftX;
 						int originY = y * EditImageScale + shiftY;
 
-						if (!selection.GetPoint((x - 1, y))) {
+						if (!selection.GetPoint(x - 1, y)) {
 							drawingContext.DrawLine(selectionPenWhite, new Point(originX, originY), new Point(originX, originY + EditImageScale));
 							drawingContext.DrawLine(selectionPenBlack, new Point(originX, originY), new Point(originX, originY + EditImageScale));
 						}
-						if (!selection.GetPoint((x + 1, y))) {
+						if (!selection.GetPoint(x + 1, y)) {
 							drawingContext.DrawLine(selectionPenWhite, new Point(originX + EditImageScale - 1, originY), new Point(originX + EditImageScale - 1, originY + EditImageScale));
 							drawingContext.DrawLine(selectionPenBlack, new Point(originX + EditImageScale - 1, originY), new Point(originX + EditImageScale - 1, originY + EditImageScale));
 						}
-						if (!selection.GetPoint((x, y - 1))) {
+						if (!selection.GetPoint(x, y - 1)) {
 							drawingContext.DrawLine(selectionPenWhite, new Point(originX, originY), new Point(originX + EditImageScale, originY));
 							drawingContext.DrawLine(selectionPenBlack, new Point(originX, originY), new Point(originX + EditImageScale, originY));
 						}
-						if (!selection.GetPoint((x, y + 1))) {
+						if (!selection.GetPoint(x, y + 1)) {
 							drawingContext.DrawLine(selectionPenWhite, new Point(originX, originY + EditImageScale - 1), new Point(originX + EditImageScale, originY + EditImageScale - 1));
 							drawingContext.DrawLine(selectionPenBlack, new Point(originX, originY + EditImageScale - 1), new Point(originX + EditImageScale, originY + EditImageScale - 1));
 						}
@@ -615,35 +616,35 @@ namespace UnitSpriteStudio {
 				(int X, int Y) checkPoint;
 
 				checkPoint = (point.X - 1, point.Y);
-				if (point.X > 0 && !newSelection.GetPoint(checkPoint) && pixels[(checkPoint.X) + (checkPoint.Y) * 32] == colorUnderCursor) {
+				if (point.X > 0 && !newSelection.GetPoint(checkPoint.X, checkPoint.Y) && pixels[(checkPoint.X) + (checkPoint.Y) * 32] == colorUnderCursor) {
 					newSelection.AddPoint(checkPoint);
 					head.Enqueue(checkPoint);
 				}
 				checkPoint = (point.X, point.Y - 1);
-				if (point.Y > 0 && !newSelection.GetPoint(checkPoint) && pixels[(checkPoint.X) + (checkPoint.Y) * 32] == colorUnderCursor) {
+				if (point.Y > 0 && !newSelection.GetPoint(checkPoint.X, checkPoint.Y) && pixels[(checkPoint.X) + (checkPoint.Y) * 32] == colorUnderCursor) {
 					newSelection.AddPoint(checkPoint);
 					head.Enqueue(checkPoint);
 				}
 				checkPoint = (point.X + 1, point.Y);
-				if (point.X < 31 && !newSelection.GetPoint(checkPoint) && pixels[(checkPoint.X) + (checkPoint.Y) * 32] == colorUnderCursor) {
+				if (point.X < 31 && !newSelection.GetPoint(checkPoint.X, checkPoint.Y) && pixels[(checkPoint.X) + (checkPoint.Y) * 32] == colorUnderCursor) {
 					newSelection.AddPoint(checkPoint);
 					head.Enqueue(checkPoint);
 				}
 				checkPoint = (point.X, point.Y + 1);
-				if (point.Y < 39 && !newSelection.GetPoint(checkPoint) && pixels[(checkPoint.X) + (checkPoint.Y) * 32] == colorUnderCursor) {
+				if (point.Y < 39 && !newSelection.GetPoint(checkPoint.X, checkPoint.Y) && pixels[(checkPoint.X) + (checkPoint.Y) * 32] == colorUnderCursor) {
 					newSelection.AddPoint(checkPoint);
 					head.Enqueue(checkPoint);
 				}
 			}
 			for (int x = 0; x < futureSelectedArea.SizeX; x++) {
 				for (int y = 0; y < futureSelectedArea.SizeY; y++) {
-					if (newSelection.GetPoint((x, y))) futureSelectedArea.AddPoint((x + frameInfo.OffsetX, y + frameInfo.OffsetY));
+					if (newSelection.GetPoint(x, y)) futureSelectedArea.AddPoint((x + frameInfo.OffsetX, y + frameInfo.OffsetY));
 				}
 			}
 			RefreshOverlayImage();
 		}
 
-		private void MergeFloatingSelection() {
+		internal void MergeFloatingSelection() {
 			if (toolPhase == EToolPhase.MoveFloatingSelection) {
 				undoSystem.RegisterUndoState();
 
@@ -883,7 +884,7 @@ namespace UnitSpriteStudio {
 						lassoPoints.Add(new Point(selectionStartX, selectionStartY));
 						for (int y = 0; y < futureSelectedArea.SizeY; y++) {
 							for (int x = 0; x < futureSelectedArea.SizeX; x++) {
-								if (futureSelectedArea.GetPoint((x, y))) continue;
+								if (futureSelectedArea.GetPoint(x, y)) continue;
 								int winding = 0;
 								int lastQuadrant = -1, currentQuadrant;
 								foreach (Point lassoPoint in lassoPoints) {
@@ -903,7 +904,7 @@ namespace UnitSpriteStudio {
 									}
 
 								}
-								if (winding!=0) futureSelectedArea.AddPoint((x, y));
+								if (winding != 0) futureSelectedArea.AddPoint((x, y));
 							}
 						}
 						goto default;
@@ -1293,7 +1294,7 @@ namespace UnitSpriteStudio {
 			byte[] pixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
 			for (int x = 0; x < selectedArea.SizeX; x++) {
 				for (int y = 0; y < selectedArea.SizeY; y++) {
-					if (selectedArea.GetPoint((x, y))) {
+					if (selectedArea.GetPoint(x, y)) {
 						int FrameX = x - frameInfo.OffsetX;
 						int FrameY = y - frameInfo.OffsetY;
 						if (FrameX < 0 || FrameY < 0 || FrameX >= 32 || FrameY >= 40) continue;
@@ -1420,7 +1421,9 @@ namespace UnitSpriteStudio {
 		}
 
 		private void SelectionShade_Click(object sender, RoutedEventArgs e) {
-			SelectionShade(ListBoxLayers.SelectedIndex);
+			ShadeWindow toolWindow = new ShadeWindow();
+			toolWindow.Owner = this;
+			toolWindow.Show();
 		}
 
 		private void SetTool(ECursorTool tool) {
@@ -1449,79 +1452,5 @@ namespace UnitSpriteStudio {
 			FrameMetadataChanged();
 		}
 
-		private void SelectionShade(int layer) {
-			MergeFloatingSelection();
-			undoSystem.RegisterUndoState();
-			DrawingRoutines.FrameMetadata metadata = GatherMetadata();
-			DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(metadata, layer);
-			float[,] distanceMap = new float[selectedArea.SizeX, selectedArea.SizeY];
-			float furthestEdge = 0;
-
-			for (int x = 0; x < selectedArea.SizeX; x++) {
-				for (int y = 0; y < selectedArea.SizeY; y++) {
-					if (selectedArea.GetPoint((x, y))) {
-						float nearestEdgeDistance = 0;
-						int ex, ey;
-						// Orthogonals
-						for (ex = x + 1; ex < selectedArea.SizeX && selectedArea.GetPoint((ex, y)); ex++) { }
-						nearestEdgeDistance = ex - x;
-						for (ex = x - 1; ex >= 0 && selectedArea.GetPoint((ex, y)); ex--) { }
-						nearestEdgeDistance = Math.Min(x - ex, nearestEdgeDistance);
-						for (ey = y + 1; ey < selectedArea.SizeY && selectedArea.GetPoint((x, ey)); ey++) { }
-						nearestEdgeDistance = Math.Min(ey - y, nearestEdgeDistance);
-						for (ey = y - 1; ey >= 0 && selectedArea.GetPoint((x, ey)); ey--) { }
-						nearestEdgeDistance = Math.Min(y - ey, nearestEdgeDistance);
-						// Diagonals
-						for (ex = x + 1, ey = y + 1; ex < selectedArea.SizeX && ey < selectedArea.SizeY && selectedArea.GetPoint((ex, ey)); ex++, ey++) { }
-						nearestEdgeDistance = Math.Min((float)Math.Sqrt((ex - x) * (ex - x) + (ey - y) * (ey - y)), nearestEdgeDistance);
-						for (ex = x - 1, ey = y + 1; ex >= 0 && ey < selectedArea.SizeY && selectedArea.GetPoint((ex, ey)); ex--, ey++) { }
-						nearestEdgeDistance = Math.Min((float)Math.Sqrt((x - ex) * (x - ex) + (ey - y) * (ey - y)), nearestEdgeDistance);
-						for (ex = x - 1, ey = y - 1; ex >= 0 && ey >= 0 && selectedArea.GetPoint((ex, ey)); ex--, ey--) { }
-						nearestEdgeDistance = Math.Min((float)Math.Sqrt((x - ex) * (x - ex) + (y - ey) * (y - ey)), nearestEdgeDistance);
-						for (ex = x + 1, ey = y - 1; ex < selectedArea.SizeX && ey >= 0 && selectedArea.GetPoint((ex, ey)); ex++, ey--) { }
-						nearestEdgeDistance = Math.Min((float)Math.Sqrt((ex - x) * (ex - x) + (y - ey) * (y - ey)), nearestEdgeDistance);
-
-						distanceMap[x, y] = nearestEdgeDistance;
-						if (furthestEdge < nearestEdgeDistance) furthestEdge = nearestEdgeDistance;
-					}
-				}
-			}
-
-			for (int x = 0; x < selectedArea.SizeX; x++) {
-				for (int y = 0; y < selectedArea.SizeY; y++) {
-					if (selectedArea.GetPoint((x, y))) {
-						distanceMap[x, y] = distanceMap[x, y] / furthestEdge;
-					}
-				}
-			}
-
-			byte[] pixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
-			for (int x = 0; x < selectedArea.SizeX; x++) {
-				for (int y = 0; y < selectedArea.SizeY; y++) {
-					if (selectedArea.GetPoint((x, y))) {
-						int FrameX = x - frameInfo.OffsetX;
-						int FrameY = y - frameInfo.OffsetY;
-						if (FrameX < 0 || FrameY < 0 || FrameX >= 32 || FrameY >= 40) continue;
-
-						int brightnessShift;
-						//brightnessShift = (int)Math.Round(furthestEdge - distanceMap[x, y]); // Linear step 1
-						//brightnessShift = (int)Math.Round((1-distanceMap[x, y])*10); // Linear Normalized to 10
-						//brightnessShift = (int)Math.Round(((1 - distanceMap[x, y]) * (1 - distanceMap[x, y])) * 10); // Squared normalized to 10
-						//brightnessShift = (int)Math.Round(Math.Cos(distanceMap[x, y] * (Math.PI / 2)) * furthestEdge);
-						//brightnessShift = (int)Math.Round(Math.Sqrt((1-distanceMap[x, y])) * furthestEdge);
-						brightnessShift = (int)Math.Round(((1 - distanceMap[x, y]) * (1 - distanceMap[x, y])) * furthestEdge); // Squared normalized to furthestEdge
-
-						int newColor = pixels[FrameX + FrameY * 32];
-						if (newColor == 0) continue;
-						newColor = Math.Max(1, (newColor / 16) * 16); // Brightest color in the group
-						newColor = Math.Min(newColor + brightnessShift, ((newColor / 16) + 1) * 16 - 1);
-
-						pixels[FrameX + FrameY * 32] = (byte)newColor;
-					}
-				}
-			}
-			spriteSheet.frameSource.SetFramePixelData(frameInfo.Index, pixels);
-			FrameMetadataChanged();
-		}
 	}
 }

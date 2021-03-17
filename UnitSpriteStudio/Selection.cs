@@ -60,9 +60,9 @@ namespace UnitSpriteStudio {
 			this.selectedPixels[index] = true;
 		}
 
-		public bool GetPoint((int X, int Y) point) {
-			if (point.X < 0 || point.X >= SizeX || point.Y < 0 || point.Y >= SizeY) return false;
-			return this.selectedPixels[point.X + point.Y * SizeX];
+		public bool GetPoint(int X, int Y) {
+			if (X < 0 || X >= SizeX || Y < 0 || Y >= SizeY) return false;
+			return this.selectedPixels[X + Y * SizeX];
 		}
 
 	}
