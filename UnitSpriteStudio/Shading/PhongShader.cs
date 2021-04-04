@@ -13,21 +13,22 @@ namespace UnitSpriteStudio.Shading {
 
 		// Settings
 		private Vector3D p_lightDirection;
-		public Vector3D LightDirection { 
+		public Vector3D LightDirection {
 			get { return p_lightDirection; }
-			set { p_lightDirection = value;p_lightDirection.Normalize(); }
+			set { p_lightDirection = value; p_lightDirection.Normalize(); }
 		}
 		Vector3D p_eyeDirection = new Vector3D(0, 0, 1);
 		public Vector3D EyeDirection {
 			get { return p_eyeDirection; }
 			set { p_eyeDirection = value; p_eyeDirection.Normalize(); }
 		}
-		public float DiffuseReflection=0.7f;
-		public float SpecularReflection=0.25f;
-		public double Shininess=2;
-		public float ShadeRange=16;
+		public float DiffuseReflection = 0.7f;
+		public float SpecularReflection = 0.25f;
+		public double Shininess = 2;
+		public float ShadeRange = 16;
+		public float AmbientDarkness = 0;
 
-		public PhongShader(Selection area,NormalMap normalMap,SpriteSheet spriteSheet) {
+		public PhongShader(Selection area, NormalMap normalMap, SpriteSheet spriteSheet) {
 			Area = area;
 			NormalMap = normalMap;
 			SpriteSheet = spriteSheet;
@@ -51,7 +52,7 @@ namespace UnitSpriteStudio.Shading {
 						//brightnessShift = (int)Math.Round(Math.Cos(distanceMap[x, y] * (Math.PI / 2)) * furthestEdge);
 						//brightnessShift = (int)Math.Round(Math.Sqrt((1-distanceMap[x, y])) * furthestEdge);
 						//brightnessShift = (int)Math.Round(((1 - distanceMap[x, y]) * (1 - distanceMap[x, y])) * furthestEdge); // Squared normalized to furthestEdge
-						float diffuse = (float)Vector3D.DotProduct(LightDirection, NormalMap.Map[x, y])*DiffuseReflection;
+						float diffuse = (float)Vector3D.DotProduct(LightDirection, NormalMap.Map[x, y]) * DiffuseReflection;
 						if (diffuse < 0) {
 							brightnessShift = 16;
 						} else {
@@ -59,9 +60,9 @@ namespace UnitSpriteStudio.Shading {
 							reflected.Normalize();
 							float specular = (float)Math.Pow(Vector3D.DotProduct(reflected, EyeDirection), Shininess) * SpecularReflection;
 							if (specular < 0) specular = 0;
-							brightnessShift = (int)Math.Round((1 - ((diffuse + specular)/(DiffuseReflection+SpecularReflection))) * ShadeRange);
+							brightnessShift = (int)Math.Round((1 - ((diffuse + specular) / (DiffuseReflection + SpecularReflection))) * ShadeRange + AmbientDarkness);
 						}
-						brightnessShift = Math.Max(0, brightnessShift);
+						brightnessShift = Math.Max(0, Math.Min(16, brightnessShift));
 
 						int newColor = pixels[FrameX + FrameY * 32];
 						if (newColor == 0) continue;

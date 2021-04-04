@@ -85,6 +85,7 @@ namespace UnitSpriteStudio {
 			MaterialShininess.Text = CurrentShader.Shininess.ToString(CultureInfo.InvariantCulture);
 			LabelShadeRange.Content = CurrentShader.ShadeRange.ToString(CultureInfo.InvariantCulture);
 			MaterialShadeRange.Value = CurrentShader.ShadeRange;
+			MaterialAmbientDarkness.Value = 16 - CurrentShader.AmbientDarkness;
 
 			LightDirection.SetValue(CurrentShader.LightDirection);
 			EyeDirection.SetValue(CurrentShader.EyeDirection);
@@ -105,6 +106,7 @@ namespace UnitSpriteStudio {
 			CurrentShader.SpecularReflection = (float)double.Parse(MaterialSpecular.Text, CultureInfo.InvariantCulture);
 			CurrentShader.Shininess = double.Parse(MaterialShininess.Text, CultureInfo.InvariantCulture);
 			CurrentShader.ShadeRange = (float)MaterialShadeRange.Value;
+			CurrentShader.AmbientDarkness = (float)(16 - MaterialAmbientDarkness.Value);
 
 			CurrentShader.LightDirection = LightDirection.GetValue();
 			CurrentShader.EyeDirection = EyeDirection.GetValue();
@@ -118,6 +120,10 @@ namespace UnitSpriteStudio {
 		private void MaterialShadeRange_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
 			LabelShadeRange.Content = MaterialShadeRange.Value.ToString(CultureInfo.InvariantCulture);
 			if (ActionAutoApply!=null && ActionAutoApply.IsChecked == true) Run();
+		}
+		private void MaterialAmbientDarkness_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+			LabelBrightness.Content = MaterialAmbientDarkness.Value.ToString(CultureInfo.InvariantCulture);
+			if (ActionAutoApply != null && ActionAutoApply.IsChecked == true) Run();
 		}
 
 		private void Direction_ValueChanged(System.Windows.Media.Media3D.Vector3D value) {
@@ -151,5 +157,6 @@ namespace UnitSpriteStudio {
 		private void SettingControl_TextChanged(object sender, TextChangedEventArgs e) {
 			if (ActionAutoApply != null && ActionAutoApply.IsChecked == true) Run();
 		}
+
 	}
 }

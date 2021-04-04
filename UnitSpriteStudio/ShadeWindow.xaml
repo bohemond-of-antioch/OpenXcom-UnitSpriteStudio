@@ -15,6 +15,7 @@
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="*"/>
+			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 		<GroupBox Header="Surface" Margin="2">
 			<Grid>
@@ -36,7 +37,7 @@
 				<TextBox TextChanged="SettingControl_TextChanged" Name="SurfaceHeightParameter" Width="40" Grid.Column="1" Grid.Row="3" IsUndoEnabled="False"/>
 			</Grid>
 		</GroupBox>
-		<GroupBox Header="Positions" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+		<GroupBox Header="Positions" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3">
 			<StackPanel>
 				<Label Content="Light"/>
 				<shading:VectorSetting x:Name="LightDirection" ValueChanged="Direction_ValueChanged" ValueChangeStart="Direction_ValueChangeStart" ValueChangeEnd="Direction_ValueChangeEnd"/>
@@ -54,8 +55,6 @@
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
-					<RowDefinition Height="*"/>
-					<RowDefinition Height="*"/>
 				</Grid.RowDefinitions>
 				<Label Content="Diffuse" Grid.Column="0" Grid.Row="0"/>
 				<TextBox TextChanged="SettingControl_TextChanged" Name="MaterialDiffuse" Width="40" Grid.Column="1" Grid.Row="0" IsUndoEnabled="False"/>
@@ -63,12 +62,29 @@
 				<TextBox TextChanged="SettingControl_TextChanged" Name="MaterialSpecular" Width="40" Grid.Column="1" Grid.Row="1" IsUndoEnabled="False"/>
 				<Label Content="Shininess" Grid.Column="0" Grid.Row="2"/>
 				<TextBox TextChanged="SettingControl_TextChanged" Name="MaterialShininess" Width="40" Grid.Column="1" Grid.Row="2" IsUndoEnabled="False"/>
-				<Label Content="Contrast" Grid.Column="0"  Grid.Row="3"/>
-				<Label Name="LabelShadeRange" Content="16" Grid.Column="1"  Grid.Row="3"/>
-				<Slider Name="MaterialShadeRange" ValueChanged="MaterialShadeRange_ValueChanged" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Maximum="16" Minimum="1" SmallChange="1" LargeChange="5" IsSnapToTickEnabled="True"/>
 			</Grid>
 		</GroupBox>
-		<GroupBox Header="Action" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2">
+		<GroupBox Header="Output" Grid.Column="0" Grid.Row="2">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<Label Content="Contrast" Grid.Column="0"  Grid.Row="0"/>
+				<Label Name="LabelShadeRange" Content="16" Grid.Column="1"  Grid.Row="0"/>
+				<Slider Name="MaterialShadeRange" ValueChanged="MaterialShadeRange_ValueChanged" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Maximum="16" Minimum="1" SmallChange="1" LargeChange="5" IsSnapToTickEnabled="True"/>
+				<Label Content="Brightness" Grid.Column="0"  Grid.Row="2"/>
+				<Label Name="LabelBrightness" Content="16" Grid.Column="1"  Grid.Row="2"/>
+				<Slider Name="MaterialAmbientDarkness" ValueChanged="MaterialAmbientDarkness_ValueChanged"  Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Maximum="16" SmallChange="1" LargeChange="5" IsSnapToTickEnabled="True"/>
+			</Grid>
+		</GroupBox>
+		<GroupBox Header="Action" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3">
 			<StackPanel Orientation="Horizontal">
 				<CheckBox Content="All layers" Margin="5" Name="ActionApplyToAllLayers"/>
 				<CheckBox Content="Auto apply" Margin="5" Name="ActionAutoApply" IsChecked="True"/>
@@ -78,6 +94,11 @@
 					<ListBox Name="ActionPresets">
 
 					</ListBox>
+				</StackPanel>
+				<StackPanel>
+					<Button>Add</Button>
+					<Button>Save</Button>
+					<Button>Delete</Button>
 				</StackPanel>
 			</StackPanel>
 		</GroupBox>
