@@ -61,7 +61,7 @@ namespace UnitSpriteStudio {
 			for (int l = 0; l < AffectedLayers.Length; l++) {
 				if (!UndoDisabled) MainWindow.undoSystem.RegisterUndoState();
 
-				DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = ApplicationWindow.spriteSheet.drawingRoutine.GetLayerFrame(metadata, l);
+				DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = ApplicationWindow.spriteSheet.drawingRoutine.GetLayerFrame(metadata, AffectedLayers[l]);
 				CurrentNormalMap.Generate();
 				CurrentShader.Shade(frameInfo);
 			}
