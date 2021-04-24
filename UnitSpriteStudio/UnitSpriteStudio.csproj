@@ -70,6 +70,7 @@
     <Compile Include="DrawingRoutines\DrawingRoutine.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineEthereal.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineSectopod.cs" />
+    <Compile Include="DrawingRoutines\DrawingRoutineMuton.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineSoldier.cs" />
     <Compile Include="DrawingRoutines\FrameMetadata.cs" />
     <Compile Include="FloatingSelectionBitmap.cs" />

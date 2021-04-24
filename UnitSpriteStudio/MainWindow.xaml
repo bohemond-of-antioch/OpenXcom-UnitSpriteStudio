@@ -19,12 +19,14 @@
 					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemNew_Click" Tag="0"/>
 					<MenuItem Header="Routine 4 - Civilian, Ethereal" Click="MenuItemNew_Click" Tag="4"/>
 					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemNew_Click" Tag="5"/>
+					<MenuItem Header="Routine 10 - Muton" Click="MenuItemNew_Click" Tag="10"/>
 				</MenuItem>
 
 				<MenuItem Header="_Open"  >
 					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemOpen_Click" Tag="0"/>
 					<MenuItem Header="Routine 4 - Civilian, Ethereal" Click="MenuItemOpen_Click" Tag="4"/>
 					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemOpen_Click" Tag="5"/>
+					<MenuItem Header="Routine 10 - Muton" Click="MenuItemOpen_Click" Tag="10"/>
 				</MenuItem>
 				<MenuItem Header="_Save" Click="MenuItemSave_Click" />
 				<MenuItem Header="_Save as..." Click="MenuItemSaveAs_Click" />

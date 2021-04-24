@@ -1002,6 +1002,9 @@ namespace UnitSpriteStudio {
 					case 5:
 						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSectopod());
 						break;
+					case 10:
+						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineMuton());
+						break;
 					default:
 						throw new Exception("Unsupported drawing routine.");
 				}
@@ -1026,6 +1029,9 @@ namespace UnitSpriteStudio {
 								break;
 							case 5:
 								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSectopod(), openFileDialog.FileName);
+								break;
+							case 10:
+								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineMuton(), openFileDialog.FileName);
 								break;
 							default:
 								throw new Exception("Unsupported drawing routine.");
