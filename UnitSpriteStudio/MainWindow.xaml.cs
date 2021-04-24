@@ -1132,6 +1132,10 @@ namespace UnitSpriteStudio {
 						selectedArea.SetAll(true);
 						RefreshOverlayImage();
 						break;
+					case Key.X:
+						Cut();
+						RefreshOverlayImage();
+						break;
 				}
 			}
 			if (KeyModifier(ModifierKeys.None)) {
