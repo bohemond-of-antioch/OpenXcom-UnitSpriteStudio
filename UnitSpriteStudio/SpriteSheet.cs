@@ -50,8 +50,13 @@ namespace UnitSpriteStudio {
 				return (sprite.PixelWidth, sprite.PixelHeight);
 			}
 
-			internal PngBitmapEncoder GetSpriteEncoder() {
+			internal PngBitmapEncoder GetPNGSpriteEncoder() {
 				PngBitmapEncoder encoder = new PngBitmapEncoder();
+				encoder.Frames.Add(BitmapFrame.Create(sprite));
+				return encoder;
+			}
+			internal GifBitmapEncoder GetGIFSpriteEncoder() {
+				GifBitmapEncoder encoder = new GifBitmapEncoder();
 				encoder.Frames.Add(BitmapFrame.Create(sprite));
 				return encoder;
 			}
@@ -142,8 +147,15 @@ namespace UnitSpriteStudio {
 		internal void Save(string FileName = "") {
 			if (FileName.Equals("")) FileName = sourceFileName;
 			sourceFileName = FileName;
+			BitmapEncoder encoder;
+			if (Path.GetExtension(FileName).Equals(".png", StringComparison.OrdinalIgnoreCase)) {
+				encoder = frameSource.GetPNGSpriteEncoder();
+			} else if (Path.GetExtension(FileName).Equals(".gif", StringComparison.OrdinalIgnoreCase)) {
+				encoder = frameSource.GetGIFSpriteEncoder();
+			} else {
+				throw new Exception("Unsupported file type!");
+			}
 			using (var stream = new FileStream(FileName, FileMode.Create)) {
-				PngBitmapEncoder encoder = frameSource.GetSpriteEncoder();
 				encoder.Save(stream);
 			}
 		}

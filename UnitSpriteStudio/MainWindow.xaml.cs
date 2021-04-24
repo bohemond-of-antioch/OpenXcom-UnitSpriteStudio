@@ -1015,7 +1015,7 @@ namespace UnitSpriteStudio {
 		private void MenuItemOpen_Click(object sender, RoutedEventArgs e) {
 			if (ConfirmUnsavedFile()) {
 				OpenFileDialog openFileDialog = new OpenFileDialog();
-				openFileDialog.Filter = "PNG Files|*.png|All Files|*.*";
+				openFileDialog.Filter = "PNG Files|*.png|GIF Files|*.gif|All Files|*.*";
 				if (openFileDialog.ShowDialog() == true) {
 					SpriteSheet openedSpriteSheet;
 					int DrawingRoutine = int.Parse((string)((MenuItem)sender).Tag);
@@ -1047,7 +1047,7 @@ namespace UnitSpriteStudio {
 
 		private bool SaveAs() {
 			SaveFileDialog saveFileDialog = new SaveFileDialog();
-			saveFileDialog.Filter = "PNG Files|*.png|All Files|*.*";
+			saveFileDialog.Filter = "PNG Files|*.png|GIF Files|*.gif|All Files|*.*";
 			if (saveFileDialog.ShowDialog() == true) {
 				spriteSheet.Save(saveFileDialog.FileName);
 				SetFileSaved();
