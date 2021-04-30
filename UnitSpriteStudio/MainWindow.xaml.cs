@@ -851,13 +851,13 @@ namespace UnitSpriteStudio {
 								} else {
 									break;
 								}
-									Vector delta = new Vector(PositionX - lastCursorPositionX, PositionY - lastCursorPositionY);
-									Vector direction = delta;
-									direction.Normalize();
-									var metadata = GatherMetadata();
-									for (int f = 0; f < delta.Length; f++) {
-										spriteSheet.SetPixel(metadata, ListBoxLayers.SelectedIndex, (int)(lastCursorPositionX + direction.X * f), (int)(lastCursorPositionY + direction.Y * f), ApplyColor);
-									}
+								Vector delta = new Vector(PositionX - lastCursorPositionX, PositionY - lastCursorPositionY);
+								Vector direction = delta;
+								direction.Normalize();
+								var metadata = GatherMetadata();
+								for (int f = 0; f < delta.Length; f++) {
+									spriteSheet.SetPixel(metadata, ListBoxLayers.SelectedIndex, (int)(lastCursorPositionX + direction.X * f), (int)(lastCursorPositionY + direction.Y * f), ApplyColor);
+								}
 								spriteSheet.SetPixel(GatherMetadata(), ListBoxLayers.SelectedIndex, PositionX, PositionY, ApplyColor);
 								RefreshCompositeImage();
 							}
@@ -1018,6 +1018,9 @@ namespace UnitSpriteStudio {
 					case 10:
 						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineMuton());
 						break;
+					case -1:
+						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSingleFrame());
+						break;
 					default:
 						throw new Exception("Unsupported drawing routine.");
 				}
@@ -1048,6 +1051,12 @@ namespace UnitSpriteStudio {
 								break;
 							case 10:
 								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineMuton(), openFileDialog.FileName);
+								break;
+							case -1: {
+									var singleFrameRoutine = new DrawingRoutines.DrawingRoutineSingleFrame();
+									openedSpriteSheet = new SpriteSheet(singleFrameRoutine, openFileDialog.FileName);
+									singleFrameRoutine.SetSize(openedSpriteSheet.frameSource.GetSize().Width, openedSpriteSheet.frameSource.GetSize().Height);
+								}
 								break;
 							default:
 								throw new Exception("Unsupported drawing routine.");

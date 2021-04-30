@@ -68,6 +68,7 @@
       <DependentUpon>ColorPalette.xaml</DependentUpon>
     </Compile>
     <Compile Include="DrawingRoutines\DrawingRoutine.cs" />
+    <Compile Include="DrawingRoutines\DrawingRoutineSingleFrame.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineEthereal.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineSectopod.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineMuton.cs" />

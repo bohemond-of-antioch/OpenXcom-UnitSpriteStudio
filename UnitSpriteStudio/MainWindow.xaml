@@ -21,6 +21,7 @@
 					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemNew_Click" Tag="5"/>
 					<MenuItem Header="Routine 6 - Snakeman" Click="MenuItemNew_Click" Tag="6"/>
 					<MenuItem Header="Routine 10 - Muton" Click="MenuItemNew_Click" Tag="10"/>
+					<MenuItem Header="Single frame" Click="MenuItemNew_Click" Tag="-1"/>
 				</MenuItem>
 
 				<MenuItem Header="_Open"  >
@@ -29,6 +30,7 @@
 					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemOpen_Click" Tag="5"/>
 					<MenuItem Header="Routine 6 - Snakeman" Click="MenuItemOpen_Click" Tag="6"/>
 					<MenuItem Header="Routine 10 - Muton" Click="MenuItemOpen_Click" Tag="10"/>
+					<MenuItem Header="Single frame" Click="MenuItemOpen_Click" Tag="-1"/>
 				</MenuItem>
 				<MenuItem Header="_Save" Click="MenuItemSave_Click" />
 				<MenuItem Header="_Save as..." Click="MenuItemSaveAs_Click" />
