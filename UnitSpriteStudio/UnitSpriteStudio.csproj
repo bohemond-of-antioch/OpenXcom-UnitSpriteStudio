@@ -71,6 +71,7 @@
     <Compile Include="DrawingRoutines\DrawingRoutineEthereal.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineSectopod.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineMuton.cs" />
+    <Compile Include="DrawingRoutines\DrawingRoutineSnakeman.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineSoldier.cs" />
     <Compile Include="DrawingRoutines\FrameMetadata.cs" />
     <Compile Include="FloatingSelectionBitmap.cs" />
@@ -83,6 +84,21 @@
     </Compile>
     <Compile Include="MirroredSpritesGenerator.xaml.cs">
       <DependentUpon>MirroredSpritesGenerator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PixelOperationsWindow.xaml.cs">
+      <DependentUpon>PixelOperationsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PixelOperations\ChangeColorGroupOperation.cs" />
+    <Compile Include="PixelOperations\ColorGroupBrightnessOperation.cs" />
+    <Compile Include="PixelOperations\ColorGroupBrightnessWindow.xaml.cs">
+      <DependentUpon>ColorGroupBrightnessWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PixelOperations\ChangeColorGroupWindow.xaml.cs">
+      <DependentUpon>ChangeColorGroupWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PixelOperations\PixelOperation.cs" />
+    <Compile Include="PixelOperations\SelectColorGroup.xaml.cs">
+      <DependentUpon>SelectColorGroup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -132,6 +148,22 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="MirroredSpritesGenerator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PixelOperationsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PixelOperations\ColorGroupBrightnessWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PixelOperations\ChangeColorGroupWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PixelOperations\SelectColorGroup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -235,6 +267,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\HWPMaskTop.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Pen.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

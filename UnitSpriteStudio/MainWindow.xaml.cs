@@ -63,6 +63,7 @@ namespace UnitSpriteStudio {
 		internal static UndoSystem undoSystem;
 
 		public event Action OnMetadataChanged;
+		public event Action<byte> OnPippeteUsed;
 
 		private bool IsSaved = true;
 		public MainWindow() {
@@ -738,6 +739,7 @@ namespace UnitSpriteStudio {
 							if (e.ChangedButton == MouseButton.Right) ToolColorPalette.SelectedRightColor = ColorUnderCursor;
 							ToolColorPalette.UpdateMarkers();
 							ToolColorPalette_OnSelectedColorChanged();
+							OnPippeteUsed?.Invoke(ColorUnderCursor);
 						} else {
 							byte ApplyColor = 0;
 							if (toolPhase == EToolPhase.None) {
@@ -837,6 +839,7 @@ namespace UnitSpriteStudio {
 								}
 								ToolColorPalette.UpdateMarkers();
 								ToolColorPalette_OnSelectedColorChanged();
+								OnPippeteUsed?.Invoke(ColorUnderCursor);
 							} else {
 								byte ApplyColor;
 								if (e.LeftButton == MouseButtonState.Pressed) {
@@ -848,6 +851,13 @@ namespace UnitSpriteStudio {
 								} else {
 									break;
 								}
+									Vector delta = new Vector(PositionX - lastCursorPositionX, PositionY - lastCursorPositionY);
+									Vector direction = delta;
+									direction.Normalize();
+									var metadata = GatherMetadata();
+									for (int f = 0; f < delta.Length; f++) {
+										spriteSheet.SetPixel(metadata, ListBoxLayers.SelectedIndex, (int)(lastCursorPositionX + direction.X * f), (int)(lastCursorPositionY + direction.Y * f), ApplyColor);
+									}
 								spriteSheet.SetPixel(GatherMetadata(), ListBoxLayers.SelectedIndex, PositionX, PositionY, ApplyColor);
 								RefreshCompositeImage();
 							}
@@ -1002,6 +1012,9 @@ namespace UnitSpriteStudio {
 					case 5:
 						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSectopod());
 						break;
+					case 6:
+						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSnakeman());
+						break;
 					case 10:
 						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineMuton());
 						break;
@@ -1029,6 +1042,9 @@ namespace UnitSpriteStudio {
 								break;
 							case 5:
 								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSectopod(), openFileDialog.FileName);
+								break;
+							case 6:
+								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSnakeman(), openFileDialog.FileName);
 								break;
 							case 10:
 								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineMuton(), openFileDialog.FileName);
@@ -1443,6 +1459,12 @@ namespace UnitSpriteStudio {
 					control.IsChecked = (tool == (ECursorTool)int.Parse((string)control.Tag));
 				}
 			}
+		}
+
+		private void MenuItemPixelOperations_Click(object sender, RoutedEventArgs e) {
+			PixelOperationsWindow pixelOperationsWindow = new PixelOperationsWindow();
+			pixelOperationsWindow.Owner = this;
+			pixelOperationsWindow.Show();
 		}
 
 		private void MenuItemHelpShortcuts_Click(object sender, RoutedEventArgs e) {

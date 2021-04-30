@@ -1,0 +1,40 @@
+﻿<Window x:Class="UnitSpriteStudio.PixelOperations.ChangeColorGroupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UnitSpriteStudio.PixelOperations"
+        mc:Ignorable="d"
+        Title="Change Color Group" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" ResizeMode="NoResize" KeyUp="Window_KeyUp" Activated="Window_Activated">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="50"/>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="50"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		<GroupBox Header="From"  Grid.Column="0" Grid.Row="0" Margin="2">
+			<local:SelectColorGroup x:Name="SourceColorGroup" Width="15" Height="240"/>
+		</GroupBox>
+		<StackPanel Grid.Column="1" Grid.Row="0" Width="60"></StackPanel>
+		<GroupBox Header="To"  Grid.Column="2" Grid.Row="0" Margin="2">
+			<local:SelectColorGroup x:Name="DestinationColorGroup" Width="15" Height="240"/>
+		</GroupBox>
+		<Canvas IsHitTestVisible="False" Name="CanvasLinks" Panel.ZIndex="10" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
+			<Path Name="Link" Canvas.Top="20" Canvas.Left="25" Stroke="#FF8FDC6B" StrokeThickness="3">
+				<Path.Data>
+					<PathGeometry>
+						<PathFigure>
+							<BezierSegment x:Name="LinkBezier" Point1="20,-20" Point2="180,-20" Point3="105,0"/>
+						</PathFigure>
+					</PathGeometry>
+				</Path.Data>
+			</Path>
+		</Canvas>
+		<Button Name="ButtonAdd" Click="ButtonAdd_Click" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1">Add Operation</Button>
+		<Button Name="ButtonUpdate" Click="ButtonUpdate_Click"  Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Visibility="Hidden">Update</Button>
+	</Grid>
+</Window>

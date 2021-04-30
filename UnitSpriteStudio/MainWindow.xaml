@@ -19,6 +19,7 @@
 					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemNew_Click" Tag="0"/>
 					<MenuItem Header="Routine 4 - Civilian, Ethereal" Click="MenuItemNew_Click" Tag="4"/>
 					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemNew_Click" Tag="5"/>
+					<MenuItem Header="Routine 6 - Snakeman" Click="MenuItemNew_Click" Tag="6"/>
 					<MenuItem Header="Routine 10 - Muton" Click="MenuItemNew_Click" Tag="10"/>
 				</MenuItem>
 
@@ -26,6 +27,7 @@
 					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemOpen_Click" Tag="0"/>
 					<MenuItem Header="Routine 4 - Civilian, Ethereal" Click="MenuItemOpen_Click" Tag="4"/>
 					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemOpen_Click" Tag="5"/>
+					<MenuItem Header="Routine 6 - Snakeman" Click="MenuItemOpen_Click" Tag="6"/>
 					<MenuItem Header="Routine 10 - Muton" Click="MenuItemOpen_Click" Tag="10"/>
 				</MenuItem>
 				<MenuItem Header="_Save" Click="MenuItemSave_Click" />
@@ -55,6 +57,7 @@
 			<MenuItem Header="_Unit sprite">
 				<MenuItem Header="_Frame cloning" Click="MenuItemFrameCloning_Click"/>
 				<MenuItem Header="_Shift animation" Click="MenuItemShiftAnimation_Click"/>
+				<MenuItem Header="_Pixel operations" Click="MenuItemPixelOperations_Click"/>
 			</MenuItem>
 			<MenuItem Header="_Help" HorizontalAlignment="Right" FlowDirection="RightToLeft">
 				<MenuItem Header="Shortcuts" Click="MenuItemHelpShortcuts_Click"/>

@@ -8,11 +8,23 @@
         Title="Shortcuts" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
 	<StackPanel>
 		<Label FontSize="20">Colour palette</Label>
-		<Label>/  Lighter colour</Label>
-		<Label>*  Darker colour</Label>
+		<Label>Lighter colour: /</Label>
+		<Label>Darker colour: *</Label>
+		<Label>Shift colour for all layers: Shift-Click</Label>
 		<Label FontSize="20">Animation</Label>
-		<Label>-  Previous frame</Label>
-		<Label>+  Next frame</Label>
+		<Label>Previous frame: -</Label>
+		<Label>Next frame: +</Label>
+		<Label FontSize="20">Global</Label>
+		<Label>Change unit direction: Numpad 1 to 9</Label>
+		<Label FontSize="20">Tools</Label>
+		<Label>Paint: B</Label>
+		<Label>Pixel Selection: A</Label>
+		<Label>Box Selection: S</Label>
+		<Label>Lasso Selection: D</Label>
+		<Label>Color Selection: F</Label>
+		<Label>Area Selection: G</Label>
+		<Label>Checkered background: Ctrl+B</Label>
+		<Label>Grid: Ctrl+G</Label>
 
 	</StackPanel>
 </Window>
