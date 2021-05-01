@@ -90,7 +90,7 @@
 				<StackPanel Margin="5,0,0,0">
 					<Label Content="Layer"  VerticalAlignment="Top" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
 					<ListBox ToolTip="Select the layer to work with (Shortcut: 1...n)" Name="ListBoxLayers" IsSynchronizedWithCurrentItem="True" SelectionChanged="ListBoxLayers_SelectionChanged" IsTextSearchEnabled="False" />
-					<CheckBox Name="CheckBoxHighlightLayer" Margin="0,5,5,0" Click="CheckBoxHighlightLayer_Click">Highlight layer</CheckBox>
+					<CheckBox Name="CheckBoxHighlightLayer" Margin="0,5,5,0" Click="CheckBoxHighlightLayer_Click" Focusable="False">Highlight layer</CheckBox>
 					<Slider Name="SliderHighlightPower" Minimum="0" Maximum="255" SmallChange="1" LargeChange="20" IsSnapToTickEnabled="True" Value="100" ValueChanged="SliderHighlightPower_ValueChanged"/>
 				</StackPanel>
 			</StackPanel>

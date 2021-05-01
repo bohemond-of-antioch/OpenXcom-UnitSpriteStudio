@@ -91,14 +91,16 @@
 				<Button Content="Apply" Margin="1" Click="ButtonApply_Click"/>
 				<StackPanel>
 					<Label Content="Presets"/>
-					<ListBox Name="ActionPresets">
+					<ListBox Name="ListPresets">
 
 					</ListBox>
 				</StackPanel>
 				<StackPanel>
-					<Button>Add</Button>
-					<Button>Save</Button>
-					<Button>Delete</Button>
+					<TextBox Name="TextBoxPresetName" Width="60"/>
+					<Button Click="ButtonPresetAdd_Click">Add</Button>
+					<Button Click="ButtonPresetSave_Click">Save</Button>
+					<Button Click="ButtonPresetLoad_Click">Load</Button>
+					<Button Click="ButtonPresetDelete_Click">Delete</Button>
 				</StackPanel>
 			</StackPanel>
 		</GroupBox>

@@ -112,6 +112,7 @@
     </Compile>
     <Compile Include="Shading\NormalMap.cs" />
     <Compile Include="Shading\PhongShader.cs" />
+    <Compile Include="Shading\ShaderPreset.cs" />
     <Compile Include="Shading\VectorSetting.xaml.cs">
       <DependentUpon>VectorSetting.xaml</DependentUpon>
     </Compile>

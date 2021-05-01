@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using UnitSpriteStudio.Shading;
+
 
 namespace UnitSpriteStudio {
 	/// <summary>
@@ -35,7 +28,11 @@ namespace UnitSpriteStudio {
 			CurrentNormalMap = new NormalMap(ApplicationWindow.selectedArea);
 			CurrentShader = new PhongShader(ApplicationWindow.selectedArea, CurrentNormalMap, ApplicationWindow.spriteSheet);
 
-
+			string[] presetFiles =System.IO.Directory.GetFiles(System.IO.Directory.GetCurrentDirectory(), "*.ShaderPreset");
+			foreach (var filePath in presetFiles) {
+				ShaderPreset preset =ShaderPreset.ReadFromBinaryFile(filePath);
+				ListPresets.Items.Add(preset);
+			}
 
 			UpdateControls();
 			Initialization = false;
@@ -119,7 +116,7 @@ namespace UnitSpriteStudio {
 
 		private void MaterialShadeRange_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
 			LabelShadeRange.Content = MaterialShadeRange.Value.ToString(CultureInfo.InvariantCulture);
-			if (ActionAutoApply!=null && ActionAutoApply.IsChecked == true) Run();
+			if (ActionAutoApply != null && ActionAutoApply.IsChecked == true) Run();
 		}
 		private void MaterialAmbientDarkness_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
 			LabelBrightness.Content = MaterialAmbientDarkness.Value.ToString(CultureInfo.InvariantCulture);
@@ -156,6 +153,37 @@ namespace UnitSpriteStudio {
 
 		private void SettingControl_TextChanged(object sender, TextChangedEventArgs e) {
 			if (ActionAutoApply != null && ActionAutoApply.IsChecked == true) Run();
+		}
+
+		private void ButtonPresetAdd_Click(object sender, RoutedEventArgs e) {
+			ApplySettingsFromControls();
+			var newPreset = new ShaderPreset(TextBoxPresetName.Text, CurrentNormalMap, CurrentShader);
+			ListPresets.Items.Add(newPreset);
+			ShaderPreset.WriteToBinaryFile(string.Format("{0}.ShaderPreset", TextBoxPresetName.Text), newPreset);
+		}
+		private void ButtonPresetSave_Click(object sender, RoutedEventArgs e) {
+			if (ListPresets.SelectedIndex == -1) return;
+			ApplySettingsFromControls();
+			var newPreset = new ShaderPreset(TextBoxPresetName.Text, CurrentNormalMap, CurrentShader);
+			ListPresets.Items[ListPresets.SelectedIndex] = newPreset;
+			ShaderPreset.WriteToBinaryFile(string.Format("{0}.ShaderPreset", TextBoxPresetName.Text), newPreset);
+		}
+
+		private void ButtonPresetLoad_Click(object sender, RoutedEventArgs e) {
+			if (ListPresets.SelectedIndex == -1) return;
+			ShaderPreset preset = (ShaderPreset)ListPresets.SelectedItem;
+			TextBoxPresetName.Text = preset.Name;
+			preset.Apply(CurrentNormalMap, CurrentShader);
+			Initialization = true;
+			UpdateControls();
+			Initialization = false;
+			if (ActionAutoApply != null && ActionAutoApply.IsChecked == true) Run();
+		}
+
+		private void ButtonPresetDelete_Click(object sender, RoutedEventArgs e) {
+			if (ListPresets.SelectedIndex == -1) return;
+			System.IO.File.Delete(string.Format("{0}.ShaderPreset", ListPresets.SelectedItem));
+			ListPresets.Items.RemoveAt(ListPresets.SelectedIndex);
 		}
 
 	}
