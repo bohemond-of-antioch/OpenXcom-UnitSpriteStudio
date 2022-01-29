@@ -38,12 +38,13 @@ namespace UnitSpriteStudio.Shading {
 
 		internal void Shade(DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo) {
 			byte[] pixels = SpriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+			(int Width, int Height) frameSize = SpriteSheet.drawingRoutine.FrameImageSize();
 			for (int x = 0; x < Area.SizeX; x++) {
 				for (int y = 0; y < Area.SizeY; y++) {
 					if (Area.GetPoint(x, y)) {
 						int FrameX = x - frameInfo.OffsetX;
 						int FrameY = y - frameInfo.OffsetY;
-						if (FrameX < 0 || FrameY < 0 || FrameX >= 32 || FrameY >= 40) continue;
+						if (FrameX < 0 || FrameY < 0 || FrameX >= frameSize.Width || FrameY >= frameSize.Height) continue;
 
 						int brightnessShift;
 						//brightnessShift = (int)Math.Round(furthestEdge - distanceMap[x, y]); // Linear step 1
@@ -64,12 +65,12 @@ namespace UnitSpriteStudio.Shading {
 						}
 						brightnessShift = Math.Max(0, Math.Min(16, brightnessShift));
 
-						int newColor = pixels[FrameX + FrameY * 32];
+						int newColor = pixels[FrameX + FrameY * frameSize.Width];
 						if (newColor == 0) continue;
 						newColor = Math.Max(1, (newColor / 16) * 16); // Brightest color in the group
 						newColor = Math.Min(newColor + brightnessShift, ((newColor / 16) + 1) * 16 - 1);
 
-						pixels[FrameX + FrameY * 32] = (byte)newColor;
+						pixels[FrameX + FrameY * frameSize.Width] = (byte)newColor;
 					}
 				}
 			}

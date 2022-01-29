@@ -17,6 +17,7 @@
 			<MenuItem Header="_File">
 				<MenuItem Header="_New"  >
 					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemNew_Click" Tag="0"/>
+					<MenuItem Header="Routine 1 - Floater" Click="MenuItemNew_Click" Tag="1"/>
 					<MenuItem Header="Routine 4 - Civilian, Ethereal" Click="MenuItemNew_Click" Tag="4"/>
 					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemNew_Click" Tag="5"/>
 					<MenuItem Header="Routine 6 - Snakeman" Click="MenuItemNew_Click" Tag="6"/>
@@ -26,6 +27,7 @@
 
 				<MenuItem Header="_Open"  >
 					<MenuItem Header="Routine 0 - Soldier, Sectoid" Click="MenuItemOpen_Click" Tag="0"/>
+					<MenuItem Header="Routine 1 - Floater" Click="MenuItemOpen_Click" Tag="1"/>
 					<MenuItem Header="Routine 4 - Civilian, Ethereal" Click="MenuItemOpen_Click" Tag="4"/>
 					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemOpen_Click" Tag="5"/>
 					<MenuItem Header="Routine 6 - Snakeman" Click="MenuItemOpen_Click" Tag="6"/>
@@ -90,7 +92,7 @@
 				<StackPanel Margin="5,0,0,0">
 					<Label Content="Layer"  VerticalAlignment="Top" DockPanel.Dock="Top" HorizontalAlignment="Left"/>
 					<ListBox ToolTip="Select the layer to work with (Shortcut: 1...n)" Name="ListBoxLayers" IsSynchronizedWithCurrentItem="True" SelectionChanged="ListBoxLayers_SelectionChanged" IsTextSearchEnabled="False" />
-					<CheckBox Name="CheckBoxHighlightLayer" Margin="0,5,5,0" Click="CheckBoxHighlightLayer_Click">Highlight layer</CheckBox>
+					<CheckBox Name="CheckBoxHighlightLayer" Margin="0,5,5,0" Click="CheckBoxHighlightLayer_Click" Focusable="False">Highlight layer</CheckBox>
 					<Slider Name="SliderHighlightPower" Minimum="0" Maximum="255" SmallChange="1" LargeChange="20" IsSnapToTickEnabled="True" Value="100" ValueChanged="SliderHighlightPower_ValueChanged"/>
 				</StackPanel>
 			</StackPanel>
@@ -151,8 +153,21 @@
 									<RowDefinition Height="*"/>
 									<RowDefinition Height="*"/>
 									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
 								</Grid.RowDefinitions>
-								<Button ToolTip="Shift+Click to affect all layers" Grid.Column="0" Grid.Row="0" Click="PaletteShiftLighter">
+                                <ComboBox Name="ComboBoxPalette" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" SelectionChanged="ComboBoxPalette_SelectionChanged">
+                                    <ComboBoxItem Content="UFO Battlescape" IsSelected="True"></ComboBoxItem>
+                                    <ComboBoxItem Content="UFO Basescape"></ComboBoxItem>
+                                    <ComboBoxItem Content="UFO Geoscape"></ComboBoxItem>
+                                    <ComboBoxItem Content="UFO Graphs"></ComboBoxItem>
+                                    <ComboBoxItem Content="UFO Ufopaedia"></ComboBoxItem>
+                                    <ComboBoxItem Content="TFTD Battlescape"></ComboBoxItem>
+                                    <ComboBoxItem Content="TFTD Basescape"></ComboBoxItem>
+                                    <ComboBoxItem Content="TFTD Geoscape"></ComboBoxItem>
+                                    <ComboBoxItem Content="TFTD Graphs"></ComboBoxItem>
+                                    <ComboBoxItem Content="Image Palette"></ComboBoxItem>
+                                </ComboBox>
+								<Button ToolTip="Shift+Click to affect all layers" Grid.Column="0" Grid.Row="1" Click="PaletteShiftLighter">
 									<Image Source="Resources/IconArrow.ico" Stretch="None" RenderTransformOrigin="0.5,0.5">
 										<Image.RenderTransform>
 											<TransformGroup>
@@ -164,7 +179,7 @@
 										</Image.RenderTransform>
 									</Image>
 								</Button>
-								<Button ToolTip="Shift+Click to affect all layers" Grid.Column="1" Grid.Row="0" Click="PaletteShiftDarker">
+								<Button ToolTip="Shift+Click to affect all layers" Grid.Column="1" Grid.Row="1" Click="PaletteShiftDarker">
 									<Image Source="Resources/IconArrow.ico" Stretch="None" RenderTransformOrigin="0.5,0.5">
 										<Image.RenderTransform>
 											<TransformGroup>
@@ -176,11 +191,11 @@
 										</Image.RenderTransform>
 									</Image>
 								</Button>
-								<Label Grid.Column="2" Grid.Row="0">Color light</Label>
-								<Button ToolTip="Shift+Click to affect all layers" Grid.Column="0" Grid.Row="1" Click="PaletteShiftUp">
+								<Label Grid.Column="2" Grid.Row="1">Color light</Label>
+								<Button ToolTip="Shift+Click to affect all layers" Grid.Column="0" Grid.Row="2" Click="PaletteShiftUp">
 									<Image Source="Resources/IconArrow.ico" Stretch="None"></Image>
 								</Button>
-								<Button ToolTip="Shift+Click to affect all layers" Grid.Column="0" Grid.Row="2" Click="PaletteShiftDown">
+								<Button ToolTip="Shift+Click to affect all layers" Grid.Column="0" Grid.Row="3" Click="PaletteShiftDown">
 									<Image Source="Resources/IconArrow.ico" Stretch="None" RenderTransformOrigin="0.5,0.5">
 										<Image.RenderTransform>
 											<TransformGroup>
@@ -192,7 +207,7 @@
 										</Image.RenderTransform>
 									</Image>
 								</Button>
-								<Label Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Center">Color group</Label>
+								<Label Grid.Column="2" Grid.Row="2" Grid.RowSpan="2" VerticalAlignment="Center">Color group</Label>
 							</Grid>
 							<Grid DockPanel.Dock="Top">
 								<Grid.ColumnDefinitions>
@@ -209,7 +224,7 @@
 							</Grid>
 							<local:ColorPalette x:Name="ToolColorPalette" Width="240" Height="240"/>
 						</DockPanel>
-						<DockPanel LastChildFill="True">
+						<DockPanel LastChildFill="True" Name="AnimationPanel">
 							<StackPanel Orientation="Horizontal">
 								<Label ContentStringFormat="" RenderTransformOrigin="0.5,0.5" Content="Previous frame" VerticalAlignment="Center">
 									<Label.LayoutTransform>

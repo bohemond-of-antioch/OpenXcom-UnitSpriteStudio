@@ -137,6 +137,7 @@ namespace UnitSpriteStudio {
 			var metadata = ApplicationWindow.GatherMetadata();
 			var drawingRoutine = ApplicationWindow.spriteSheet.drawingRoutine;
 			var frameSource = ApplicationWindow.spriteSheet.frameSource;
+			(int Width, int Height) frameSize = ApplicationWindow.spriteSheet.drawingRoutine.FrameImageSize();
 			foreach (InteractiveFrame frame in animationFrames) {
 				int deltaX = frame.SecondaryReticlePosition.X - frame.ReticlePosition.X;
 				int deltaY = frame.SecondaryReticlePosition.Y - frame.ReticlePosition.Y;
@@ -145,14 +146,14 @@ namespace UnitSpriteStudio {
 					DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = drawingRoutine.GetLayerFrame(metadata, layers[l]);
 					byte[] originalPixels = frameSource.GetFramePixelData(frameInfo.Index);
 					byte[] shiftedPixels = new byte[originalPixels.Length];
-					for (int x = 0; x < 32; x++) {
-						for (int y = 0; y < 40; y++) {
+					for (int x = 0; x < frameSize.Width; x++) {
+						for (int y = 0; y < frameSize.Height; y++) {
 							int newX = x + deltaX;
 							int newY = y + deltaY;
 
-							if (newX < 0 || newY < 0 || newX >= 32 || newY >= 40) continue;
+							if (newX < 0 || newY < 0 || newX >= frameSize.Width || newY >= frameSize.Height) continue;
 
-							shiftedPixels[newX + newY * 32] = originalPixels[x + y * 32];
+							shiftedPixels[newX + newY * frameSize.Width] = originalPixels[x + y * frameSize.Width];
 						}
 					}
 					frameSource.SetFramePixelData(frameInfo.Index, shiftedPixels);

@@ -72,6 +72,7 @@
     <Compile Include="DrawingRoutines\DrawingRoutineEthereal.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineSectopod.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineMuton.cs" />
+    <Compile Include="DrawingRoutines\DrawingRoutineFloater.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineSnakeman.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineSoldier.cs" />
     <Compile Include="DrawingRoutines\FrameMetadata.cs" />
@@ -80,12 +81,14 @@
       <DependentUpon>InteractiveFrame.xaml</DependentUpon>
     </Compile>
     <Compile Include="FrameProcessing\MirroredDirectionsOperation.cs" />
+    <Compile Include="FrameSource.cs" />
     <Compile Include="HelpShortcuts.xaml.cs">
       <DependentUpon>HelpShortcuts.xaml</DependentUpon>
     </Compile>
     <Compile Include="MirroredSpritesGenerator.xaml.cs">
       <DependentUpon>MirroredSpritesGenerator.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Palettes.cs" />
     <Compile Include="PixelOperationsWindow.xaml.cs">
       <DependentUpon>PixelOperationsWindow.xaml</DependentUpon>
     </Compile>
@@ -112,12 +115,14 @@
     </Compile>
     <Compile Include="Shading\NormalMap.cs" />
     <Compile Include="Shading\PhongShader.cs" />
+    <Compile Include="Shading\ShaderPreset.cs" />
     <Compile Include="Shading\VectorSetting.xaml.cs">
       <DependentUpon>VectorSetting.xaml</DependentUpon>
     </Compile>
     <Compile Include="ShiftAnimationWindow.xaml.cs">
       <DependentUpon>ShiftAnimationWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SingleFrameSource.cs" />
     <Compile Include="SpriteSheet.cs" />
     <Compile Include="UndoSystem.cs" />
     <Compile Include="UnitDirection.xaml.cs">
@@ -271,6 +276,30 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Pen.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TFTDBasescapePalette.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TFTDBattlescapePalette.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TFTDGeoscapePalette.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TFTDGraphsPalette.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UFOBasescapePalette.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UFOGeoscapePalette.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UFOGraphsPalette.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UFOUfopaediaPalette.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
