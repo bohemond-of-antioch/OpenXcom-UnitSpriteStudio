@@ -46,7 +46,6 @@ namespace UnitSpriteStudio {
 			}
 			return "Image Palette";
 		}
-		// Dumb RGB match seems to work best after all
 		public static byte FindNearestColorRGB(System.Drawing.Color color, List<System.Drawing.Color> palette) {
 			int BestMatchIndex = -1;
 			float BestMatchCloseness = 1000;
@@ -55,7 +54,7 @@ namespace UnitSpriteStudio {
 				float rDelta = Math.Abs(color.R - palette[i].R);
 				float gDelta = Math.Abs(color.G - palette[i].G);
 				float bDelta = Math.Abs(color.B - palette[i].B);
-				closeness = rDelta + gDelta + bDelta;
+				closeness = rDelta * rDelta + gDelta * gDelta + bDelta * bDelta;
 				if (BestMatchIndex == -1 || BestMatchCloseness > closeness) {
 					BestMatchCloseness = closeness;
 					BestMatchIndex = i;

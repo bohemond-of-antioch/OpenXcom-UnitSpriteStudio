@@ -52,7 +52,7 @@ namespace UnitSpriteStudio {
 					transformedPixels[f] = (byte)BestMatchIndex;
 				}
 			}
-
+			SourceImage.UnlockBits(BitmapData);
 			var destinationBitmap = new WriteableBitmap(ItemBitmapWidth, ItemBitmapHeight, 96, 96, PixelFormats.Indexed8, Palette);
 			destinationBitmap.WritePixels(new System.Windows.Int32Rect(0, 0, ItemBitmapWidth, ItemBitmapHeight), transformedPixels, ItemBitmapWidth, 0);
 			frameSource = new FrameSource(destinationBitmap);
