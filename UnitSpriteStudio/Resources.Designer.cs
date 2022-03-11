@@ -223,9 +223,89 @@ namespace UnitSpriteStudio {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap TFTDBasescapePalette {
+            get {
+                object obj = ResourceManager.GetObject("TFTDBasescapePalette", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TFTDBattlescapePalette {
+            get {
+                object obj = ResourceManager.GetObject("TFTDBattlescapePalette", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TFTDGeoscapePalette {
+            get {
+                object obj = ResourceManager.GetObject("TFTDGeoscapePalette", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TFTDGraphsPalette {
+            get {
+                object obj = ResourceManager.GetObject("TFTDGraphsPalette", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap UFOBasescapePalette {
+            get {
+                object obj = ResourceManager.GetObject("UFOBasescapePalette", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap UFOBattlescapePalette {
             get {
                 object obj = ResourceManager.GetObject("UFOBattlescapePalette", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap UFOGeoscapePalette {
+            get {
+                object obj = ResourceManager.GetObject("UFOGeoscapePalette", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap UFOGraphsPalette {
+            get {
+                object obj = ResourceManager.GetObject("UFOGraphsPalette", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap UFOUfopaediaPalette {
+            get {
+                object obj = ResourceManager.GetObject("UFOUfopaediaPalette", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

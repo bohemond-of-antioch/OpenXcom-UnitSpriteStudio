@@ -38,23 +38,26 @@ namespace UnitSpriteStudio {
 			internal readonly FloatingSelectionState FloatingSelection;
 			internal readonly MainWindow.EToolPhase ToolPhase;
 			internal readonly WriteableBitmap EntireSprite;
+			internal readonly string SelectedPalette;
 
-			internal State(int frameIndex, SavedFrame frameData, Selection selection, FloatingSelectionState floatingSelection, MainWindow.EToolPhase toolPhase) {
+			internal State(int frameIndex, SavedFrame frameData, Selection selection, FloatingSelectionState floatingSelection, MainWindow.EToolPhase toolPhase, string selectedPalette) {
 				FrameIndex = frameIndex;
 				FrameData = frameData;
 				Selection = selection;
 				FloatingSelection = floatingSelection;
 				ToolPhase = toolPhase;
 				EntireSprite = null;
+				SelectedPalette = selectedPalette;
 			}
 
-			internal State(SpriteSheet spriteSheet,Selection selection, FloatingSelectionState floatingSelection, MainWindow.EToolPhase toolPhase) {
+			internal State(SpriteSheet spriteSheet, Selection selection, FloatingSelectionState floatingSelection, MainWindow.EToolPhase toolPhase, string selectedPalette) {
 				FrameIndex = -1;
 				FrameData = null;
 				Selection = selection;
 				FloatingSelection = floatingSelection;
 				ToolPhase = toolPhase;
 				EntireSprite = new WriteableBitmap(spriteSheet.frameSource.sprite);
+				SelectedPalette = selectedPalette;
 			}
 		}
 
@@ -66,7 +69,7 @@ namespace UnitSpriteStudio {
 
 		bool InsideUndoBlock = false;
 
-		public UndoSystem(SpriteSheet spriteSheet,MainWindow mainWindow) {
+		public UndoSystem(SpriteSheet spriteSheet, MainWindow mainWindow) {
 			SpriteSheet = spriteSheet;
 			ApplicationWindow = mainWindow;
 			UndoBuffer = new Stack<State>();
@@ -80,7 +83,7 @@ namespace UnitSpriteStudio {
 
 		private State PopUndoState() {
 			State temp = UndoBuffer.Pop();
-			if (temp.FrameIndex==-1) {
+			if (temp.FrameIndex == -1) {
 				RedoBuffer.Push(CaptureEntireSprite());
 			} else {
 				RedoBuffer.Push(CaptureCurrentState(temp.FrameIndex));
@@ -97,7 +100,7 @@ namespace UnitSpriteStudio {
 			return temp;
 		}
 
-		private State CaptureEntireSprite() {
+		private State CaptureEntireSprite(string previousPalette = null) {
 			int floatingSelectionX = ((int)System.Windows.Controls.Canvas.GetLeft(ApplicationWindow.ImageFloatingSelection));
 			int floatingSelectionY = ((int)System.Windows.Controls.Canvas.GetTop(ApplicationWindow.ImageFloatingSelection));
 
@@ -105,11 +108,12 @@ namespace UnitSpriteStudio {
 			currentState = new State(SpriteSheet
 				, new Selection(ApplicationWindow.selectedArea)
 				, new State.FloatingSelectionState((floatingSelectionX, floatingSelectionY), ApplicationWindow.floatingSelection)
-				, ApplicationWindow.toolPhase);
+				, ApplicationWindow.toolPhase
+				, previousPalette);
 			return currentState;
 		}
-		private State CaptureCurrentState(int frameIndex=-1) {
-			if (frameIndex==-1) {
+		private State CaptureCurrentState(int frameIndex = -1) {
+			if (frameIndex == -1) {
 				DrawingRoutines.FrameMetadata frameMetadata = ApplicationWindow.GatherMetadata();
 				int layer = ApplicationWindow.ListBoxLayers.SelectedIndex;
 				var frameInfo = SpriteSheet.drawingRoutine.GetLayerFrame(frameMetadata, layer);
@@ -123,16 +127,17 @@ namespace UnitSpriteStudio {
 			State currentState;
 			currentState = new State(frameIndex
 				, new SavedFrame(frameIndex, SpriteSheet)
-				, new Selection( ApplicationWindow.selectedArea)
+				, new Selection(ApplicationWindow.selectedArea)
 				, new State.FloatingSelectionState((floatingSelectionX, floatingSelectionY), ApplicationWindow.floatingSelection)
-				, ApplicationWindow.toolPhase);
+				, ApplicationWindow.toolPhase
+				, null);
 			return currentState;
 		}
 
-		internal void BeginUndoBlock() {
+		internal void BeginUndoBlock(string previousPalette = null) {
 			if (!InsideUndoBlock) {
 				InsideUndoBlock = true;
-				PushUndoState(CaptureEntireSprite());
+				PushUndoState(CaptureEntireSprite(previousPalette));
 			}
 		}
 
@@ -157,7 +162,7 @@ namespace UnitSpriteStudio {
 		}
 
 		private void ApplyState(State state) {
-			if (state.FrameData!=null) {
+			if (state.FrameData != null) {
 				state.FrameData.Apply(SpriteSheet);
 			} else {
 				SpriteSheet.frameSource.SetInternalSprite(state.EntireSprite);
@@ -168,6 +173,10 @@ namespace UnitSpriteStudio {
 			ApplicationWindow.floatingSelection = state.FloatingSelection.ImageData;
 			ApplicationWindow.ImageFloatingSelection.Source = state.FloatingSelection.ImageData.bitmap;
 			ApplicationWindow.toolPhase = state.ToolPhase;
+			if (!(state.SelectedPalette is null)) {
+				ApplicationWindow.SelectPalette(state.SelectedPalette);
+				ApplicationWindow.ToolColorPalette.ApplyPalette(SpriteSheet.GetColorPalette());
+			}
 		}
 	}
 }

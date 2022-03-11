@@ -23,12 +23,12 @@ namespace UnitSpriteStudio.DrawingRoutines {
 			return (COMPOSITE_IMAGE_WIDTH, COMPOSITE_IMAGE_HEIGHT);
 		}
 
-		internal override void DrawCompositeImage(SpriteSheet.FrameSource sprite, FrameMetadata metadata, DrawingContext drawingContext, int highlightedLayer) {
+		internal override void DrawCompositeImage(FrameSource sprite, FrameMetadata metadata, ItemSpriteSheet itemSprite, DrawingContext drawingContext, int highlightedLayer) {
 			LayerFrameInfo frameInfo = GetLayerFrame(metadata, 0);
 			ImageSource image = sprite.GetFrame(frameInfo.Index);
 			drawingContext.DrawImage(image, new Rect(frameInfo.OffsetX, frameInfo.OffsetY, 32, 40));
 		}
-		internal override Selection GetCompositeOutline(SpriteSheet.FrameSource sprite, FrameMetadata metadata) {
+		internal override Selection GetCompositeOutline(FrameSource sprite, FrameMetadata metadata) {
 			Selection outline = new Selection(COMPOSITE_IMAGE_WIDTH, COMPOSITE_IMAGE_HEIGHT);
 			LayerFrameInfo frameInfo = GetLayerFrame(metadata, 0);
 			BitmapSource image = sprite.GetFrame(frameInfo.Index);
@@ -107,6 +107,10 @@ namespace UnitSpriteStudio.DrawingRoutines {
 		}
 		internal override int[] TertiaryFrameMirroring() {
 			return new int[] { 0 };
+		}
+
+		internal override BitmapPalette DefaultSpriteSheetPalette() {
+			return Palettes.FromName("UFO Battlescape");
 		}
 	}
 }

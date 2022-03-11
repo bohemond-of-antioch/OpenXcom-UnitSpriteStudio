@@ -99,10 +99,10 @@ namespace UnitSpriteStudio {
 			using (DrawingContext drawingContext = drawingVisual.RenderOpen()) {
 				DrawTransparentBackground(drawingContext, targetImage.Source);
 				if (HighlightedLayer != -1) {
-					ApplicationWindow.spriteSheet.DrawCompositeImage(metadata, drawingContext, -1);
+					ApplicationWindow.spriteSheet.DrawCompositeImage(metadata, null, drawingContext, -1);
 					DrawTransparentBackground(drawingContext, targetImage.Source, true);
 				}
-				ApplicationWindow.spriteSheet.DrawCompositeImage(metadata, drawingContext, HighlightedLayer);
+				ApplicationWindow.spriteSheet.DrawCompositeImage(metadata, null, drawingContext, HighlightedLayer);
 			}
 			((RenderTargetBitmap)targetImage.Source).Render(drawingVisual);
 		}

@@ -49,20 +49,20 @@ namespace UnitSpriteStudio {
 			DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(frameMetadata, layer);
 			byte[] sourcePixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
 			byte[] destinationPixels = GetAllPixels();
-
+			(int Width, int Height) frameSize = spriteSheet.drawingRoutine.FrameImageSize();
 			for (x = 0; x < selectedArea.SizeX; x++) {
 				for (y = 0; y < selectedArea.SizeY; y++) {
 					if (selectedArea.GetPoint(x, y)) {
 						(int X, int Y) pointInSource;
 						pointInSource.X = x - frameInfo.OffsetX;
 						pointInSource.Y = y - frameInfo.OffsetY;
-						if (pointInSource.X < 0 || pointInSource.Y < 0 || pointInSource.X >= 32 || pointInSource.Y >= 40) continue;
+						if (pointInSource.X < 0 || pointInSource.Y < 0 || pointInSource.X >= frameSize.Width || pointInSource.Y >= frameSize.Height) continue;
 						copiedPixels++;
-						byte colorIndex = sourcePixels[pointInSource.X + pointInSource.Y * 32];
+						byte colorIndex = sourcePixels[pointInSource.X + pointInSource.Y * frameSize.Width];
 						if (transparency && colorIndex == 0) continue; // Skip pixel if copying with transparency
 						destinationPixels[x + y * selectedArea.SizeX] = colorIndex;
 
-						if (cut) sourcePixels[pointInSource.X + pointInSource.Y * 32] = 0;
+						if (cut) sourcePixels[pointInSource.X + pointInSource.Y * frameSize.Width] = 0;
 					}
 				}
 			}

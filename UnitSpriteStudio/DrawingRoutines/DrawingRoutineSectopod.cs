@@ -23,7 +23,7 @@ namespace UnitSpriteStudio.DrawingRoutines {
 			return (COMPOSITE_IMAGE_WIDTH, COMPOSITE_IMAGE_HEIGHT);
 		}
 
-		internal override void DrawCompositeImage(SpriteSheet.FrameSource sprite, FrameMetadata metadata, DrawingContext drawingContext, int highlightedLayer) {
+		internal override void DrawCompositeImage(FrameSource sprite, FrameMetadata metadata, ItemSpriteSheet itemSprite, DrawingContext drawingContext, int highlightedLayer) {
 			for (int l = 0; l < 4; l++) {
 				if (highlightedLayer != -1 && l != highlightedLayer) continue;
 				LayerFrameInfo frameInfo = GetLayerFrame(metadata, l);
@@ -31,7 +31,7 @@ namespace UnitSpriteStudio.DrawingRoutines {
 				drawingContext.DrawImage(image, new Rect(frameInfo.OffsetX, frameInfo.OffsetY, 32, 40));
 			}
 		}
-		internal override Selection GetCompositeOutline(SpriteSheet.FrameSource sprite, FrameMetadata metadata) {
+		internal override Selection GetCompositeOutline(FrameSource sprite, FrameMetadata metadata) {
 			Selection outline = new Selection(COMPOSITE_IMAGE_WIDTH, COMPOSITE_IMAGE_HEIGHT);
 			for (int l = 0; l < 4; l++) {
 				LayerFrameInfo frameInfo = GetLayerFrame(metadata, l);
@@ -118,6 +118,9 @@ namespace UnitSpriteStudio.DrawingRoutines {
 
 		internal override SmartLayerType SmartLayerSupported() {
 			return SmartLayerType.HWP;
+		}
+		internal override BitmapPalette DefaultSpriteSheetPalette() {
+			return Palettes.FromName("UFO Battlescape");
 		}
 	}
 }

@@ -27,7 +27,7 @@ namespace UnitSpriteStudio.PixelOperations {
 		public SelectColorGroup() {
 			InitializeComponent();
 
-			int x, y;
+			int y;
 			for (y = 0; y < 16; y++) {
 				Rectangle colorSwatch = new Rectangle();
 				colorSwatch.Fill = Brushes.White;

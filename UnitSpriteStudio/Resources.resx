@@ -166,8 +166,32 @@
   <data name="SmartLayer" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\SmartLayer.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="TFTDBasescapePalette" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\TFTDBasescapePalette.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TFTDBattlescapePalette" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\TFTDBattlescapePalette.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TFTDGeoscapePalette" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\TFTDGeoscapePalette.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TFTDGraphsPalette" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\TFTDGraphsPalette.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UFOBasescapePalette" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\UFOBasescapePalette.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="UFOBattlescapePalette" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\UFOBattlescapePalette.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UFOGeoscapePalette" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\UFOGeoscapePalette.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UFOGraphsPalette" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\UFOGraphsPalette.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UFOUfopaediaPalette" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\UFOUfopaediaPalette.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="UnitSpriteStudioIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\UnitSpriteStudioIcon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

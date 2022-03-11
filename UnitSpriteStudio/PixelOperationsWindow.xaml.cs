@@ -18,7 +18,6 @@ namespace UnitSpriteStudio {
 	/// </summary>
 	public partial class PixelOperationsWindow : Window {
 		MainWindow ApplicationWindow;
-		bool Initialization = true;
 
 		private List<CheckBox> TargetPrimaryFrames, TargetSecondaryFrames, TargetTertiaryFrames, TargetLayers;
 
@@ -54,8 +53,6 @@ namespace UnitSpriteStudio {
 			foreach (string name in layerNames) {
 				AddTargetCheckBox(LayersPanel, TargetLayers, name);
 			}
-
-			Initialization = false;
 		}
 		private STargetFrames GatherTargets() {
 			STargetFrames targets = new STargetFrames();

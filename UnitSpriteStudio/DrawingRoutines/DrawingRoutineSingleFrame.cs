@@ -13,8 +13,8 @@ namespace UnitSpriteStudio.DrawingRoutines {
 			return false;
 		}
 
-		private int SpriteWidth = 32;
-		private int SpriteHeight = 40;
+		private int SpriteWidth = 64;
+		private int SpriteHeight = 80;
 
 		internal override (int Width, int Height) DefaultSpriteSheetSize() {
 			return (SpriteWidth, SpriteHeight);
@@ -23,16 +23,28 @@ namespace UnitSpriteStudio.DrawingRoutines {
 			return (SpriteWidth, SpriteHeight);
 		}
 
+		internal override bool ShowLayerThumbnails() {
+			return false;
+		}
+
+		internal override int InitialEditImageScale() {
+			return (int)Math.Round((double)Math.Min(10, Math.Min(960 / SpriteWidth, 600 / SpriteHeight)));
+		}
+
+		internal override (int Width, int Height) FrameImageSize() {
+			return (SpriteWidth, SpriteHeight);
+		}
+
 		internal void SetSize(int Width,int Height) {
 			SpriteWidth = Width;
 			SpriteHeight = Height;
 		}
 
-		internal override void DrawCompositeImage(SpriteSheet.FrameSource sprite, FrameMetadata metadata, DrawingContext drawingContext, int highlightedLayer) {
-			ImageSource image = sprite.GetFrame(0);
+		internal override void DrawCompositeImage(FrameSource sprite, FrameMetadata metadata, ItemSpriteSheet itemSprite, DrawingContext drawingContext, int highlightedLayer) {
+			ImageSource image = sprite.sprite;
 			drawingContext.DrawImage(image, new Rect(0, 0, SpriteWidth, SpriteHeight));
 		}
-		internal override Selection GetCompositeOutline(SpriteSheet.FrameSource sprite, FrameMetadata metadata) {
+		internal override Selection GetCompositeOutline(FrameSource sprite, FrameMetadata metadata) {
 			Selection outline = new Selection(SpriteWidth, SpriteHeight);
 			BitmapSource image = sprite.GetFrame(0);
 			byte[] pixels = new byte[SpriteWidth * SpriteHeight];
@@ -89,6 +101,13 @@ namespace UnitSpriteStudio.DrawingRoutines {
 		}
 		internal override int[] TertiaryFrameMirroring() {
 			return new int[] { 0 };
+		}
+
+		internal override FrameSource CreateFrameSource(BitmapSource sourceBitmap) {
+			return new SingleFrameSource(sourceBitmap);
+		}
+		internal override BitmapPalette DefaultSpriteSheetPalette() {
+			return Palettes.FromName("UFO Battlescape");
 		}
 	}
 }
