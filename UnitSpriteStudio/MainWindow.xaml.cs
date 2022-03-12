@@ -1604,15 +1604,17 @@ namespace UnitSpriteStudio {
 		private void TryLoadFromHandObMaker() {
 			IDataObject data = Clipboard.GetDataObject();
 			string[] formats = data.GetFormats();
-
-			if (data.GetDataPresent("HandObMakerExport", false)) {
-				object content = data.GetData("HandObMakerExport", true);
-				if (content is System.Drawing.Bitmap) {
-					itemSpriteSheet = new ItemSpriteSheet((System.Drawing.Bitmap)content, spriteSheet.frameSource.sprite.Palette);
-					LabelItemFilename.Content = "Imported from HandObMaker";
-					CheckBoxItemShow.IsChecked = true;
-					RefreshCompositeImage();
+			try {
+				if (data.GetDataPresent("HandObMakerExport", false)) {
+					object content = data.GetData("HandObMakerExport", true);
+					if (content is System.Drawing.Bitmap) {
+						itemSpriteSheet = new ItemSpriteSheet((System.Drawing.Bitmap)content, spriteSheet.frameSource.sprite.Palette);
+						LabelItemFilename.Content = "Imported from HandObMaker";
+						CheckBoxItemShow.IsChecked = true;
+						RefreshCompositeImage();
+					}
 				}
+			} catch (Exception) {
 			}
 		}
 		private void ButtonLoadFromHandObMaker(object sender, RoutedEventArgs e) {
