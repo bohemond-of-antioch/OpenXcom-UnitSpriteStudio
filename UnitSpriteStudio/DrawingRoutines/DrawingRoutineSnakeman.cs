@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 
 namespace UnitSpriteStudio.DrawingRoutines {
 	class DrawingRoutineSnakeman : DrawingRoutine {
+		private int DeathFrames = 3;
 		internal override bool CanHoldItems() {
 			return true;
 		}
@@ -208,7 +209,7 @@ namespace UnitSpriteStudio.DrawingRoutines {
 				case EPrimaryFrame.Walk:
 					return 8;
 				case EPrimaryFrame.Death:
-					return 3;
+					return DeathFrames;
 				default:
 					return 1;
 			}
@@ -264,6 +265,23 @@ namespace UnitSpriteStudio.DrawingRoutines {
 		}
 		internal override BitmapPalette DefaultSpriteSheetPalette() {
 			return Palettes.FromName("UFO Battlescape");
+		}
+		internal override List<string> SupportedRuleValues() {
+			return new List<string>() { "deathFrames" };
+		}
+		internal override void SetRuleValue(string Name, string Value) {
+			switch (Name) {
+				case "deathFrames":
+					DeathFrames = int.Parse(Value);
+					break;
+			}
+		}
+		internal override string GetRuleValue(string Name) {
+			switch (Name) {
+				case "deathFrames":
+					return DeathFrames.ToString();
+			}
+			return base.GetRuleValue(Name);
 		}
 	}
 }
