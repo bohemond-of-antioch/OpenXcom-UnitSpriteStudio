@@ -18,7 +18,11 @@ namespace UnitSpriteStudio {
 		}
 
 		internal ItemSpriteSheet(string FileName) {
-			frameSource = new FrameSource(new BitmapImage(new Uri(FileName, UriKind.Absolute)));
+			BitmapImage sourceImage = new BitmapImage(new Uri(FileName, UriKind.Absolute));
+			if (sourceImage.Width != 256 || sourceImage.Height != 40) {
+				throw new Exception("Item image must be 256x40 pixels.");
+			}
+			frameSource = new FrameSource(sourceImage);
 			sourceFileName = FileName;
 		}
 		internal ImageSource GetFrame(int direction) {

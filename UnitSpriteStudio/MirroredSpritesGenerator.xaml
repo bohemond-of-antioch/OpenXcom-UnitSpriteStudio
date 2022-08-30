@@ -214,6 +214,7 @@
 				<ListBoxItem Content="Custom"/>
 				<ListBoxItem Content="Left to Right"/>
 				<ListBoxItem Content="Right to Left"/>
+				<ListBoxItem Content="Fix swapped arms"/>
 			</ListBox>
 		</DockPanel>
 	</Grid>

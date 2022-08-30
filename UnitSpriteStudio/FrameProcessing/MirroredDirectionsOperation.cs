@@ -52,6 +52,14 @@ namespace UnitSpriteStudio.FrameProcessing {
 			Directions[4].Destination = 2;
 			Directions[4].Active = true;
 		}
+		public void ApplyPresetFixSwappedArms() {
+			ApplyDefaultSettings();
+			Directions[4].Destination = 4;
+			Directions[4].Active = true;
+			Directions[4].Mirror = false;
+			Directions[4].ChangeArms = true;
+			EntireAnimation = true;
+		}
 
 		private void ProcessComposite(List<DrawingRoutines.FrameMetadata> metadataList, SpriteSheet sourceSpriteSheet,SpriteSheet destinationSpriteSheet) {
 			DrawingRoutines.DrawingRoutine routine = sourceSpriteSheet.drawingRoutine;

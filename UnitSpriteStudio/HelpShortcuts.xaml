@@ -16,6 +16,7 @@
 		<Label>Next frame: +</Label>
 		<Label FontSize="20">Global</Label>
 		<Label>Change unit direction: Numpad 1 to 9</Label>
+		<Label>Reload from disk: F5</Label>
 		<Label FontSize="20">Tools</Label>
 		<Label>Paint: B</Label>
 		<Label>Pixel Selection: A</Label>

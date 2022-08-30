@@ -215,6 +215,10 @@ namespace UnitSpriteStudio {
 					Operation.ApplyPresetRightToLeft();
 					UpdateUIForOperation();
 					break;
+				case 3:
+					Operation.ApplyPresetFixSwappedArms();
+					UpdateUIForOperation();
+					break;
 			}
 		}
 
