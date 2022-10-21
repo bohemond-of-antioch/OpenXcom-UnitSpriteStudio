@@ -22,6 +22,8 @@
 					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemNew_Click" Tag="5"/>
 					<MenuItem Header="Routine 6 - Snakeman" Click="MenuItemNew_Click" Tag="6"/>
 					<MenuItem Header="Routine 7 - Chryssalid" Click="MenuItemNew_Click" Tag="7"/>
+					<MenuItem Header="Routine 8 - Silacoid" Click="MenuItemNew_Click" Tag="8"/>
+					<MenuItem Header="Routine 9 - Celatid" Click="MenuItemNew_Click" Tag="9"/>
 					<MenuItem Header="Routine 10 - Muton" Click="MenuItemNew_Click" Tag="10"/>
 					<MenuItem Header="Single frame" Click="MenuItemNew_Click" Tag="-1"/>
 				</MenuItem>
@@ -33,6 +35,8 @@
 					<MenuItem Header="Routine 5 - Sectopod, Reaper" Click="MenuItemOpen_Click" Tag="5"/>
 					<MenuItem Header="Routine 6 - Snakeman" Click="MenuItemOpen_Click" Tag="6"/>
 					<MenuItem Header="Routine 7 - Chryssalid" Click="MenuItemOpen_Click" Tag="7"/>
+					<MenuItem Header="Routine 8 - Silacoid" Click="MenuItemOpen_Click" Tag="8"/>
+					<MenuItem Header="Routine 9 - Celatid" Click="MenuItemOpen_Click" Tag="9"/>
 					<MenuItem Header="Routine 10 - Muton" Click="MenuItemOpen_Click" Tag="10"/>
 					<MenuItem Header="Single frame" Click="MenuItemOpen_Click" Tag="-1"/>
 				</MenuItem>

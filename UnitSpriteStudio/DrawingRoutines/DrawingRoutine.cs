@@ -8,6 +8,17 @@ using System.Windows.Media.Imaging;
 
 namespace UnitSpriteStudio.DrawingRoutines {
 	abstract class DrawingRoutine {
+		public static readonly Dictionary<int, Func<DrawingRoutine>> ClassConstructors = new Dictionary<int, Func<DrawingRoutine>> {
+			{ 0,()=>new DrawingRoutineSoldier() },
+			{ 1,()=>new DrawingRoutineFloater() },
+			{ 4,()=>new DrawingRoutineEthereal() },
+			{ 5,()=>new DrawingRoutineSectopod() },
+			{ 6,()=>new DrawingRoutineSnakeman() },
+			{ 7,()=>new DrawingRoutineChryssalid() },
+			{ 8,()=>new DrawingRoutineSilacoid() },
+			{ 9,()=>new DrawingRoutineCelatid() },
+			{ 10,()=>new DrawingRoutineMuton() }
+		};
 		internal struct LayerFrameInfo {
 			internal enum ETarget {
 				Unit,

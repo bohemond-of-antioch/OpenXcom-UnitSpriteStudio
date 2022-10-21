@@ -1042,38 +1042,18 @@ namespace UnitSpriteStudio {
 			animationTimer.Stop();
 			FrameMetadataChanged();
 		}
-
 		private void MenuItemNew_Click(object sender, RoutedEventArgs e) {
 			if (ConfirmUnsavedFile()) {
 				SpriteSheet openedSpriteSheet;
 				int DrawingRoutine = int.Parse((string)((MenuItem)sender).Tag);
-				switch (DrawingRoutine) {
-					case 0:
-						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSoldier());
-						break;
-					case 1:
-						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineFloater());
-						break;
-					case 4:
-						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineEthereal());
-						break;
-					case 5:
-						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSectopod());
-						break;
-					case 6:
-						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSnakeman());
-						break;
-					case 7:
-						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineChryssalid());
-						break;
-					case 10:
-						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineMuton());
-						break;
-					case -1:
-						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSingleFrame());
-						break;
-					default:
+				if (DrawingRoutine == -1) {
+					openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSingleFrame());
+				} else {
+					if (DrawingRoutines.DrawingRoutine.ClassConstructors.ContainsKey(DrawingRoutine)) {
+						openedSpriteSheet = new SpriteSheet(DrawingRoutines.DrawingRoutine.ClassConstructors[DrawingRoutine]());
+					} else {
 						throw new Exception("Unsupported drawing routine.");
+					}
 				}
 				InitializeSpriteSheet(openedSpriteSheet);
 			}
@@ -1087,36 +1067,16 @@ namespace UnitSpriteStudio {
 					SpriteSheet openedSpriteSheet;
 					int DrawingRoutine = int.Parse((string)((MenuItem)sender).Tag);
 					try {
-						switch (DrawingRoutine) {
-							case 0:
-								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSoldier(), openFileDialog.FileName);
-								break;
-							case 1:
-								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineFloater(), openFileDialog.FileName);
-								break;
-							case 4:
-								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineEthereal(), openFileDialog.FileName);
-								break;
-							case 5:
-								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSectopod(), openFileDialog.FileName);
-								break;
-							case 6:
-								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSnakeman(), openFileDialog.FileName);
-								break;
-							case 7:
-								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineChryssalid(), openFileDialog.FileName);
-								break;
-							case 10:
-								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineMuton(), openFileDialog.FileName);
-								break;
-							case -1: {
-								var singleFrameRoutine = new DrawingRoutines.DrawingRoutineSingleFrame();
-								openedSpriteSheet = new SpriteSheet(singleFrameRoutine, openFileDialog.FileName);
-								singleFrameRoutine.SetSize(openedSpriteSheet.frameSource.GetSize().Width, openedSpriteSheet.frameSource.GetSize().Height);
-							}
-							break;
-							default:
+						if (DrawingRoutine == -1) {
+							var singleFrameRoutine = new DrawingRoutines.DrawingRoutineSingleFrame();
+							openedSpriteSheet = new SpriteSheet(singleFrameRoutine, openFileDialog.FileName);
+							singleFrameRoutine.SetSize(openedSpriteSheet.frameSource.GetSize().Width, openedSpriteSheet.frameSource.GetSize().Height);
+						} else {
+							if (DrawingRoutines.DrawingRoutine.ClassConstructors.ContainsKey(DrawingRoutine)) {
+								openedSpriteSheet = new SpriteSheet(DrawingRoutines.DrawingRoutine.ClassConstructors[DrawingRoutine](), openFileDialog.FileName);
+							} else {
 								throw new Exception("Unsupported drawing routine.");
+							}
 						}
 					} catch (Exception exception) {
 						MessageBox.Show("An error has occured during loading of the file: " + exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
