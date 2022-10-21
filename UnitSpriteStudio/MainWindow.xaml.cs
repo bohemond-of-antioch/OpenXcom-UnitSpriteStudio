@@ -1063,6 +1063,9 @@ namespace UnitSpriteStudio {
 					case 6:
 						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSnakeman());
 						break;
+					case 7:
+						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineChryssalid());
+						break;
 					case 10:
 						openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineMuton());
 						break;
@@ -1099,6 +1102,9 @@ namespace UnitSpriteStudio {
 								break;
 							case 6:
 								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSnakeman(), openFileDialog.FileName);
+								break;
+							case 7:
+								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineChryssalid(), openFileDialog.FileName);
 								break;
 							case 10:
 								openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineMuton(), openFileDialog.FileName);
