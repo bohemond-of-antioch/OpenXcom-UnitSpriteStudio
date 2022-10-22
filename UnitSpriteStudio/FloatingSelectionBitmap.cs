@@ -29,7 +29,20 @@ namespace UnitSpriteStudio {
 			return pixels[0];
 		}
 
-		internal void PastePixels(UnitSpriteSheet spriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer, int shiftX, int shiftY, System.Drawing.Bitmap mask = null) {
+		internal void PastePixels(UnitSpriteSheet spriteSheet,ItemSpriteSheet itemSpriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer, int shiftX, int shiftY, System.Drawing.Bitmap mask = null) {
+			DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(frameMetadata, layer);
+			FrameSource destinationFrameSource;
+			switch (frameInfo.Target) {
+				case DrawingRoutine.LayerFrameInfo.ETarget.Unit:
+					destinationFrameSource = spriteSheet.frameSource;
+					break;
+				case DrawingRoutine.LayerFrameInfo.ETarget.Item:
+					destinationFrameSource = itemSpriteSheet.frameSource;
+					break;
+				case DrawingRoutine.LayerFrameInfo.ETarget.None:
+				default:
+					return;
+			}
 			byte[] pixels = new byte[bitmap.PixelWidth * bitmap.PixelHeight];
 			bitmap.CopyPixels(pixels, bitmap.BackBufferStride, 0);
 			for (int x = 0; x < bitmap.PixelWidth; x++) {
@@ -37,17 +50,29 @@ namespace UnitSpriteStudio {
 					byte colorIndex = pixels[x + y * bitmap.BackBufferStride];
 					if (colorIndex > 0) {
 						if (mask != null && mask.GetPixel(x, y).R <= 0) continue;
-						spriteSheet.SetPixel(frameMetadata, layer, x + shiftX, y + shiftY, colorIndex);
+						destinationFrameSource.SetPixel(frameInfo.Index, x + shiftX - frameInfo.OffsetX, y + shiftY - frameInfo.OffsetY, colorIndex);
 					}
 				}
 			}
 		}
 
-		internal int CopyPixels(Selection selectedArea, UnitSpriteSheet spriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer, bool cut = false, bool transparency = false) {
+		internal int CopyPixels(Selection selectedArea, UnitSpriteSheet spriteSheet, ItemSpriteSheet itemSpriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer, bool cut = false, bool transparency = false) {
 			int x, y;
 			int copiedPixels = 0;
 			DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(frameMetadata, layer);
-			byte[] sourcePixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+			FrameSource frameSource;
+			switch (frameInfo.Target) {
+				case DrawingRoutine.LayerFrameInfo.ETarget.Unit:
+					frameSource = spriteSheet.frameSource;
+					break;
+				case DrawingRoutine.LayerFrameInfo.ETarget.Item:
+					frameSource = itemSpriteSheet.frameSource;
+					break;
+				case DrawingRoutine.LayerFrameInfo.ETarget.None:
+				default:
+					return 0;
+			}
+			byte[] sourcePixels = frameSource.GetFramePixelData(frameInfo.Index);
 			byte[] destinationPixels = GetAllPixels();
 			(int Width, int Height) frameSize = spriteSheet.drawingRoutine.FrameImageSize();
 			for (x = 0; x < selectedArea.SizeX; x++) {
@@ -68,7 +93,7 @@ namespace UnitSpriteStudio {
 			}
 
 			PutAllPixels(destinationPixels);
-			if (cut) spriteSheet.frameSource.SetFramePixelData(frameInfo.Index, sourcePixels);
+			if (cut) frameSource.SetFramePixelData(frameInfo.Index, sourcePixels);
 
 			return copiedPixels;
 		}

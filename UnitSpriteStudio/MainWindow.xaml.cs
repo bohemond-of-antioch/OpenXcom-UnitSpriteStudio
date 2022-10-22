@@ -522,7 +522,7 @@ namespace UnitSpriteStudio {
 
 		private void CutSelection() {
 			floatingSelection = new FloatingSelectionBitmap(spriteSheet);
-			int cutPixels = floatingSelection.CopyPixels(selectedArea, spriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex, true);
+			int cutPixels = floatingSelection.CopyPixels(selectedArea, spriteSheet, itemSpriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex, true);
 			if (cutPixels == 0) {
 				toolPhase = EToolPhase.None;
 			} else {
@@ -535,7 +535,7 @@ namespace UnitSpriteStudio {
 			int f;
 			int copiedPixels = 0;
 			for (f = 0; f < spriteSheet.drawingRoutine.LayerNames().Length; f++) {
-				copiedPixels += copyBuffer.CopyPixels(selectedArea, spriteSheet, GatherMetadata(), f, false, true);
+				copiedPixels += copyBuffer.CopyPixels(selectedArea, spriteSheet, itemSpriteSheet, GatherMetadata(), f, false, true);
 			}
 			if (copiedPixels > 0) {
 				Clipboard.Clear();
@@ -550,7 +550,7 @@ namespace UnitSpriteStudio {
 		}
 		private void CopySelection() {
 			FloatingSelectionBitmap copyBuffer = new FloatingSelectionBitmap(spriteSheet);
-			int copiedPixels = copyBuffer.CopyPixels(selectedArea, spriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex);
+			int copiedPixels = copyBuffer.CopyPixels(selectedArea, spriteSheet, itemSpriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex);
 			if (copiedPixels > 0) {
 				Clipboard.Clear();
 				DataObject data;
@@ -656,7 +656,18 @@ namespace UnitSpriteStudio {
 			DrawingRoutines.FrameMetadata metadata = GatherMetadata();
 			DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(metadata, ListBoxLayers.SelectedIndex);
 			(int Width, int Height) frameSize = spriteSheet.drawingRoutine.FrameImageSize();
-			byte[] pixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+			byte[] pixels;
+			switch (frameInfo.Target) {
+				case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit:
+					pixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+					break;
+				case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Item:
+					pixels = itemSpriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+					break;
+				case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.None:
+				default:
+					return;
+			}
 			int cursorOffset = (positionX - frameInfo.OffsetX) + (positionY - frameInfo.OffsetY) * frameSize.Width;
 			byte colorUnderCursor;
 			if (cursorOffset < 0 || cursorOffset >= pixels.Length) {
@@ -676,7 +687,18 @@ namespace UnitSpriteStudio {
 			(int Width, int Height) frameSize = spriteSheet.drawingRoutine.FrameImageSize();
 			(int X, int Y) cursorPoint = (positionX - frameInfo.OffsetX, positionY - frameInfo.OffsetY);
 			if (cursorPoint.X < 0 || cursorPoint.X >= frameSize.Width || cursorPoint.Y < 0 || cursorPoint.Y >= frameSize.Height) return;
-			byte[] pixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+			byte[] pixels;
+			switch (frameInfo.Target) {
+				case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit:
+					pixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+					break;
+				case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Item:
+					pixels = itemSpriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+					break;
+				case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.None:
+				default:
+					return;
+			}
 			int cursorOffset = cursorPoint.X + cursorPoint.Y * frameSize.Width;
 			byte colorUnderCursor;
 			if (cursorOffset < 0 || cursorOffset >= pixels.Length) {
@@ -731,7 +753,7 @@ namespace UnitSpriteStudio {
 				int shiftX, shiftY;
 				shiftX = (int)Canvas.GetLeft(ImageFloatingSelection) / EditImageScale;
 				shiftY = (int)Canvas.GetTop(ImageFloatingSelection) / EditImageScale;
-				floatingSelection.PastePixels(spriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex, shiftX, shiftY);
+				floatingSelection.PastePixels(spriteSheet, itemSpriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex, shiftX, shiftY);
 				selectedArea.SetAll(false);
 				ResetFloatingSection();
 				RefreshOverlayImage();
@@ -746,10 +768,10 @@ namespace UnitSpriteStudio {
 				shiftX = (int)Canvas.GetLeft(ImageFloatingSelection) / EditImageScale;
 				shiftY = (int)Canvas.GetTop(ImageFloatingSelection) / EditImageScale;
 
-				floatingSelection.PastePixels(spriteSheet, GatherMetadata(), 0, shiftX, shiftY, UnitSpriteStudio.Resources.HWPMaskTop);
-				floatingSelection.PastePixels(spriteSheet, GatherMetadata(), 1, shiftX, shiftY, UnitSpriteStudio.Resources.HWPMaskRight);
-				floatingSelection.PastePixels(spriteSheet, GatherMetadata(), 2, shiftX, shiftY, UnitSpriteStudio.Resources.HWPMaskLeft);
-				floatingSelection.PastePixels(spriteSheet, GatherMetadata(), 3, shiftX, shiftY, UnitSpriteStudio.Resources.HWPMaskCenter);
+				floatingSelection.PastePixels(spriteSheet, itemSpriteSheet, GatherMetadata(), 0, shiftX, shiftY, UnitSpriteStudio.Resources.HWPMaskTop);
+				floatingSelection.PastePixels(spriteSheet, itemSpriteSheet, GatherMetadata(), 1, shiftX, shiftY, UnitSpriteStudio.Resources.HWPMaskRight);
+				floatingSelection.PastePixels(spriteSheet, itemSpriteSheet, GatherMetadata(), 2, shiftX, shiftY, UnitSpriteStudio.Resources.HWPMaskLeft);
+				floatingSelection.PastePixels(spriteSheet, itemSpriteSheet, GatherMetadata(), 3, shiftX, shiftY, UnitSpriteStudio.Resources.HWPMaskCenter);
 
 				selectedArea.SetAll(false);
 				ResetFloatingSection();
@@ -1393,7 +1415,9 @@ namespace UnitSpriteStudio {
 		private void MenuItemPaste_Click(object sender, RoutedEventArgs e) {
 			PasteBuffer();
 		}
-
+		private void MenuItemDeselect_Click(object sender, RoutedEventArgs e) {
+			ClearSelection();
+		}
 		private void MenuItemSmartMerge_Click(object sender, RoutedEventArgs e) {
 			SmartMergeFloatingSelection();
 		}
@@ -1433,11 +1457,21 @@ namespace UnitSpriteStudio {
 			undoSystem.RegisterUndoState();
 			DrawingRoutines.FrameMetadata metadata = GatherMetadata();
 			DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(metadata, layer);
-			if (frameInfo.Target != DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit) {
-				return;
+			FrameSource destinationFrameSource;
+			switch (frameInfo.Target) {
+				case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit:
+					destinationFrameSource = spriteSheet.frameSource;
+					break;
+				case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Item:
+					destinationFrameSource = itemSpriteSheet.frameSource;
+					break;
+				case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.None:
+				default:
+					return;
 			}
+
 			(int Width, int Height) frameSize = spriteSheet.drawingRoutine.FrameImageSize();
-			byte[] pixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
+			byte[] pixels = destinationFrameSource.GetFramePixelData(frameInfo.Index);
 			for (int x = 0; x < selectedArea.SizeX; x++) {
 				for (int y = 0; y < selectedArea.SizeY; y++) {
 					if (selectedArea.GetPoint(x, y)) {
@@ -1449,7 +1483,7 @@ namespace UnitSpriteStudio {
 					}
 				}
 			}
-			spriteSheet.frameSource.SetFramePixelData(frameInfo.Index, pixels);
+			destinationFrameSource.SetFramePixelData(frameInfo.Index, pixels);
 			FrameMetadataChanged();
 		}
 
