@@ -75,7 +75,9 @@ namespace UnitSpriteStudio.FrameProcessing {
 						if (Directions[d].ChangeArms) destinationLayer = routine.ChangeArmsLayer(destinationLayer);
 						metadata.Direction = Directions[d].Destination;
 						DrawingRoutines.DrawingRoutine.LayerFrameInfo destinationFrameInfo = routine.GetLayerFrame(metadata, destinationLayer);
-						frameMappings[sourceFrameInfo.Index] = destinationFrameInfo.Index;
+						if (destinationFrameInfo.Target == DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit) {
+							frameMappings[sourceFrameInfo.Index] = destinationFrameInfo.Index;
+						}
 					}
 				}
 				foreach (KeyValuePair<int, int> frameMapping in frameMappings) {

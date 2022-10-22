@@ -137,6 +137,8 @@ namespace UnitSpriteStudio.DrawingRoutines {
 			return new string[] { "Top", "Right", "Left", "Center", "Turret", "Propulsion Right", "Propulsion Left", "Propulsion Center" };
 		}
 		internal override int ChangeArmsLayer(int layer) {
+			if (layer == 1) return 2;
+			if (layer == 2) return 1;
 			return layer;
 		}
 		private enum EPrimaryFrame {
