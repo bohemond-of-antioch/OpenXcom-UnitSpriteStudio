@@ -298,7 +298,7 @@ namespace UnitSpriteStudio.DrawingRoutines {
 									throw new Exception("No such frame!");
 							}
 						default:
-							return new LayerFrameInfo(0, 0, 0, LayerFrameInfo.ETarget.None);
+							return new LayerFrameInfo(-1, 0, 0, LayerFrameInfo.ETarget.None);
 					}
 				case ELayer.LeftItem:
 					switch ((ESecondaryFrame)metadata.SecondaryFrame) {
@@ -317,7 +317,7 @@ namespace UnitSpriteStudio.DrawingRoutines {
 									throw new Exception("No such frame!");
 							}
 						default:
-							return new LayerFrameInfo(0, 0, 0, LayerFrameInfo.ETarget.None);
+							return new LayerFrameInfo(-1, 0, 0, LayerFrameInfo.ETarget.None);
 					}
 				default:
 					throw new Exception("No such layer!");
@@ -340,11 +340,11 @@ namespace UnitSpriteStudio.DrawingRoutines {
 			LeftArm,
 			RightArm,
 			Legs,
-			LeftItem,
-			RightItem
+			RightItem,
+			LeftItem
 		}
 		internal override string[] LayerNames() {
-			return new string[] { "Torso", "Left arm", "Right arm", "Legs" };
+			return new string[] { "Torso", "Left arm", "Right arm", "Legs", "Right Item" };
 		}
 		internal override int ChangeArmsLayer(int layer) {
 			if (layer == 1) return 2;

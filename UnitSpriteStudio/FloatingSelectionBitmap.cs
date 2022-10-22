@@ -11,7 +11,7 @@ namespace UnitSpriteStudio {
 	class FloatingSelectionBitmap {
 		internal WriteableBitmap bitmap;
 
-		public FloatingSelectionBitmap(SpriteSheet spriteSheet) {
+		public FloatingSelectionBitmap(UnitSpriteSheet spriteSheet) {
 			bitmap = new WriteableBitmap(spriteSheet.drawingRoutine.CompositeImageSize().Width, spriteSheet.drawingRoutine.CompositeImageSize().Height, 96, 96, spriteSheet.getSprite().Format, spriteSheet.getSprite().Palette);
 		}
 
@@ -29,7 +29,7 @@ namespace UnitSpriteStudio {
 			return pixels[0];
 		}
 
-		internal void PastePixels(SpriteSheet spriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer, int shiftX, int shiftY, System.Drawing.Bitmap mask = null) {
+		internal void PastePixels(UnitSpriteSheet spriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer, int shiftX, int shiftY, System.Drawing.Bitmap mask = null) {
 			byte[] pixels = new byte[bitmap.PixelWidth * bitmap.PixelHeight];
 			bitmap.CopyPixels(pixels, bitmap.BackBufferStride, 0);
 			for (int x = 0; x < bitmap.PixelWidth; x++) {
@@ -43,7 +43,7 @@ namespace UnitSpriteStudio {
 			}
 		}
 
-		internal int CopyPixels(Selection selectedArea, SpriteSheet spriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer, bool cut = false, bool transparency = false) {
+		internal int CopyPixels(Selection selectedArea, UnitSpriteSheet spriteSheet, DrawingRoutines.FrameMetadata frameMetadata, int layer, bool cut = false, bool transparency = false) {
 			int x, y;
 			int copiedPixels = 0;
 			DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(frameMetadata, layer);

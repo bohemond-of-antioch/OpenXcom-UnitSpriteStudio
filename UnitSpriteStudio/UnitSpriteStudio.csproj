@@ -131,6 +131,7 @@
     </Compile>
     <Compile Include="SingleFrameSource.cs" />
     <Compile Include="SpriteSheet.cs" />
+    <Compile Include="UnitSpriteSheet.cs" />
     <Compile Include="UndoSystem.cs" />
     <Compile Include="UnitDirection.xaml.cs">
       <DependentUpon>UnitDirection.xaml</DependentUpon>

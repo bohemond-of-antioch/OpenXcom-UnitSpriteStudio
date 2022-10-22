@@ -17,7 +17,7 @@ namespace UnitSpriteStudio {
 			Pixels = floatingSelection.GetAllPixels();
 		}
 
-		internal FloatingSelectionBitmap GetFloatingSelection(SpriteSheet spriteSheet) {
+		internal FloatingSelectionBitmap GetFloatingSelection(UnitSpriteSheet spriteSheet) {
 			FloatingSelectionBitmap result;
 			result = new FloatingSelectionBitmap(spriteSheet);
 			result.bitmap.WritePixels(new System.Windows.Int32Rect(0, 0, Width, Height), Pixels, Width, 0);

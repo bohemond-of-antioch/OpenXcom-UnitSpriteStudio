@@ -9,7 +9,7 @@ namespace UnitSpriteStudio.Shading {
 	class PhongShader {
 		private Selection Area;
 		private NormalMap NormalMap;
-		private SpriteSheet SpriteSheet;
+		private UnitSpriteSheet SpriteSheet;
 
 		// Settings
 		private Vector3D p_lightDirection;
@@ -28,7 +28,7 @@ namespace UnitSpriteStudio.Shading {
 		public float ShadeRange = 16;
 		public float AmbientDarkness = 0;
 
-		public PhongShader(Selection area, NormalMap normalMap, SpriteSheet spriteSheet) {
+		public PhongShader(Selection area, NormalMap normalMap, UnitSpriteSheet spriteSheet) {
 			Area = area;
 			NormalMap = normalMap;
 			SpriteSheet = spriteSheet;

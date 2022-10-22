@@ -61,7 +61,7 @@ namespace UnitSpriteStudio.FrameProcessing {
 			EntireAnimation = true;
 		}
 
-		private void ProcessComposite(List<DrawingRoutines.FrameMetadata> metadataList, SpriteSheet sourceSpriteSheet,SpriteSheet destinationSpriteSheet) {
+		private void ProcessComposite(List<DrawingRoutines.FrameMetadata> metadataList, UnitSpriteSheet sourceSpriteSheet,UnitSpriteSheet destinationSpriteSheet) {
 			DrawingRoutines.DrawingRoutine routine = sourceSpriteSheet.drawingRoutine;
 			int layerCount = routine.LayerNames().Length;
 			for (int d = 0; d < 8; d++) {
@@ -111,7 +111,7 @@ namespace UnitSpriteStudio.FrameProcessing {
 			}
 		}
 
-		public void Run(DrawingRoutines.FrameMetadata mainWindowMetadata, SpriteSheet spriteSheet) {
+		public void Run(DrawingRoutines.FrameMetadata mainWindowMetadata, UnitSpriteSheet spriteSheet) {
 			List<DrawingRoutines.FrameMetadata> metadataList = new List<DrawingRoutines.FrameMetadata>();
 			int[] primaryList, secondaryList, tertiaryList;
 			if (EntirePrimaryGroup) {
@@ -157,7 +157,7 @@ namespace UnitSpriteStudio.FrameProcessing {
 					}
 				}
 			}
-			SpriteSheet sourceSpriteSheet = new SpriteSheet(spriteSheet);
+			UnitSpriteSheet sourceSpriteSheet = new UnitSpriteSheet(spriteSheet);
 			ProcessComposite(metadataList,sourceSpriteSheet, spriteSheet);
 		}
 	}

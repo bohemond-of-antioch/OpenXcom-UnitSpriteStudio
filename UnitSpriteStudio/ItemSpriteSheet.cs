@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,19 +8,32 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace UnitSpriteStudio {
-	class ItemSpriteSheet {
+	class ItemSpriteSheet:SpriteSheet {
 		protected const int ItemBitmapWidth = 256;
 		protected const int ItemBitmapHeight = 40;
 
-		internal FrameSource frameSource { get; private set; }
-		internal string sourceFileName { get; private set; }
 		internal void ReloadFromSource() {
 			if (sourceFileName != null) frameSource = new FrameSource(new BitmapImage(new Uri(sourceFileName, UriKind.Absolute)));
+		}
+		internal void Save(string FileName = "") {
+			if (FileName.Equals("")) FileName = sourceFileName;
+			sourceFileName = FileName;
+			BitmapEncoder encoder;
+			if (Path.GetExtension(FileName).Equals(".png", StringComparison.OrdinalIgnoreCase)) {
+				encoder = frameSource.GetPNGSpriteEncoder();
+			} else if (Path.GetExtension(FileName).Equals(".gif", StringComparison.OrdinalIgnoreCase)) {
+				encoder = frameSource.GetGIFSpriteEncoder();
+			} else {
+				throw new Exception("Unsupported file type!");
+			}
+			using (var stream = new FileStream(FileName, FileMode.Create)) {
+				encoder.Save(stream);
+			}
 		}
 
 		internal ItemSpriteSheet(string FileName) {
 			BitmapImage sourceImage = new BitmapImage(new Uri(FileName, UriKind.Absolute));
-			if (sourceImage.Width != 256 || sourceImage.Height != 40) {
+			if (sourceImage.PixelWidth != 256 || sourceImage.PixelHeight != 40) {
 				throw new Exception("Item image must be 256x40 pixels.");
 			}
 			frameSource = new FrameSource(sourceImage);

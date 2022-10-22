@@ -118,9 +118,10 @@ namespace UnitSpriteStudio {
 
 		private void ButtonRun_Click(object sender, RoutedEventArgs e) {
 			STargetFrames targets = GatherTargets();
-			SpriteSheet spriteSheet = ApplicationWindow.spriteSheet;
+			UnitSpriteSheet spriteSheet = ApplicationWindow.spriteSheet;
 			DrawingRoutines.DrawingRoutine drawingRoutine = spriteSheet.drawingRoutine;
 			HashSet<int> targetFrames = new HashSet<int>();
+			HashSet<int> targetItemFrames = new HashSet<int>();
 
 			DrawingRoutines.FrameMetadata frameMetadata = new DrawingRoutines.FrameMetadata();
 			foreach (int primary in targets.Primary) {
@@ -134,7 +135,15 @@ namespace UnitSpriteStudio {
 							for (int a = 0; a < drawingRoutine.GetAnimationFrameCount(frameMetadata); a++) {
 								frameMetadata.AnimationFrame = a;
 								foreach (int l in targets.Layers) {
-									targetFrames.Add(ApplicationWindow.spriteSheet.drawingRoutine.GetLayerFrame(frameMetadata, l).Index);
+									var frameInfo = ApplicationWindow.spriteSheet.drawingRoutine.GetLayerFrame(frameMetadata, l);
+									switch (frameInfo.Target) {
+										case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit:
+											targetFrames.Add(frameInfo.Index);
+											break;
+										case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Item:
+											targetItemFrames.Add(frameInfo.Index);
+											break;
+									}
 								}
 							}
 						}
@@ -145,6 +154,7 @@ namespace UnitSpriteStudio {
 			MainWindow.undoSystem.BeginUndoBlock();
 			foreach (PixelOperations.PixelOperation operation in ListOperations.Items) {
 				operation.Run(ApplicationWindow.spriteSheet, targetFrames.ToList<int>());
+				if (ApplicationWindow.itemSpriteSheet!=null) operation.Run(ApplicationWindow.itemSpriteSheet, targetItemFrames.ToList<int>());
 			}
 			MainWindow.undoSystem.EndUndoBlock();
 			ApplicationWindow.FrameMetadataChanged();

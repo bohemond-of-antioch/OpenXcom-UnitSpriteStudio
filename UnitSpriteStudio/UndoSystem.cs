@@ -12,13 +12,23 @@ namespace UnitSpriteStudio {
 			byte[] PixelData;
 			int FrameIndex;
 
-			internal SavedFrame(int frameIndex, SpriteSheet spriteSheet) {
+			internal SavedFrame(int frameIndex, UnitSpriteSheet spriteSheet) {
 				PixelData = spriteSheet.frameSource.GetFramePixelData(frameIndex);
 				FrameIndex = frameIndex;
 			}
 
-			internal void Apply(SpriteSheet spriteSheet) {
+			internal void Apply(UnitSpriteSheet spriteSheet) {
 				spriteSheet.frameSource.SetFramePixelData(FrameIndex, PixelData);
+			}
+		}
+		class PixelData {
+			internal readonly int FrameIndex;
+			internal readonly SavedFrame FrameData;
+			internal readonly WriteableBitmap EntireSprite;
+			public PixelData(int frameIndex, SavedFrame frameData, WriteableBitmap entireSprite) {
+				FrameIndex = frameIndex;
+				FrameData = frameData;
+				EntireSprite = entireSprite;
 			}
 		}
 
@@ -32,36 +42,41 @@ namespace UnitSpriteStudio {
 					ImageData = floatingSelection;
 				}
 			}
-			internal readonly int FrameIndex;
-			internal readonly SavedFrame FrameData;
 			internal readonly Selection Selection;
 			internal readonly FloatingSelectionState FloatingSelection;
 			internal readonly MainWindow.EToolPhase ToolPhase;
-			internal readonly WriteableBitmap EntireSprite;
+			internal readonly PixelData UnitPixelData;
+			internal readonly PixelData ItemPixelData;
 			internal readonly string SelectedPalette;
 
-			internal State(int frameIndex, SavedFrame frameData, Selection selection, FloatingSelectionState floatingSelection, MainWindow.EToolPhase toolPhase, string selectedPalette) {
-				FrameIndex = frameIndex;
-				FrameData = frameData;
+			internal State(int unitFrameIndex, SavedFrame unitFrameData, Selection selection, FloatingSelectionState floatingSelection, MainWindow.EToolPhase toolPhase, string selectedPalette, ItemSpriteSheet itemSpriteSheet) {
 				Selection = selection;
 				FloatingSelection = floatingSelection;
 				ToolPhase = toolPhase;
-				EntireSprite = null;
 				SelectedPalette = selectedPalette;
+				UnitPixelData = new PixelData(unitFrameIndex, unitFrameData, null);
+				if (itemSpriteSheet != null) {
+					ItemPixelData = new PixelData(-1, null, new WriteableBitmap(itemSpriteSheet.frameSource.sprite));
+				} else {
+					ItemPixelData = null;
+				}
 			}
 
-			internal State(SpriteSheet spriteSheet, Selection selection, FloatingSelectionState floatingSelection, MainWindow.EToolPhase toolPhase, string selectedPalette) {
-				FrameIndex = -1;
-				FrameData = null;
+			internal State(UnitSpriteSheet spriteSheet, Selection selection, FloatingSelectionState floatingSelection, MainWindow.EToolPhase toolPhase, string selectedPalette, ItemSpriteSheet itemSpriteSheet) {
 				Selection = selection;
 				FloatingSelection = floatingSelection;
 				ToolPhase = toolPhase;
-				EntireSprite = new WriteableBitmap(spriteSheet.frameSource.sprite);
 				SelectedPalette = selectedPalette;
+				UnitPixelData = new PixelData(-1, null, new WriteableBitmap(spriteSheet.frameSource.sprite));
+				if (itemSpriteSheet != null) {
+					ItemPixelData = new PixelData(-1, null, new WriteableBitmap(itemSpriteSheet.frameSource.sprite));
+				} else {
+					ItemPixelData = null;
+				}
 			}
 		}
 
-		SpriteSheet SpriteSheet;
+		UnitSpriteSheet SpriteSheet;
 		MainWindow ApplicationWindow;
 
 		Stack<State> UndoBuffer;
@@ -69,7 +84,7 @@ namespace UnitSpriteStudio {
 
 		bool InsideUndoBlock = false;
 
-		public UndoSystem(SpriteSheet spriteSheet, MainWindow mainWindow) {
+		public UndoSystem(UnitSpriteSheet spriteSheet, MainWindow mainWindow) {
 			SpriteSheet = spriteSheet;
 			ApplicationWindow = mainWindow;
 			UndoBuffer = new Stack<State>();
@@ -83,19 +98,19 @@ namespace UnitSpriteStudio {
 
 		private State PopUndoState() {
 			State temp = UndoBuffer.Pop();
-			if (temp.FrameIndex == -1) {
+			if (temp.UnitPixelData.FrameIndex == -1) {
 				RedoBuffer.Push(CaptureEntireSprite());
 			} else {
-				RedoBuffer.Push(CaptureCurrentState(temp.FrameIndex));
+				RedoBuffer.Push(CaptureCurrentState(temp.UnitPixelData.FrameIndex));
 			}
 			return temp;
 		}
 		private State PopRedoState() {
 			State temp = RedoBuffer.Pop();
-			if (temp.FrameIndex == -1) {
+			if (temp.UnitPixelData.FrameIndex == -1) {
 				UndoBuffer.Push(CaptureEntireSprite());
 			} else {
-				UndoBuffer.Push(CaptureCurrentState(temp.FrameIndex));
+				UndoBuffer.Push(CaptureCurrentState(temp.UnitPixelData.FrameIndex));
 			}
 			return temp;
 		}
@@ -109,7 +124,8 @@ namespace UnitSpriteStudio {
 				, new Selection(ApplicationWindow.selectedArea)
 				, new State.FloatingSelectionState((floatingSelectionX, floatingSelectionY), ApplicationWindow.floatingSelection)
 				, ApplicationWindow.toolPhase
-				, previousPalette);
+				, previousPalette
+				, ApplicationWindow.itemSpriteSheet);
 			return currentState;
 		}
 		private State CaptureCurrentState(int frameIndex = -1) {
@@ -130,7 +146,8 @@ namespace UnitSpriteStudio {
 				, new Selection(ApplicationWindow.selectedArea)
 				, new State.FloatingSelectionState((floatingSelectionX, floatingSelectionY), ApplicationWindow.floatingSelection)
 				, ApplicationWindow.toolPhase
-				, null);
+				, null
+				, ApplicationWindow.itemSpriteSheet);
 			return currentState;
 		}
 
@@ -162,11 +179,12 @@ namespace UnitSpriteStudio {
 		}
 
 		private void ApplyState(State state) {
-			if (state.FrameData != null) {
-				state.FrameData.Apply(SpriteSheet);
+			if (state.UnitPixelData.FrameData != null) {
+				state.UnitPixelData.FrameData.Apply(SpriteSheet);
 			} else {
-				SpriteSheet.frameSource.SetInternalSprite(state.EntireSprite);
+				SpriteSheet.frameSource.SetInternalSprite(state.UnitPixelData.EntireSprite);
 			}
+			if (state.ItemPixelData != null) ApplicationWindow.itemSpriteSheet.frameSource.SetInternalSprite(state.ItemPixelData.EntireSprite);
 			ApplicationWindow.selectedArea = state.Selection;
 			System.Windows.Controls.Canvas.SetLeft(ApplicationWindow.ImageFloatingSelection, state.FloatingSelection.Position.X);
 			System.Windows.Controls.Canvas.SetTop(ApplicationWindow.ImageFloatingSelection, state.FloatingSelection.Position.Y);

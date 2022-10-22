@@ -193,12 +193,11 @@ namespace UnitSpriteStudio.DrawingRoutines {
 			Torso,
 			LeftArm,
 			RightArm,
-			Legs,
-			LeftItem,
-			RightItem
+			RightItem,
+			LeftItem
 		}
 		internal override string[] LayerNames() {
-			return new string[] { "Torso", "Left arm", "Right arm" };
+			return new string[] { "Torso", "Left arm", "Right arm", "Right item" };
 		}
 		internal override int ChangeArmsLayer(int layer) {
 			if (layer == 1) return 2;

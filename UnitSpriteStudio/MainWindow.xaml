@@ -72,6 +72,11 @@
 				<MenuItem Header="_Shift animation" Click="MenuItemShiftAnimation_Click"/>
 				<MenuItem Header="_Pixel operations" Click="MenuItemPixelOperations_Click"/>
 			</MenuItem>
+			<MenuItem Name="ItemSpriteMenuSection" Header="_Item sprite">
+				<MenuItem Header="_Load" Click="ButtonLoadItem_Click"/>
+				<MenuItem Header="_Save" Click="MenuItemSpriteSave_Click"/>
+				<MenuItem Header="_Save as..." Click="MenuItemSpriteSaveAs_Click"/>
+			</MenuItem>
 			<MenuItem Header="_Help" HorizontalAlignment="Right" FlowDirection="RightToLeft">
 				<MenuItem Header="Shortcuts" Click="MenuItemHelpShortcuts_Click"/>
 			</MenuItem>

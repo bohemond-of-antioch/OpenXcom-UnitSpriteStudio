@@ -40,7 +40,7 @@ namespace UnitSpriteStudio {
 		private const int AnimationImageScale = 3;
 		private const int LayerImageScale = 2;
 
-		internal SpriteSheet spriteSheet;
+		internal UnitSpriteSheet spriteSheet;
 		internal ItemSpriteSheet itemSpriteSheet;
 		private RenderTargetBitmap compositeImageSource;
 		private RenderTargetBitmap overlayImageSource;
@@ -70,6 +70,7 @@ namespace UnitSpriteStudio {
 		public event Action<byte> OnPippeteUsed;
 
 		private bool IsSaved = true;
+		private bool IsItemSaved = true;
 		public MainWindow() {
 			InitializeComponent();
 			LayerImages = new List<Image>();
@@ -280,7 +281,19 @@ namespace UnitSpriteStudio {
 			layerMetadata = GatherMetadata();
 			for (int l = 0; l < LayerImages.Count; l++) {
 				try {
-					LayerImages[l].Source = spriteSheet.GetLayerImage(layerMetadata, l);
+					var frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(layerMetadata, l);
+					switch (frameInfo.Target) {
+						case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit:
+							LayerImages[l].Source = spriteSheet.GetLayerImage(layerMetadata, l);
+							break;
+						case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Item:
+							LayerImages[l].Source = itemSpriteSheet?.frameSource.GetFrame(frameInfo.Index);
+							break;
+						case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.None:
+						default:
+							LayerImages[l].Source = null;
+							break;
+					}
 				} catch (Exception) {
 					LayerImages[l].Source = null;
 				}
@@ -300,7 +313,7 @@ namespace UnitSpriteStudio {
 			animationImageSource.Render(drawingVisual);
 		}
 
-		internal void InitializeSpriteSheet(SpriteSheet spriteSheet) {
+		internal void InitializeSpriteSheet(UnitSpriteSheet spriteSheet) {
 			SpriteSheetInitialized = false;
 			this.spriteSheet = spriteSheet;
 			string identifiedPalette = Palettes.Identify(spriteSheet.GetColorPalette());
@@ -399,7 +412,7 @@ namespace UnitSpriteStudio {
 
 			ToggleSmartLayer.IsEnabled = (spriteSheet.drawingRoutine.SmartLayerSupported() != DrawingRoutines.DrawingRoutine.SmartLayerType.None);
 
-			SectionItems.IsEnabled = spriteSheet.drawingRoutine.ItemSupported();
+			ItemSpriteMenuSection.IsEnabled = SectionItems.IsEnabled = spriteSheet.drawingRoutine.ItemSupported();
 
 			RefreshRulesPanel();
 			FrameMetadataChanged();
@@ -443,7 +456,7 @@ namespace UnitSpriteStudio {
 			return FileTitle;
 		}
 		private void SetWindowTitle() {
-			this.Title = string.Format("{0}{1} - UnitSprite Studio", GetTitleFilename(), IsSaved ? "" : "*");
+			this.Title = string.Format("{0}{1}{2} - UnitSprite Studio", GetTitleFilename(), IsSaved ? "" : "*", IsItemSaved ? "" : "#");
 		}
 		private void SetFileModified() {
 			if (IsSaved) {
@@ -455,28 +468,50 @@ namespace UnitSpriteStudio {
 			IsSaved = true;
 			SetWindowTitle();
 		}
+		private void SetItemFileModified() {
+			if (IsItemSaved) {
+				IsItemSaved = false;
+				SetWindowTitle();
+			}
+		}
+		private void SetItemFileSaved() {
+			IsItemSaved = true;
+			SetWindowTitle();
+		}
 
 		private bool ConfirmUnsavedFile() {
-			if (IsSaved) {
-				return true;
-			} else {
+			if (!IsSaved) {
 				var answer = MessageBox.Show(string.Format("Save changes to {0}?", GetTitleFilename()), "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
 				if (answer == MessageBoxResult.Yes) {
 					return Save();
-				} else if (answer == MessageBoxResult.No) {
-					return true;
-				} else {
+				} else if (answer == MessageBoxResult.Cancel) {
 					return false;
 				}
 			}
+			if (!IsItemSaved) {
+				var answer = MessageBox.Show(string.Format("Save changes to item {0}?", System.IO.Path.GetFileName(itemSpriteSheet.sourceFileName)), "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+				if (answer == MessageBoxResult.Yes) {
+					SaveItem();
+				} else if (answer == MessageBoxResult.Cancel) {
+					return false;
+				}
+			}
+			return true;
 		}
 		private bool ConfirmDiscardChanges() {
-			if (IsSaved) {
-				return true;
-			} else {
+			if (!IsSaved) {
 				var answer = MessageBox.Show(string.Format("Discard changes to {0}?", GetTitleFilename()), "Unsaved changes", MessageBoxButton.YesNo, MessageBoxImage.Question);
-				return (answer == MessageBoxResult.Yes);
+				if (answer == MessageBoxResult.No) {
+					return false;
+				}
 			}
+			if (!IsItemSaved) {
+				var answer = MessageBox.Show(string.Format("Discard changes to item {0}?", System.IO.Path.GetFileName(itemSpriteSheet.sourceFileName)), "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+				if (answer == MessageBoxResult.No) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		private void ToolColorPalette_OnSelectedColorChanged() {
@@ -777,7 +812,18 @@ namespace UnitSpriteStudio {
 						break;
 					case ECursorTool.Paint:
 						if (Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
-							byte ColorUnderCursor = spriteSheet.GetPixel(GatherMetadata(), ListBoxLayers.SelectedIndex, PositionX, PositionY);
+							DrawingRoutines.FrameMetadata layerMetadata;
+							layerMetadata = GatherMetadata();
+							var frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(layerMetadata, ListBoxLayers.SelectedIndex);
+							byte ColorUnderCursor = 0;
+							switch (frameInfo.Target) {
+								case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit:
+									ColorUnderCursor = spriteSheet.GetPixel(layerMetadata, ListBoxLayers.SelectedIndex, PositionX, PositionY);
+									break;
+								case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Item:
+									if (itemSpriteSheet != null) ColorUnderCursor = itemSpriteSheet.frameSource.GetPixel(frameInfo.Index, PositionX - frameInfo.OffsetX, PositionY - frameInfo.OffsetY);
+									break;
+							}
 							if (e.ChangedButton == MouseButton.Left) ToolColorPalette.SelectedLeftColor = ColorUnderCursor;
 							if (e.ChangedButton == MouseButton.Middle) ToolColorPalette.SelectedMiddleColor = ColorUnderCursor;
 							if (e.ChangedButton == MouseButton.Right) ToolColorPalette.SelectedRightColor = ColorUnderCursor;
@@ -795,7 +841,17 @@ namespace UnitSpriteStudio {
 							if (e.ChangedButton == MouseButton.Left) ApplyColor = ToolColorPalette.SelectedLeftColor;
 							if (e.ChangedButton == MouseButton.Middle) ApplyColor = ToolColorPalette.SelectedMiddleColor;
 							if (e.ChangedButton == MouseButton.Right) ApplyColor = ToolColorPalette.SelectedRightColor;
-							spriteSheet.SetPixel(GatherMetadata(), ListBoxLayers.SelectedIndex, PositionX, PositionY, ApplyColor);
+							DrawingRoutines.FrameMetadata layerMetadata;
+							layerMetadata = GatherMetadata();
+							var frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(layerMetadata, ListBoxLayers.SelectedIndex);
+							switch (frameInfo.Target) {
+								case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit:
+									spriteSheet.SetPixel(layerMetadata, ListBoxLayers.SelectedIndex, PositionX, PositionY, ApplyColor);
+									break;
+								case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Item:
+									itemSpriteSheet?.frameSource.SetPixel(frameInfo.Index, PositionX - frameInfo.OffsetX, PositionY - frameInfo.OffsetY, ApplyColor);
+									break;
+							}
 							RefreshCompositeImage();
 						}
 						break;
@@ -871,7 +927,18 @@ namespace UnitSpriteStudio {
 							break;
 						case ECursorTool.Paint:
 							if (Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
-								byte ColorUnderCursor = spriteSheet.GetPixel(GatherMetadata(), ListBoxLayers.SelectedIndex, PositionX, PositionY);
+								DrawingRoutines.FrameMetadata layerMetadata;
+								layerMetadata = GatherMetadata();
+								var frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(layerMetadata, ListBoxLayers.SelectedIndex);
+								byte ColorUnderCursor = 0;
+								switch (frameInfo.Target) {
+									case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit:
+										ColorUnderCursor = spriteSheet.GetPixel(layerMetadata, ListBoxLayers.SelectedIndex, PositionX, PositionY);
+										break;
+									case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Item:
+										if (itemSpriteSheet != null) ColorUnderCursor = itemSpriteSheet.frameSource.GetPixel(frameInfo.Index, PositionX - frameInfo.OffsetX, PositionY - frameInfo.OffsetY);
+										break;
+								}
 								if (e.LeftButton == MouseButtonState.Pressed) {
 									ToolColorPalette.SelectedLeftColor = ColorUnderCursor;
 								} else if (e.MiddleButton == MouseButtonState.Pressed) {
@@ -898,11 +965,23 @@ namespace UnitSpriteStudio {
 								Vector delta = new Vector(PositionX - lastCursorPositionX, PositionY - lastCursorPositionY);
 								Vector direction = delta;
 								direction.Normalize();
-								var metadata = GatherMetadata();
-								for (int f = 0; f < delta.Length; f++) {
-									spriteSheet.SetPixel(metadata, ListBoxLayers.SelectedIndex, (int)(lastCursorPositionX + direction.X * f), (int)(lastCursorPositionY + direction.Y * f), ApplyColor);
+								DrawingRoutines.FrameMetadata layerMetadata;
+								layerMetadata = GatherMetadata();
+								var frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(layerMetadata, ListBoxLayers.SelectedIndex);
+								switch (frameInfo.Target) {
+									case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit:
+										for (int f = 0; f < delta.Length; f++) {
+											spriteSheet.SetPixel(layerMetadata, ListBoxLayers.SelectedIndex, (int)(lastCursorPositionX + direction.X * f), (int)(lastCursorPositionY + direction.Y * f), ApplyColor);
+										}
+										spriteSheet.SetPixel(layerMetadata, ListBoxLayers.SelectedIndex, PositionX, PositionY, ApplyColor);
+										break;
+									case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Item:
+										for (int f = 0; f < delta.Length; f++) {
+											itemSpriteSheet?.frameSource.SetPixel(frameInfo.Index, (int)(lastCursorPositionX + direction.X * f) - frameInfo.OffsetX, (int)(lastCursorPositionY + direction.Y * f) - frameInfo.OffsetY, ApplyColor);
+										}
+										itemSpriteSheet?.frameSource.SetPixel(frameInfo.Index, PositionX - frameInfo.OffsetX, PositionY - frameInfo.OffsetY, ApplyColor);
+										break;
 								}
-								spriteSheet.SetPixel(GatherMetadata(), ListBoxLayers.SelectedIndex, PositionX, PositionY, ApplyColor);
 								RefreshCompositeImage();
 							}
 							break;
@@ -1043,13 +1122,13 @@ namespace UnitSpriteStudio {
 		}
 		private void MenuItemNew_Click(object sender, RoutedEventArgs e) {
 			if (ConfirmUnsavedFile()) {
-				SpriteSheet openedSpriteSheet;
+				UnitSpriteSheet openedSpriteSheet;
 				int DrawingRoutine = int.Parse((string)((MenuItem)sender).Tag);
 				if (DrawingRoutine == -1) {
-					openedSpriteSheet = new SpriteSheet(new DrawingRoutines.DrawingRoutineSingleFrame());
+					openedSpriteSheet = new UnitSpriteSheet(new DrawingRoutines.DrawingRoutineSingleFrame());
 				} else {
 					if (DrawingRoutines.DrawingRoutine.ClassConstructors.ContainsKey(DrawingRoutine)) {
-						openedSpriteSheet = new SpriteSheet(DrawingRoutines.DrawingRoutine.ClassConstructors[DrawingRoutine]());
+						openedSpriteSheet = new UnitSpriteSheet(DrawingRoutines.DrawingRoutine.ClassConstructors[DrawingRoutine]());
 					} else {
 						throw new Exception("Unsupported drawing routine.");
 					}
@@ -1063,16 +1142,16 @@ namespace UnitSpriteStudio {
 				OpenFileDialog openFileDialog = new OpenFileDialog();
 				openFileDialog.Filter = "PNG Files|*.png|GIF Files|*.gif|All Files|*.*";
 				if (openFileDialog.ShowDialog() == true) {
-					SpriteSheet openedSpriteSheet;
+					UnitSpriteSheet openedSpriteSheet;
 					int DrawingRoutine = int.Parse((string)((MenuItem)sender).Tag);
 					try {
 						if (DrawingRoutine == -1) {
 							var singleFrameRoutine = new DrawingRoutines.DrawingRoutineSingleFrame();
-							openedSpriteSheet = new SpriteSheet(singleFrameRoutine, openFileDialog.FileName);
+							openedSpriteSheet = new UnitSpriteSheet(singleFrameRoutine, openFileDialog.FileName);
 							singleFrameRoutine.SetSize(openedSpriteSheet.frameSource.GetSize().Width, openedSpriteSheet.frameSource.GetSize().Height);
 						} else {
 							if (DrawingRoutines.DrawingRoutine.ClassConstructors.ContainsKey(DrawingRoutine)) {
-								openedSpriteSheet = new SpriteSheet(DrawingRoutines.DrawingRoutine.ClassConstructors[DrawingRoutine](), openFileDialog.FileName);
+								openedSpriteSheet = new UnitSpriteSheet(DrawingRoutines.DrawingRoutine.ClassConstructors[DrawingRoutine](), openFileDialog.FileName);
 							} else {
 								throw new Exception("Unsupported drawing routine.");
 							}
@@ -1547,6 +1626,14 @@ namespace UnitSpriteStudio {
 		}
 
 		private void ButtonLoadItem_Click(object sender, RoutedEventArgs e) {
+			if (!IsItemSaved) {
+				var answer = MessageBox.Show(string.Format("Save changes to item {0}?", System.IO.Path.GetFileName(itemSpriteSheet.sourceFileName)), "Unsaved changes", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+				if (answer == MessageBoxResult.Yes) {
+					SaveItem();
+				} else if (answer == MessageBoxResult.Cancel) {
+					return;
+				}
+			}
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			openFileDialog.Filter = "PNG Files|*.png|GIF Files|*.gif|All Files|*.*";
 			if (openFileDialog.ShowDialog() == true) {
@@ -1558,7 +1645,8 @@ namespace UnitSpriteStudio {
 					return;
 				}
 				itemSpriteSheet = openedSpriteSheet;
-				LabelItemFilename.Content = openFileDialog.FileName;
+				itemSpriteSheet.frameSource.OnChanged += SetItemFileModified;
+				LabelItemFilename.Content = System.IO.Path.GetFileName(openFileDialog.FileName);
 				CheckBoxItemShow.IsChecked = true;
 				RefreshCompositeImage();
 				if (clipboardMonitor != null) {
@@ -1614,6 +1702,29 @@ namespace UnitSpriteStudio {
 				spriteSheet.frameSource.OnChanged += SetFileModified;
 				SetFileSaved();
 				FrameMetadataChanged();
+			}
+		}
+
+		private void SaveItem() {
+			if (itemSpriteSheet != null) {
+				itemSpriteSheet.Save();
+				SetItemFileSaved();
+			}
+		}
+
+		private void MenuItemSpriteSave_Click(object sender, RoutedEventArgs e) {
+			SaveItem();
+		}
+
+		private void MenuItemSpriteSaveAs_Click(object sender, RoutedEventArgs e) {
+			if (itemSpriteSheet != null) {
+				SaveFileDialog saveFileDialog = new SaveFileDialog();
+				saveFileDialog.Filter = "PNG Files|*.png|GIF Files|*.gif|All Files|*.*";
+				if (saveFileDialog.ShowDialog() == true) {
+					itemSpriteSheet.Save(saveFileDialog.FileName);
+					LabelItemFilename.Content = System.IO.Path.GetFileName(saveFileDialog.FileName);
+					SetItemFileSaved();
+				}
 			}
 		}
 
