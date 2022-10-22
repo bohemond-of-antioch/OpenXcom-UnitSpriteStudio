@@ -11,6 +11,7 @@ namespace UnitSpriteStudio.DrawingRoutines {
 		public static readonly Dictionary<int, Func<DrawingRoutine>> ClassConstructors = new Dictionary<int, Func<DrawingRoutine>> {
 			{ 0,()=>new DrawingRoutineSoldier() },
 			{ 1,()=>new DrawingRoutineFloater() },
+			{ 2,()=>new DrawingRoutineTank() },
 			{ 4,()=>new DrawingRoutineEthereal() },
 			{ 5,()=>new DrawingRoutineSectopod() },
 			{ 6,()=>new DrawingRoutineSnakeman() },

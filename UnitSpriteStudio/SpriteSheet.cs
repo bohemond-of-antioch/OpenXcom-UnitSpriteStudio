@@ -84,7 +84,9 @@ namespace UnitSpriteStudio {
 		}
 
 		internal ImageSource GetLayerImage(FrameMetadata metadata, int layer) {
-			return frameSource.GetFrame(drawingRoutine.GetLayerFrame(metadata, layer).Index);
+			int frameIndex = drawingRoutine.GetLayerFrame(metadata, layer).Index;
+			if (frameIndex == -1) return null;
+			return frameSource.GetFrame(frameIndex);
 		}
 
 		internal BitmapPalette GetColorPalette() {

@@ -71,6 +71,7 @@
     <Compile Include="DrawingRoutines\DrawingRoutine.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineChryssalid.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineCelatid.cs" />
+    <Compile Include="DrawingRoutines\DrawingRoutineTank.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineSilacoid.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineSingleFrame.cs" />
     <Compile Include="DrawingRoutines\DrawingRoutineEthereal.cs" />

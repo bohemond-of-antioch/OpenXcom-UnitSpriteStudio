@@ -281,11 +281,10 @@ namespace UnitSpriteStudio {
 			for (int l = 0; l < LayerImages.Count; l++) {
 				try {
 					LayerImages[l].Source = spriteSheet.GetLayerImage(layerMetadata, l);
-					LayerImages[l].Visibility = Visibility.Visible;
 				} catch (Exception) {
 					LayerImages[l].Source = null;
-					LayerImages[l].Visibility = Visibility.Hidden;
 				}
+				LayerImages[l].Visibility = LayerImages[l].Source == null ? Visibility.Hidden : Visibility.Visible;
 			}
 		}
 
@@ -1255,6 +1254,15 @@ namespace UnitSpriteStudio {
 					case Key.D6:
 						ListBoxLayers.SelectedIndex = 5;
 						break;
+					case Key.D7:
+						ListBoxLayers.SelectedIndex = 6;
+						break;
+					case Key.D8:
+						ListBoxLayers.SelectedIndex = 7;
+						break;
+					case Key.D9:
+						ListBoxLayers.SelectedIndex = 8;
+						break;
 					case Key.Add:
 						SliderFrame.Value = (SliderFrame.Value + 1) % (SliderFrame.Maximum + 1);
 						break;
@@ -1346,6 +1354,9 @@ namespace UnitSpriteStudio {
 			undoSystem.RegisterUndoState();
 			DrawingRoutines.FrameMetadata metadata = GatherMetadata();
 			DrawingRoutines.DrawingRoutine.LayerFrameInfo frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(metadata, layer);
+			if (frameInfo.Target != DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit) {
+				return;
+			}
 			(int Width, int Height) frameSize = spriteSheet.drawingRoutine.FrameImageSize();
 			byte[] pixels = spriteSheet.frameSource.GetFramePixelData(frameInfo.Index);
 			for (int x = 0; x < selectedArea.SizeX; x++) {
