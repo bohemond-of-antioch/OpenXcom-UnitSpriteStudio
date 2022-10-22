@@ -37,12 +37,11 @@ namespace UnitSpriteStudio {
 			frameSource = drawingRoutine.CreateFrameSource(new BitmapImage(new Uri(FileName, UriKind.Absolute)));
 			sourceFileName = FileName;
 		}
-
-		internal UnitSpriteSheet(DrawingRoutine drawingRoutine) {
+		internal UnitSpriteSheet(DrawingRoutine drawingRoutine)
+			: this(drawingRoutine, drawingRoutine.DefaultSpriteSheetSize(), drawingRoutine.DefaultSpriteSheetPalette()) { }
+		internal UnitSpriteSheet(DrawingRoutine drawingRoutine, (int Width, int Height) spriteSize, BitmapPalette spritePalette) {
 			this.drawingRoutine = drawingRoutine;
-			var defaultSpriteSize = drawingRoutine.DefaultSpriteSheetSize();
-			var defaultPalette = drawingRoutine.DefaultSpriteSheetPalette();
-			var emptyBitmap = new WriteableBitmap(defaultSpriteSize.Width, defaultSpriteSize.Height, 96, 96, PixelFormats.Indexed8, defaultPalette);
+			var emptyBitmap = new WriteableBitmap(spriteSize.Width, spriteSize.Height, 96, 96, PixelFormats.Indexed8, spritePalette);
 			frameSource = drawingRoutine.CreateFrameSource(emptyBitmap);
 		}
 

@@ -1,0 +1,39 @@
+﻿<Window x:Class="UnitSpriteStudio.SingleFrameDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UnitSpriteStudio"
+        mc:Ignorable="d"
+        Title="New Single Frame" Height="133" Width="284" ResizeMode="NoResize" WindowStyle="ToolWindow" WindowStartupLocation="CenterOwner">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<Label Grid.Column="0" Grid.Row="0">Width</Label>
+		<TextBox Name="TextBoxWidth" Grid.Column="1" Grid.Row="0" Text="32"/>
+		<Label Grid.Column="0" Grid.Row="1">Height</Label>
+		<TextBox Name="TextBoxHeight" Grid.Column="1" Grid.Row="1" Text="40"/>
+		<Label Grid.Column="0" Grid.Row="2">Palette</Label>
+		<ComboBox Name="ComboBoxPalette" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3">
+			<ComboBoxItem Content="UFO Battlescape" IsSelected="True"></ComboBoxItem>
+			<ComboBoxItem Content="UFO Basescape"></ComboBoxItem>
+			<ComboBoxItem Content="UFO Geoscape"></ComboBoxItem>
+			<ComboBoxItem Content="UFO Graphs"></ComboBoxItem>
+			<ComboBoxItem Content="UFO Ufopaedia"></ComboBoxItem>
+			<ComboBoxItem Content="TFTD Battlescape"></ComboBoxItem>
+			<ComboBoxItem Content="TFTD Basescape"></ComboBoxItem>
+			<ComboBoxItem Content="TFTD Geoscape"></ComboBoxItem>
+			<ComboBoxItem Content="TFTD Graphs"></ComboBoxItem>
+		</ComboBox>
+		<Button Content="OK" Grid.Column="0" Grid.Row="3" Click="ButtonOK_Click"/>
+		<Button Content="Cancel" Grid.Column="1" Grid.Row="3" Click="ButtonCancel_Click"/>
+	</Grid>
+</Window>

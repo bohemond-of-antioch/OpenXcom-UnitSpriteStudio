@@ -129,6 +129,9 @@
     <Compile Include="ShiftAnimationWindow.xaml.cs">
       <DependentUpon>ShiftAnimationWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SingleFrameDialog.xaml.cs">
+      <DependentUpon>SingleFrameDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SingleFrameSource.cs" />
     <Compile Include="SpriteSheet.cs" />
     <Compile Include="UnitSpriteSheet.cs" />
@@ -190,6 +193,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ShiftAnimationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SingleFrameDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

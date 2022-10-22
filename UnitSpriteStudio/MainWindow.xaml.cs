@@ -1147,7 +1147,19 @@ namespace UnitSpriteStudio {
 				UnitSpriteSheet openedSpriteSheet;
 				int DrawingRoutine = int.Parse((string)((MenuItem)sender).Tag);
 				if (DrawingRoutine == -1) {
-					openedSpriteSheet = new UnitSpriteSheet(new DrawingRoutines.DrawingRoutineSingleFrame());
+					SingleFrameDialog newSpriteWindow = new SingleFrameDialog();
+					newSpriteWindow.Owner = this;
+					bool? result = newSpriteWindow.ShowDialog();
+					if (result == true) {
+						var singleFrameRoutine = new DrawingRoutines.DrawingRoutineSingleFrame();
+						int SpriteWidth = int.Parse(newSpriteWindow.TextBoxWidth.Text);
+						int SpriteHeight = int.Parse(newSpriteWindow.TextBoxHeight.Text);
+						BitmapPalette SelectedPalette = Palettes.FromName(((ComboBoxItem)newSpriteWindow.ComboBoxPalette.SelectedItem).Content.ToString());
+						openedSpriteSheet = new UnitSpriteSheet(singleFrameRoutine, (SpriteWidth, SpriteHeight), SelectedPalette);
+						singleFrameRoutine.SetSize(SpriteWidth, SpriteHeight);
+					} else {
+						return;
+					}
 				} else {
 					if (DrawingRoutines.DrawingRoutine.ClassConstructors.ContainsKey(DrawingRoutine)) {
 						openedSpriteSheet = new UnitSpriteSheet(DrawingRoutines.DrawingRoutine.ClassConstructors[DrawingRoutine]());

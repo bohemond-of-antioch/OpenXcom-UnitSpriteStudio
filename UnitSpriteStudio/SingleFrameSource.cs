@@ -25,7 +25,7 @@ namespace UnitSpriteStudio {
 				LoadedImagePalette = Palettes.FromName(IdentifiedPalette);
 			}
 			sprite = new WriteableBitmap(originalSprite.PixelWidth, originalSprite.PixelHeight, originalSprite.DpiX, originalSprite.DpiY, PixelFormats.Indexed8, LoadedImagePalette);
-			byte[] originalPixels = new byte[originalSprite.PixelWidth * originalSprite.PixelHeight];
+			byte[] originalPixels = new byte[originalSprite.BackBufferStride * originalSprite.PixelHeight];
 			originalSprite.CopyPixels(originalPixels, originalSprite.BackBufferStride, 0);
 			sprite.WritePixels(new System.Windows.Int32Rect(0, 0, originalSprite.PixelWidth, originalSprite.PixelHeight), originalPixels, sprite.BackBufferStride, 0);
 			return;
