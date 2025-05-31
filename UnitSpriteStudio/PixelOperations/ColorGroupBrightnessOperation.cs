@@ -25,7 +25,7 @@ namespace UnitSpriteStudio.PixelOperations {
 				byte colorGroup = (byte)(pixel / 16);
 				if (colorGroup != SourceGroup) continue;
 				int newColor;
-				newColor = Math.Max(Math.Min(pixel + BrightnessAdjustment, ((pixel / 16) + 1) * 16 - 1), (pixel / 16) * 16);
+				newColor = Math.Max(1, Math.Max(Math.Min(pixel + BrightnessAdjustment, ((pixel / 16) + 1) * 16 - 1), (pixel / 16) * 16));
 				pixelData[p] = (byte)newColor;
 			}
 		}
