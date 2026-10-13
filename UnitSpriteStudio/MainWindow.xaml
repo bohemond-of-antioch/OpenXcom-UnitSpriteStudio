@@ -26,6 +26,9 @@
 					<MenuItem Header="Routine 8 - Silacoid" Click="MenuItemNew_Click" Tag="8"/>
 					<MenuItem Header="Routine 9 - Celatid" Click="MenuItemNew_Click" Tag="9"/>
 					<MenuItem Header="Routine 10 - Muton" Click="MenuItemNew_Click" Tag="10"/>
+					<MenuItem Header="Routine 13 - Aquanaut" Click="MenuItemNew_Click" Tag="13"/>
+					<MenuItem Header="Routine 14 - Calcinite, Deep One, Gillman, Lobster Man, Tasoth" Click="MenuItemNew_Click" Tag="14"/>
+					<MenuItem Header="Routine 15 - Aquatoid" Click="MenuItemNew_Click" Tag="15"/>
 					<MenuItem Header="Single frame" Click="MenuItemNew_Click" Tag="-1"/>
 				</MenuItem>
 
@@ -40,6 +43,9 @@
 					<MenuItem Header="Routine 8 - Silacoid" Click="MenuItemOpen_Click" Tag="8"/>
 					<MenuItem Header="Routine 9 - Celatid" Click="MenuItemOpen_Click" Tag="9"/>
 					<MenuItem Header="Routine 10 - Muton" Click="MenuItemOpen_Click" Tag="10"/>
+					<MenuItem Header="Routine 13 - Aquanaut" Click="MenuItemOpen_Click" Tag="13"/>
+					<MenuItem Header="Routine 14 - Calcinite, Deep One, Gillman, Lobster Man, Tasoth" Click="MenuItemOpen_Click" Tag="14"/>
+					<MenuItem Header="Routine 15 - Aquatoid" Click="MenuItemOpen_Click" Tag="15"/>
 					<MenuItem Header="Single frame" Click="MenuItemOpen_Click" Tag="-1"/>
 				</MenuItem>
 				<MenuItem Header="_Save" Click="MenuItemSave_Click" />

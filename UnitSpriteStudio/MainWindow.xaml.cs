@@ -1274,10 +1274,10 @@ namespace UnitSpriteStudio {
 		}
 
 		internal bool IsUndoShortcut(KeyEventArgs e) {
-			return (e.Key == Key.Z && KeyModifier(ModifierKeys.Control));
+			return e.Key == Key.Z && KeyModifier(ModifierKeys.Control);
 		}
 		internal bool IsRedoShortcut(KeyEventArgs e) {
-			return (e.Key == Key.Y && KeyModifier(ModifierKeys.Control));
+			return e.Key == Key.Y && KeyModifier(ModifierKeys.Control);
 		}
 
 		internal void Window_KeyUp(object sender, KeyEventArgs e) {

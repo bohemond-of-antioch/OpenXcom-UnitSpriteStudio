@@ -110,6 +110,9 @@ namespace UnitSpriteStudio {
 			}
 			(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
 			CroppedBitmap result;
+			if (sprite.PixelWidth < frameCoords.X + 32 || sprite.PixelHeight < frameCoords.Y + 40) {
+				return null;
+			}
 			lock (sprite) {
 				result = new CroppedBitmap(sprite, new System.Windows.Int32Rect(frameCoords.X, frameCoords.Y, 32, 40));
 				imageSourceCache.Add(FrameIndex, result);

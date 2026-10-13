@@ -36,6 +36,8 @@
 			<Label>Erase: Delete</Label>
 			<Label>Fill: Insert</Label>
 			<Label>Move: Ctrl+Click&amp;Drag</Label>
+			<Label>Add to selection: Hold Shift</Label>
+			<Label>Subtract from selection: Hold Alt</Label>
 		</StackPanel>
 
 	</StackPanel>

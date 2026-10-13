@@ -18,7 +18,10 @@ namespace UnitSpriteStudio.DrawingRoutines {
 			{ 7,()=>new DrawingRoutineChryssalid() },
 			{ 8,()=>new DrawingRoutineSilacoid() },
 			{ 9,()=>new DrawingRoutineCelatid() },
-			{ 10,()=>new DrawingRoutineMuton() }
+			{ 10,()=>new DrawingRoutineMuton() },
+			{ 13,()=>new DrawingRoutineAquanaut() },
+			{ 14,()=>new DrawingRoutineGillMan() },
+			{ 15,()=>new DrawingRoutineAquatoid() }
 		};
 		internal struct LayerFrameInfo {
 			internal enum ETarget {
