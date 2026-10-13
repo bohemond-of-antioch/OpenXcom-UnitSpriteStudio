@@ -32,11 +32,11 @@ namespace UnitSpriteStudio {
 		}
 
 
-		internal override BitmapSource GetFrame(int FrameIndex) {
+		internal override BitmapSource GetFrame(int FrameIndex, bool Unused = false) {
 			return sprite;
 		}
 
-		internal override byte[] GetFramePixelData(int FrameIndex) {
+		internal override byte[] GetFramePixelData(int FrameIndex, bool Unused = false) {
 			byte[] pixels = new byte[sprite.PixelWidth*sprite.PixelHeight];
 			lock (sprite) {
 				try {
@@ -61,7 +61,7 @@ namespace UnitSpriteStudio {
 			return pixels[0];
 		}
 
-		internal override void SetFramePixelData(int FrameIndex, byte[] pixelData) {
+		internal override void SetFramePixelData(int FrameIndex, byte[] pixelData, bool Unused = false) {
 			lock (sprite) {
 				try {
 					sprite.WritePixels(new System.Windows.Int32Rect(0, 0, sprite.PixelWidth, sprite.PixelHeight), pixelData, sprite.BackBufferStride, 0);

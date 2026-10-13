@@ -1800,6 +1800,35 @@ namespace UnitSpriteStudio {
 			}
 		}
 
+		private void AlternateFramesAddButton_Click(object sender, RoutedEventArgs e) {
+			AlternateFrameDialog newAlternateFrameWindow = new AlternateFrameDialog();
+			newAlternateFrameWindow.Owner = this;
+			bool? result = newAlternateFrameWindow.ShowDialog();
+			if (result == true) {
+				int ReplacedFrame = int.Parse(newAlternateFrameWindow.TextBoxReplacedFrame.Text);
+				int TargetFrame = int.Parse(newAlternateFrameWindow.TextBoxTargetFrame.Text);
+				string Name = newAlternateFrameWindow.TextBoxName.Text;
+				AlternateFrame newAlternateFrame = new AlternateFrame(Name, ReplacedFrame, TargetFrame);
+				spriteSheet.ExpandToFitAlternateFrame(TargetFrame);
+				if (newAlternateFrameWindow.CheckCopyOrigin.IsChecked == true) {
+					spriteSheet.CopyAlternateFrameOrigin(newAlternateFrame);
+				}
+				((App)App.Current).AlternateFrames.Add(newAlternateFrame);
+			} else {
+				return;
+			}
+		}
+
+		private void AlternateFramesRemoveButton_Click(object sender, RoutedEventArgs e) {
+			if (ListBoxAlternateFrames.SelectedIndex == -1) return;
+			((App)App.Current).AlternateFrames.RemoveAt(ListBoxAlternateFrames.SelectedIndex);
+			FrameMetadataChanged();
+		}
+
+		private void AlternateFrameCheckBox_Checked(object sender, RoutedEventArgs e) {
+			FrameMetadataChanged();
+		}
+
 		private void MenuItemHelpShortcuts_Click(object sender, RoutedEventArgs e) {
 			HelpShortcuts helpWindow = new HelpShortcuts();
 			helpWindow.Owner = this;

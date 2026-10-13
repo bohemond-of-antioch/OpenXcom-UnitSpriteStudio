@@ -153,8 +153,8 @@ namespace UnitSpriteStudio {
 
 			MainWindow.undoSystem.BeginUndoBlock();
 			foreach (PixelOperations.PixelOperation operation in ListOperations.Items) {
-				operation.Run(ApplicationWindow.spriteSheet, targetFrames.ToList<int>());
-				if (ApplicationWindow.itemSpriteSheet!=null) operation.Run(ApplicationWindow.itemSpriteSheet, targetItemFrames.ToList<int>());
+				operation.Run(ApplicationWindow.spriteSheet, targetFrames.ToList<int>(), CheckBoxAffectedFramesBase.IsChecked == true, CheckBoxAffectedFramesAlternate.IsChecked == true);
+				if (ApplicationWindow.itemSpriteSheet!=null) operation.Run(ApplicationWindow.itemSpriteSheet, targetItemFrames.ToList<int>(), true, false);
 			}
 			MainWindow.undoSystem.EndUndoBlock();
 			ApplicationWindow.FrameMetadataChanged();

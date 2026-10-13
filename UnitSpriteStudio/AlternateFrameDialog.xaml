@@ -1,0 +1,32 @@
+﻿<Window x:Class="UnitSpriteStudio.AlternateFrameDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UnitSpriteStudio"
+        mc:Ignorable="d"
+        Title="Alternate Frame" Height="133" Width="284" ResizeMode="NoResize" WindowStyle="ToolWindow" WindowStartupLocation="CenterOwner">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<Label Grid.Column="0" Grid.Row="0">Name</Label>
+		<TextBox Name="TextBoxName" Grid.Column="1" Grid.Row="0" Text="Alt. Body"/>
+		<Label Grid.Column="0" Grid.Row="1">Replaced frame</Label>
+		<TextBox Name="TextBoxReplacedFrame" Grid.Column="1" Grid.Row="1" Text="32"/>
+		<Label Grid.Column="0" Grid.Row="2">Target frame</Label>
+		<TextBox Name="TextBoxTargetFrame" Grid.Column="1" Grid.Row="2" Text="288"/>
+		<Label Grid.Column="0" Grid.Row="3">Copy origin</Label>
+		<CheckBox Name="CheckCopyOrigin" Grid.Column="1" Grid.Row="3" Padding="5,0,0,0" Margin="5,0,0,0" VerticalAlignment="Center" VerticalContentAlignment="Center" Content="Overwrites!"/>
+		<Button Content="OK" Grid.Column="0" Grid.Row="4" Click="ButtonOK_Click" IsDefault="True"/>
+		<Button Content="Cancel" Grid.Column="1" Grid.Row="4" Click="ButtonCancel_Click" IsCancel="True"/>
+	</Grid>
+</Window>

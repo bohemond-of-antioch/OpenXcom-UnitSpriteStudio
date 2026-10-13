@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using UnitSpriteStudio.DrawingRoutines;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace UnitSpriteStudio {
 	class UnitSpriteSheet : SpriteSheet {
@@ -112,6 +114,26 @@ namespace UnitSpriteStudio {
 
 		internal WriteableBitmap getSprite() {
 			return frameSource.sprite;
+		}
+
+		internal bool CanAccomodateAlternateFrame(int target) {
+			var lastFrame = frameSource.GetFrame(target + 7, true);
+			return lastFrame != null;
+		}
+
+		internal void ExpandToFitAlternateFrame(int target) {
+			if (CanAccomodateAlternateFrame(target)) return;
+			frameSource.ExpandToFitFrame(target);
+		}
+
+		internal void CopyAlternateFrameOrigin(AlternateFrame frame) {
+			for (int d = 0; d < 8; d++) {
+				int source = d + frame.ReplacedFrame;
+				int destination = frame.GetTargetIndex(source);
+
+				byte[] pixels = frameSource.GetFramePixelData(source, true);
+				frameSource.SetFramePixelData(destination, pixels, true);
+			}
 		}
 	}
 }

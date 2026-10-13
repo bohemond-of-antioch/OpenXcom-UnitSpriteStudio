@@ -44,7 +44,7 @@ namespace UnitSpriteStudio {
 		}
 
 		internal void SwitchToPalette(BitmapPalette NewPalette) {
-			var SpriteWithNewPalette=new WriteableBitmap(sprite.PixelWidth, sprite.PixelHeight, sprite.DpiX, sprite.DpiY, PixelFormats.Indexed8, NewPalette);
+			var SpriteWithNewPalette = new WriteableBitmap(sprite.PixelWidth, sprite.PixelHeight, sprite.DpiX, sprite.DpiY, PixelFormats.Indexed8, NewPalette);
 			byte[] PixelData = new byte[sprite.PixelWidth * sprite.PixelHeight];
 			sprite.CopyPixels(PixelData, sprite.BackBufferStride, 0);
 			SpriteWithNewPalette.WritePixels(new System.Windows.Int32Rect(0, 0, sprite.PixelWidth, sprite.PixelHeight), PixelData, sprite.BackBufferStride, 0);
@@ -68,7 +68,7 @@ namespace UnitSpriteStudio {
 				spritePalette.Add(System.Drawing.Color.FromArgb(c.A, c.R, c.G, c.B));
 			}
 			byte[] paletteMap = new byte[256];
-			for (int t=0;t<256;t++) {
+			for (int t = 0; t < 256; t++) {
 				paletteMap[t] = Palettes.FindNearestColorRGB(spritePalette[t], newPalette);
 			}
 
@@ -104,7 +104,8 @@ namespace UnitSpriteStudio {
 			return result;
 		}
 
-		virtual internal BitmapSource GetFrame(int FrameIndex) {
+		virtual internal BitmapSource GetFrame(int FrameIndex, bool IgnoreAlternateFrames = false) {
+			if (!IgnoreAlternateFrames) FrameIndex = AlternateFrame.CalculateTargetIndex(FrameIndex);
 			if (imageSourceCache.ContainsKey(FrameIndex)) {
 				return imageSourceCache[FrameIndex];
 			}
@@ -120,7 +121,8 @@ namespace UnitSpriteStudio {
 			return result;
 		}
 
-		virtual internal byte[] GetFramePixelData(int FrameIndex) {
+		virtual internal byte[] GetFramePixelData(int FrameIndex, bool IgnoreAlternateFrames = false) {
+			if (!IgnoreAlternateFrames) FrameIndex = AlternateFrame.CalculateTargetIndex(FrameIndex);
 			(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
 			byte[] pixels = new byte[32 * 40];
 			lock (sprite) {
@@ -135,6 +137,7 @@ namespace UnitSpriteStudio {
 
 		virtual internal byte GetPixel(int FrameIndex, int X, int Y) {
 			if (X < 0 || Y < 0 || X >= 32 || Y >= 40) return 0;
+			FrameIndex = AlternateFrame.CalculateTargetIndex(FrameIndex);
 			(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
 			byte[] pixels = new byte[1];
 			lock (sprite) {
@@ -146,7 +149,8 @@ namespace UnitSpriteStudio {
 			}
 			return pixels[0];
 		}
-		virtual internal void SetFramePixelData(int FrameIndex, byte[] pixelData) {
+		virtual internal void SetFramePixelData(int FrameIndex, byte[] pixelData, bool IgnoreAlternateFrames = false) {
+			if (!IgnoreAlternateFrames) FrameIndex = AlternateFrame.CalculateTargetIndex(FrameIndex);
 			(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
 			lock (sprite) {
 				try {
@@ -161,6 +165,7 @@ namespace UnitSpriteStudio {
 
 		virtual internal void SetPixel(int FrameIndex, int X, int Y, byte Color) {
 			if (X < 0 || Y < 0 || X >= 32 || Y >= 40) return;
+			FrameIndex = AlternateFrame.CalculateTargetIndex(FrameIndex);
 			(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
 
 			lock (sprite) {
@@ -176,6 +181,19 @@ namespace UnitSpriteStudio {
 
 		internal BitmapPalette GetColorPalette() {
 			return sprite.Palette;
+		}
+
+		internal void ExpandToFitFrame(int FrameIndex) {
+			(int X, int Y) frameCoords = GetFrameCoords(FrameIndex);
+			int newHeight = frameCoords.Y + 40;
+
+			var originalSprite = sprite;
+			sprite = new WriteableBitmap(originalSprite.PixelWidth, newHeight, originalSprite.DpiX, originalSprite.DpiY, PixelFormats.Indexed8, originalSprite.Palette);
+			byte[] originalPixels = new byte[originalSprite.BackBufferStride * originalSprite.PixelHeight];
+			originalSprite.CopyPixels(originalPixels, originalSprite.BackBufferStride, 0);
+			sprite.WritePixels(new System.Windows.Int32Rect(0, 0, originalSprite.PixelWidth, originalSprite.PixelHeight), originalPixels, sprite.BackBufferStride, 0);
+			columnCount = sprite.PixelWidth / 32;
+			imageSourceCache = new Dictionary<int, BitmapSource>();
 		}
 	}
 }

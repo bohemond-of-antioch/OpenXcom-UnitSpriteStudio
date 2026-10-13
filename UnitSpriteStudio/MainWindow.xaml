@@ -7,6 +7,11 @@
 		mc:Ignorable="d" 
 		Title="UnitSprite Studio"  Loaded="Window_Loaded"
 		SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" KeyUp="Window_KeyUp" Closing="Window_Closing">
+	<Window.Resources>
+		<CollectionViewSource
+                Source="{Binding Source={x:Static Application.Current}, Path=AlternateFrames}"
+                x:Key="AlternateFramesData" />
+	</Window.Resources>
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<Menu.ItemsPanel>
@@ -126,6 +131,23 @@
 				</StackPanel>
 				<StackPanel Name="RulesPanel" Margin="5,0,0,0">
 					<Label Content="Rules"/>
+				</StackPanel>
+				<StackPanel Margin="5,0,0,0">
+					<Label Content="Alternate Frames"/>
+					<ListBox ToolTip="Alternate sprite frames for the selected layer. Used in Y-Scripts" Name="ListBoxAlternateFrames" ItemsSource="{Binding Source={StaticResource AlternateFramesData}}" IsSynchronizedWithCurrentItem="True" IsTextSearchEnabled="False">
+						<ListBox.ItemTemplate>
+							<HierarchicalDataTemplate>
+								<StackPanel Orientation="Horizontal">
+									<CheckBox IsChecked="{Binding Enabled}" Checked="AlternateFrameCheckBox_Checked" Unchecked="AlternateFrameCheckBox_Checked" VerticalAlignment="Center" HorizontalAlignment="Left" />
+									<Label Content="{Binding Label}" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="0" Margin="3,0" VerticalContentAlignment="Center"/>
+								</StackPanel>
+							</HierarchicalDataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+					<StackPanel Orientation="Horizontal">
+						<Button Click="AlternateFramesAddButton_Click">Add</Button>
+						<Button Click="AlternateFramesRemoveButton_Click">Remove</Button>
+					</StackPanel>
 				</StackPanel>
 			</StackPanel>
 			<DockPanel LastChildFill = "True">

@@ -22,9 +22,9 @@
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="*"/>
 				</Grid.ColumnDefinitions>
 				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
 				</Grid.RowDefinitions>
 				<GroupBox Header="Primary" Margin="2" Grid.Row="0" Grid.Column="0">
@@ -39,8 +39,14 @@
 					<StackPanel Name="TertiaryFramesPanel">
 					</StackPanel>
 				</GroupBox>
-				<GroupBox Header="Layers" Margin="2" Grid.Row="0" Grid.Column="3">
+				<GroupBox Header="Layers" Margin="2" Grid.Row="1" Grid.Column="0">
 					<StackPanel Name="LayersPanel">
+					</StackPanel>
+				</GroupBox>
+				<GroupBox Header="Affected Frames" Margin="2" Grid.Row="1" Grid.Column="1">
+					<StackPanel Name="AlternateFramesPanel">
+						<CheckBox Name="CheckBoxAffectedFramesBase" Content="Base" IsChecked="True"/>
+						<CheckBox Name="CheckBoxAffectedFramesAlternate" Content="Alternate" IsChecked="True"/>
 					</StackPanel>
 				</GroupBox>
 			</Grid>

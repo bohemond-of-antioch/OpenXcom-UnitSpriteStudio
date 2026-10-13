@@ -64,6 +64,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AlternateFrame.cs" />
+    <Compile Include="AlternateFrameDialog.xaml.cs">
+      <DependentUpon>AlternateFrameDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ClipboardMonitor.cs" />
     <Compile Include="ColorPalette.xaml.cs">
       <DependentUpon>ColorPalette.xaml</DependentUpon>
@@ -143,6 +147,10 @@
       <DependentUpon>UnitDirection.xaml</DependentUpon>
     </Compile>
     <Compile Include="UnitSpriteStudioClipboardFormat.cs" />
+    <Page Include="AlternateFrameDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ColorPalette.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
