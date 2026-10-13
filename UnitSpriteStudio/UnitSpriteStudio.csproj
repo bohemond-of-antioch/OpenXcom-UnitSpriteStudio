@@ -242,6 +242,7 @@
     <None Include="Resources\UnitSpriteStudioIcon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Paint.ico" />
     <Resource Include="Resources\PixelSelection.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -255,9 +256,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ColorSelection.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Paint.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\PaintCursor.ico" />
@@ -315,6 +313,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\UFOUfopaediaPalette.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\CopyColor.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

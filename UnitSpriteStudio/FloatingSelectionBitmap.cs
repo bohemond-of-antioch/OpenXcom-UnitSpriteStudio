@@ -15,6 +15,10 @@ namespace UnitSpriteStudio {
 			bitmap = new WriteableBitmap(spriteSheet.drawingRoutine.CompositeImageSize().Width, spriteSheet.drawingRoutine.CompositeImageSize().Height, 96, 96, spriteSheet.getSprite().Format, spriteSheet.getSprite().Palette);
 		}
 
+		public FloatingSelectionBitmap(ImageSource source) {
+			bitmap = new WriteableBitmap((BitmapSource)source);
+		}
+
 		internal byte[] GetAllPixels() {
 			byte[] pixels = new byte[bitmap.PixelWidth * bitmap.PixelHeight];
 			bitmap.CopyPixels(new System.Windows.Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight), pixels, bitmap.PixelWidth, 0);

@@ -2,18 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Media.Media3D;
 
 namespace UnitSpriteStudio {
 	/// <summary>
@@ -27,7 +20,8 @@ namespace UnitSpriteStudio {
 			SelectColors,
 			SelectArea,
 			Paint,
-			Paste
+			Paste,
+			CopyColor,
 		}
 
 		public enum EToolPhase {
@@ -521,13 +515,13 @@ namespace UnitSpriteStudio {
 		}
 
 		private void CutSelection() {
-			floatingSelection = new FloatingSelectionBitmap(spriteSheet);
-			int cutPixels = floatingSelection.CopyPixels(selectedArea, spriteSheet, itemSpriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex, true);
-			if (cutPixels == 0) {
-				toolPhase = EToolPhase.None;
+			CopySelection();
+			if (toolPhase == EToolPhase.MoveFloatingSelection) {
+				ResetFloatingSection();
 			} else {
-				ImageFloatingSelection.Source = floatingSelection.bitmap;
+				TransmogrifySelection(ListBoxLayers.SelectedIndex, (oldColor) => 0);
 			}
+			selectedArea.SetAll(false);
 		}
 
 		private void CopyMergedSelection() {
@@ -549,8 +543,15 @@ namespace UnitSpriteStudio {
 			}
 		}
 		private void CopySelection() {
-			FloatingSelectionBitmap copyBuffer = new FloatingSelectionBitmap(spriteSheet);
-			int copiedPixels = copyBuffer.CopyPixels(selectedArea, spriteSheet, itemSpriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex);
+			int copiedPixels;
+			FloatingSelectionBitmap copyBuffer;
+			if (toolPhase == EToolPhase.MoveFloatingSelection) {
+				copyBuffer = new FloatingSelectionBitmap(ImageFloatingSelection.Source);
+				copiedPixels = 1;
+			} else {
+				copyBuffer = new FloatingSelectionBitmap(spriteSheet);
+				copiedPixels = copyBuffer.CopyPixels(selectedArea, spriteSheet, itemSpriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex);
+			}
 			if (copiedPixels > 0) {
 				Clipboard.Clear();
 				DataObject data;
@@ -648,8 +649,19 @@ namespace UnitSpriteStudio {
 		}
 		private void Cut() {
 			undoSystem.RegisterUndoState();
-			toolPhase = EToolPhase.MoveFloatingSelection;
 			CutSelection();
+			RefreshCompositeImage();
+		}
+		private void DragCut() {
+			undoSystem.RegisterUndoState();
+			toolPhase = EToolPhase.MoveFloatingSelection;
+			floatingSelection = new FloatingSelectionBitmap(spriteSheet);
+			int cutPixels = floatingSelection.CopyPixels(selectedArea, spriteSheet, itemSpriteSheet, GatherMetadata(), ListBoxLayers.SelectedIndex, true);
+			if (cutPixels == 0) {
+				toolPhase = EToolPhase.None;
+			} else {
+				ImageFloatingSelection.Source = floatingSelection.bitmap;
+			}
 			RefreshCompositeImage();
 		}
 		private void SelectColors(int positionX, int positionY) {
@@ -780,6 +792,27 @@ namespace UnitSpriteStudio {
 			}
 		}
 
+		private void UsePippete(int PositionX, int PositionY, MouseButton Button) {
+			DrawingRoutines.FrameMetadata layerMetadata;
+			layerMetadata = GatherMetadata();
+			var frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(layerMetadata, ListBoxLayers.SelectedIndex);
+			byte ColorUnderCursor = 0;
+			switch (frameInfo.Target) {
+				case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit:
+					ColorUnderCursor = spriteSheet.GetPixel(layerMetadata, ListBoxLayers.SelectedIndex, PositionX, PositionY);
+					break;
+				case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Item:
+					if (itemSpriteSheet != null) ColorUnderCursor = itemSpriteSheet.frameSource.GetPixel(frameInfo.Index, PositionX - frameInfo.OffsetX, PositionY - frameInfo.OffsetY);
+					break;
+			}
+			if (Button == MouseButton.Left) ToolColorPalette.SelectedLeftColor = ColorUnderCursor;
+			if (Button == MouseButton.Middle) ToolColorPalette.SelectedMiddleColor = ColorUnderCursor;
+			if (Button == MouseButton.Right) ToolColorPalette.SelectedRightColor = ColorUnderCursor;
+			ToolColorPalette.UpdateMarkers();
+			ToolColorPalette_OnSelectedColorChanged();
+			OnPippeteUsed?.Invoke(ColorUnderCursor);
+		}
+
 		private void ImageOverlay_MouseDown(object sender, MouseButtonEventArgs e) {
 			int PositionX, PositionY;
 			PositionX = (int)(e.GetPosition((IInputElement)sender).X / EditImageScale);
@@ -788,7 +821,7 @@ namespace UnitSpriteStudio {
 
 			if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
 				if (toolPhase == EToolPhase.None) {
-					Cut();
+					DragCut();
 				} else if (toolPhase == EToolPhase.MoveFloatingSelection) {
 					undoSystem.RegisterUndoState();
 				}
@@ -832,26 +865,12 @@ namespace UnitSpriteStudio {
 							FloodSelectColor(PositionX, PositionY);
 						}
 						break;
+					case ECursorTool.CopyColor:
+						UsePippete(PositionX, PositionY, e.ChangedButton);
+						break;
 					case ECursorTool.Paint:
 						if (Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
-							DrawingRoutines.FrameMetadata layerMetadata;
-							layerMetadata = GatherMetadata();
-							var frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(layerMetadata, ListBoxLayers.SelectedIndex);
-							byte ColorUnderCursor = 0;
-							switch (frameInfo.Target) {
-								case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit:
-									ColorUnderCursor = spriteSheet.GetPixel(layerMetadata, ListBoxLayers.SelectedIndex, PositionX, PositionY);
-									break;
-								case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Item:
-									if (itemSpriteSheet != null) ColorUnderCursor = itemSpriteSheet.frameSource.GetPixel(frameInfo.Index, PositionX - frameInfo.OffsetX, PositionY - frameInfo.OffsetY);
-									break;
-							}
-							if (e.ChangedButton == MouseButton.Left) ToolColorPalette.SelectedLeftColor = ColorUnderCursor;
-							if (e.ChangedButton == MouseButton.Middle) ToolColorPalette.SelectedMiddleColor = ColorUnderCursor;
-							if (e.ChangedButton == MouseButton.Right) ToolColorPalette.SelectedRightColor = ColorUnderCursor;
-							ToolColorPalette.UpdateMarkers();
-							ToolColorPalette_OnSelectedColorChanged();
-							OnPippeteUsed?.Invoke(ColorUnderCursor);
+							UsePippete(PositionX, PositionY, e.ChangedButton);
 						} else {
 							byte ApplyColor = 0;
 							if (toolPhase == EToolPhase.None) {
@@ -947,32 +966,34 @@ namespace UnitSpriteStudio {
 								FloodSelectColor(PositionX, PositionY);
 							}
 							break;
-						case ECursorTool.Paint:
-							if (Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
-								DrawingRoutines.FrameMetadata layerMetadata;
-								layerMetadata = GatherMetadata();
-								var frameInfo = spriteSheet.drawingRoutine.GetLayerFrame(layerMetadata, ListBoxLayers.SelectedIndex);
-								byte ColorUnderCursor = 0;
-								switch (frameInfo.Target) {
-									case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Unit:
-										ColorUnderCursor = spriteSheet.GetPixel(layerMetadata, ListBoxLayers.SelectedIndex, PositionX, PositionY);
-										break;
-									case DrawingRoutines.DrawingRoutine.LayerFrameInfo.ETarget.Item:
-										if (itemSpriteSheet != null) ColorUnderCursor = itemSpriteSheet.frameSource.GetPixel(frameInfo.Index, PositionX - frameInfo.OffsetX, PositionY - frameInfo.OffsetY);
-										break;
-								}
+						case ECursorTool.CopyColor: 
+							{
+								MouseButton ButtonUsed;
 								if (e.LeftButton == MouseButtonState.Pressed) {
-									ToolColorPalette.SelectedLeftColor = ColorUnderCursor;
+									ButtonUsed = MouseButton.Left;
 								} else if (e.MiddleButton == MouseButtonState.Pressed) {
-									ToolColorPalette.SelectedMiddleColor = ColorUnderCursor;
+									ButtonUsed = MouseButton.Middle;
 								} else if (e.RightButton == MouseButtonState.Pressed) {
-									ToolColorPalette.SelectedRightColor = ColorUnderCursor;
+									ButtonUsed = MouseButton.Right;
 								} else {
 									break;
 								}
-								ToolColorPalette.UpdateMarkers();
-								ToolColorPalette_OnSelectedColorChanged();
-								OnPippeteUsed?.Invoke(ColorUnderCursor);
+								UsePippete(PositionX, PositionY, ButtonUsed);
+							}
+							break;
+						case ECursorTool.Paint:
+							if (Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
+								MouseButton ButtonUsed;
+								if (e.LeftButton == MouseButtonState.Pressed) {
+									ButtonUsed = MouseButton.Left;
+								} else if (e.MiddleButton == MouseButtonState.Pressed) {
+									ButtonUsed = MouseButton.Middle;
+								} else if (e.RightButton == MouseButtonState.Pressed) {
+									ButtonUsed = MouseButton.Right;
+								} else {
+									break;
+								}
+								UsePippete(PositionX, PositionY, ButtonUsed);
 							} else {
 								byte ApplyColor;
 								if (e.LeftButton == MouseButtonState.Pressed) {
@@ -1325,6 +1346,9 @@ namespace UnitSpriteStudio {
 					case Key.B:
 						SetTool(ECursorTool.Paint);
 						break;
+					case Key.O:
+						SetTool(ECursorTool.CopyColor);
+						break;
 					case Key.NumPad9:
 						UnitDirectionControl.SetDirection(0);
 						break;
@@ -1376,9 +1400,11 @@ namespace UnitSpriteStudio {
 					case Key.D9:
 						ListBoxLayers.SelectedIndex = 8;
 						break;
+					case Key.OemPlus:
 					case Key.Add:
 						SliderFrame.Value = (SliderFrame.Value + 1) % (SliderFrame.Maximum + 1);
 						break;
+					case Key.OemMinus:
 					case Key.Subtract:
 						SliderFrame.Value = SliderFrame.Value == 0 ? SliderFrame.Maximum : SliderFrame.Value - 1;
 						break;

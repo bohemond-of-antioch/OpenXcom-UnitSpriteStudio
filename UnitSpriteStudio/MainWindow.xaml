@@ -142,6 +142,9 @@
 					<ToggleButton ToolTip="Paint (B)" Tag="5" Click="ToggleCursorToolClicked" Name="TogglePaint" Margin="10,0,0,0" IsChecked="True">
 						<Image Source="Resources/Paint.ico" Stretch="None"></Image>
 					</ToggleButton>
+					<ToggleButton ToolTip="Copy Color (O)" Tag="7" Click="ToggleCursorToolClicked" Name="ToggleCopyColor" Margin="2,0,0,0" IsChecked="False">
+						<Image Source="Resources/CopyColor.ico" Stretch="None"></Image>
+					</ToggleButton>
 
 					<ToggleButton ToolTip="Checkered background (Ctrl+B)" Click="ToggleBackground_Click" Name="ToggleBackground" Margin="20,0,0,0" IsChecked="True">
 						<Image Source="Resources/CheckeredBackground.ico" Stretch="None"></Image>
